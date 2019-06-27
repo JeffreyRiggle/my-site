@@ -8,26 +8,26 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
         const projectPageTemplate = path.resolve('src/templates/project-page.jsx');
 
         graphql(`query {
-            github {
-              viewer {
-                name
-                repositories(last: 100) {
-                  nodes {
-                    name
+          github {
+            viewer {
+              name
+              repositories(last: 100) {
+                nodes {
+                  name
+                  id
+                  descriptionHTML
+                  object(expression: "master:README.md") {
                     id
-                    descriptionHTML
-                    object(expression: "master:README.md") {
-                      id
-                      ... on Github_Blob {
-                        text
-                      }
+                    ... on Github_Blob {
+                      text
                     }
                   }
                 }
               }
             }
-          }          
-        `).then(result => {
+          }
+        }
+      `).then(result => {
             if (result.errors) {
                 reject(result.errors);
             }
