@@ -1,0 +1,43 @@
+body {
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.page-header {
+    background-color: darkslategrey;
+    color: #00a14b;
+}
+
+.page-header a {
+    color: #00a14b;
+}
+
+.page-header h1 {
+    margin: 0;
+    padding: 16px 4px;
+}
+
+.header-link {
+    margin-right: 16px;
+}
+
+.project {
+    display: flex;
+}
+
+.project-title {
+    text-align: center;
+}
+
+.project .project-sidebar {
+    flex: 0 1 auto;
+    margin-right: 32px;
+}
+
+.project .project-sidebar ul li {
+    list-style: none;
+}
+
+.project .project-content {
+    flex: 1 1 auto;
+}

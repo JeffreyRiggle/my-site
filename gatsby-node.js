@@ -16,7 +16,14 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
                   name
                   id
                   descriptionHTML
-                  object(expression: "master:README.md") {
+                  url
+                  first: object(expression: "master:README.md") {
+                    id
+                    ... on Github_Blob {
+                      text
+                    }
+                  }
+                  second: object(expression: "master:doc.json") {
                     id
                     ... on Github_Blob {
                       text
@@ -35,8 +42,8 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
             const nodes = result.data.github.viewer.repositories.nodes;
             for (const node of nodes) {
               let content = '';
-              if (node.object && node.object.text) {
-                content = marked(node.object.text);
+              if (node.first && node.first.text) {
+                content = marked(node.first.text);
               }
               
               if (!content) {
@@ -44,12 +51,17 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
                 continue;
               }
 
+              let pages = {};
+              pages['Github'] = content;
+
               createPage({
                   path: node.name,
                   component: projectPageTemplate,
                   context: {
                       projectName: node.name,
-                      content: content
+                      projectUrl: node.url,
+                      currentPage: 'Github',
+                      pages: pages
                   }
               });
             }

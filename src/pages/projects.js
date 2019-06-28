@@ -1,7 +1,6 @@
-import React from "react";
-import Layout from "../components/layout";
-import { Link } from "gatsby"
-import { useStaticQuery, graphql } from "gatsby";
+import React from 'react';
+import Layout from '../components/layout';
+import { Link, useStaticQuery, graphql } from 'gatsby';
 
 const ProjectsPage = () => {
     const result = useStaticQuery(graphql`query {
@@ -11,6 +10,13 @@ const ProjectsPage = () => {
             repositories(last: 100) {
               nodes {
                 name
+                description
+                first: object(expression: "master:README.md") {
+                  id
+                  ... on Github_Blob {
+                    text
+                  }
+                }
               }
             }
           }
@@ -18,12 +24,16 @@ const ProjectsPage = () => {
       }          
     `);
 
+    let projects = result.github.viewer.repositories.nodes.filter(node => {
+      return node.first && node.first.text;
+    });
+
     return (
         <Layout>
           <h1>Projects</h1>
           <ul>
-              {result.github.viewer.repositories.nodes.map(node => {
-                  return <li><Link to={`/${node.name}`}>{node.name}</Link></li>;
+              {projects.map(node => {
+                  return <li><Link to={`/${node.name}`}>{node.name}</Link>{node.description && <span> - {node.description}</span>}</li>;
               })}
           </ul>
         </Layout>

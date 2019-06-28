@@ -1,13 +1,32 @@
 import React from 'react';
-import Header from '../components/header';
+import Layout from '../components/layout';
+import { Link } from 'gatsby';
+
+function getLinkPath(projectName, page) {
+    if (page === 'Github') {
+        return `/${projectName}`;
+    }
+
+    return `/${projectName}/${page}`;
+}
 
 const ProjectPage = ({pageContext}) => {
     return (
-        <div>
-            <Header />
-            <h1>{pageContext.projectName}</h1>
-            <div dangerouslySetInnerHTML={{ __html: pageContext.content }}></div>
-        </div>
+        <Layout>
+            <h1 className="project-title"><a href={pageContext.projectUrl}>{pageContext.projectName}</a></h1>
+            <div className="project">
+                <div className="project-sidebar">
+                    <ul>
+                        {Object.keys(pageContext.pages).map(page => {
+                            return <li><Link to={getLinkPath(pageContext.projectName, page)}>{page}</Link></li>
+                        })}
+                    </ul>
+                </div>
+                <div className="project-area">
+                    <div dangerouslySetInnerHTML={{ __html: pageContext.pages[pageContext.currentPage] }}></div>
+                </div>
+            </div>
+        </Layout>
     );
 }
 
