@@ -2,8 +2,8 @@ import React from 'react';
 import Layout from '../components/layout';
 import { Link } from 'gatsby';
 
-function getLinkPath(projectName, page) {
-    if (page === 'Github') {
+function getLinkPath(projectName, page, index) {
+    if (page === index) {
         return `/${projectName}`;
     }
 
@@ -18,7 +18,7 @@ const ProjectPage = ({pageContext}) => {
                 <div className="project-sidebar">
                     <ul>
                         {Object.keys(pageContext.pages).map(page => {
-                            return <li><Link to={getLinkPath(pageContext.projectName, page)}>{page}</Link></li>
+                            return <li><Link to={getLinkPath(pageContext.projectName, page, pageContext.index)}>{page}</Link></li>
                         })}
                     </ul>
                 </div>

@@ -1,5 +1,22 @@
 const path = require('path');
 const marked = require('marked');
+const {processDocumentation} = require('./src/docBuilder');
+
+function createPageFromMd(createPage, projectPageTemplate, node, currentPage, pages, parent) {
+  const p = parent !== currentPage ? `${node.name}/${currentPage}` : node.name;
+
+  createPage({
+    path: p,
+    component: projectPageTemplate,
+    context: {
+        projectName: node.name,
+        projectUrl: node.url,
+        currentPage: currentPage,
+        pages: pages,
+        index: parent
+    }
+  });
+}
 
 exports.createPages = ({ graphql, boundActionCreators }) => {
 
@@ -23,7 +40,7 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
                       text
                     }
                   }
-                  second: object(expression: "master:doc.json") {
+                  second: object(expression: "master:doc/doc.json") {
                     id
                     ... on Github_Blob {
                       text
@@ -40,6 +57,7 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
             }
             
             const nodes = result.data.github.viewer.repositories.nodes;
+            let p;
             for (const node of nodes) {
               let content = '';
               if (node.first && node.first.text) {
@@ -52,20 +70,39 @@ exports.createPages = ({ graphql, boundActionCreators }) => {
               }
 
               let pages = {};
-              pages['Github'] = content;
 
-              createPage({
-                  path: node.name,
-                  component: projectPageTemplate,
-                  context: {
-                      projectName: node.name,
-                      projectUrl: node.url,
-                      currentPage: 'Github',
-                      pages: pages
-                  }
-              });
+              if (node.second && node.second.text) {
+                let nodeData = JSON.parse(node.second.text);
+                if (!p) {
+                  p = processDocumentation(pages, node.name, nodeData, graphql).then(() => {
+                    pages['Github'] = content;
+                    for (const page of Object.keys(pages)) {
+                      createPageFromMd(createPage, projectPageTemplate, node, page, pages, nodeData.index);
+                    }
+                  });
+                } else {
+                  p.then(() => {
+                    processDocumentation(pages, node.name, nodeData, graphql).then(() => {
+                      pages['Github'] = content;
+                      for (const page of Object.keys(pages)) {
+                        createPageFromMd(createPage, projectPageTemplate, node, page, pages, nodeData.index);
+                      }
+                    });
+                  });
+                }
+              } else {
+                pages['Github'] = content;
+                createPageFromMd(createPage, projectPageTemplate, node, 'Github', pages, 'Github');
+              }
             }
-            resolve();
+
+            if (p) {
+              p.finally(() => {
+                resolve();
+              });
+            } else {
+              resolve();
+            }
         })
     })
 }
