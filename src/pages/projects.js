@@ -31,9 +31,9 @@ const ProjectsPage = () => {
     return (
         <Layout>
           <h1>Projects</h1>
-          <ul>
+          <ul className="project-list">
               {projects.map(node => {
-                  return <li><Link to={`/${node.name}`}>{node.name}</Link>{node.description && <span> - {node.description}</span>}</li>;
+                  return <li><Link to={`/${node.name}`}>{node.name}</Link>{node.description && <span className="description"> - {node.description}</span>}</li>;
               })}
           </ul>
         </Layout>

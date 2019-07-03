@@ -21,9 +21,9 @@ const Layout = ({ children }) => {
           </h1>
         </div>
       </header>
-      <div>
-        <main>{children}</main>
-        <footer>
+      <div className="content-area">
+        <main className="main-content">{children}</main>
+        <footer className="content-footer">
           © {new Date().getFullYear()}, Built with
           {` `}
           <a href="https://www.gatsbyjs.org">Gatsby</a>
