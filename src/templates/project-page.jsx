@@ -23,7 +23,7 @@ const ProjectPage = ({pageContext}) => {
                     </ul>
                 </div>
                 <div className="project-area">
-                    <div dangerouslySetInnerHTML={{ __html: pageContext.pages[pageContext.currentPage] }}></div>
+                    <div className="project-content-page" dangerouslySetInnerHTML={{ __html: pageContext.pages[pageContext.currentPage] }}></div>
                 </div>
             </div>
         </Layout>

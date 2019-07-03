@@ -82,3 +82,7 @@ body {
 .project-list li .description {
     font-style: italic
 }
+
+.project-content-page img {
+    display: block;
+}
