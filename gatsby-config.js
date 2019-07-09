@@ -11,6 +11,13 @@ module.exports = {
     {
       resolve: `gatsby-source-filesystem`,
       options: {
+        name: `blog`,
+        path: `${__dirname}/content/blog`
+      }
+    },
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
         name: `images`,
         path: `${__dirname}/src/images`,
       },
@@ -40,7 +47,8 @@ module.exports = {
         },
         fetchOptions: {}
       }
-    }
+    },
+    `gatsby-transformer-remark`,
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.dev/offline
     // `gatsby-plugin-offline`,
