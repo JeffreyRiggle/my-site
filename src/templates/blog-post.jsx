@@ -9,25 +9,22 @@ class BlogPostTemplate extends React.Component {
 
     return (
       <Layout>
-        <h1>{post.frontmatter.title}</h1>
-        <div dangerouslySetInnerHTML={{ __html: post.html }} />
-        <hr />
-        <ul>
-          {previous && (
-            <li>
+        <div className="blog-post">
+          <h1>{post.frontmatter.title}</h1>
+          <div className="blog-content" dangerouslySetInnerHTML={{ __html: post.html }} />
+          <div className="blog-selector">
+            {previous && (
               <Link to={previous.fields.slug} rel="prev">
-              ← {previous.frontmatter.title}
+              Last post ({previous.frontmatter.title})
               </Link>
-            </li>
-          )}
-          {next && (
-            <li>
+            )}
+            {next && (
               <Link to={next.fields.slug} rel="next">
-                {next.frontmatter.title} →
+                Next post ({next.frontmatter.title})
               </Link>
-            </li>
-          )}
-        </ul>
+            )}
+          </div>
+        </div>
       </Layout>
     )
   }
