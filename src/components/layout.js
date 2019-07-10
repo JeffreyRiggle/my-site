@@ -1,9 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'gatsby';
+import { Link, useStaticQuery, graphql } from 'gatsby';
+import Img from 'gatsby-image';
 import './layout.css';
+import '../images/github.png';
 
 const Layout = ({ children }) => {
+  const data = useStaticQuery(graphql`
+    query {
+      github: file(relativePath: { eq: "github.png" }) {
+        childImageSharp {
+          fixed(width: 32, height: 32) {
+            ...GatsbyImageSharpFixed
+          }
+        }
+      }
+      email: file(relativePath: { eq: "email.png" }) {
+        childImageSharp {
+          fixed(width: 32, height: 32) {
+            ...GatsbyImageSharpFixed
+          }
+        }
+      }
+    }
+  `);
+
+  const githubImage = data.github.childImageSharp.fixed;
+  const emailImage = data.email.childImageSharp.fixed;
+
   return (
     <>
       <header className="page-header">
@@ -24,9 +48,7 @@ const Layout = ({ children }) => {
       <div className="content-area">
         <main className="main-content">{children}</main>
         <footer className="content-footer">
-          © {new Date().getFullYear()}, Built with
-          {` `}
-          <a href="https://www.gatsbyjs.org">Gatsby</a>
+          <a href="https://github.com/JeffreyRiggle"><Img fixed={githubImage} alt="github"></Img></a><a href="mailto:jeffreyriggle@gmail.com"><Img fixed={emailImage} alt="email"></Img></a><span>Jeffrey Riggle</span>
         </footer>
       </div>
     </>

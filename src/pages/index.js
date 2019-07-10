@@ -4,8 +4,9 @@ import Layout from "../components/layout"
 const IndexPage = () => (
   <Layout>
     <h1>Home page</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
+    <p>You have stumbled upon my site, welcome.</p>
+    <p>This site is filled with random projects I have worked on in my free time. 
+      Please look around and see what you can find.</p>
   </Layout>
 )
 

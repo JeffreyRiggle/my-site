@@ -28,7 +28,16 @@ body {
 }
 
 .content-area .content-footer {
+    border-top: 1px solid black;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
     flex: 0 0 auto;
+}
+
+.content-area .content-footer > * {
+    margin-right: 8px;
 }
 
 .page-header {
