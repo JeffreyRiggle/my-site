@@ -1,7 +1,7 @@
 {
   "name": "personal-site",
   "private": true,
-  "description": "An attempt to make a personal site with gastbyjs",
+  "description": "Personal Website",
   "version": "0.1.0",
   "author": "Jeffrey Riggle <jeffreyriggle@gmail.com>",
   "dependencies": {
@@ -25,7 +25,7 @@
     "prettier": "^1.18.2"
   },
   "keywords": [
-    "gatsby"
+    "ilusr"
   ],
   "license": "MIT",
   "scripts": {

@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, useStaticQuery, graphql } from 'gatsby';
 import Img from 'gatsby-image';
+import SEO from './SEO';
 import './layout.css';
 import '../images/github.png';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, title }) => {
   const data = useStaticQuery(graphql`
     query {
       github: file(relativePath: { eq: "github.png" }) {
@@ -30,6 +31,7 @@ const Layout = ({ children }) => {
 
   return (
     <>
+      <SEO title={title}/>
       <header className="page-header">
         <div>
           <h1>
@@ -57,6 +59,7 @@ const Layout = ({ children }) => {
 
 Layout.propTypes = {
   children: PropTypes.node.isRequired,
+  title: PropTypes.string.isRequired
 }
 
 export default Layout

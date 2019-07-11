@@ -12,7 +12,7 @@ function getLinkPath(projectName, page, index) {
 
 const ProjectPage = ({pageContext}) => {
     return (
-        <Layout>
+        <Layout title={pageContext.projectName}>
             <h1 className="project-title"><a href={pageContext.projectUrl}>{pageContext.projectName}</a></h1>
             <div className="project">
                 <div className="project-sidebar">

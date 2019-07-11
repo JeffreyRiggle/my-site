@@ -29,7 +29,7 @@ const ProjectsPage = () => {
     });
 
     return (
-        <Layout>
+        <Layout title="projects">
           <h1>Projects</h1>
           <ul className="project-list">
               {projects.map(node => {

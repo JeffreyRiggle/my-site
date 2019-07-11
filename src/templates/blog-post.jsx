@@ -1,5 +1,5 @@
 import React from "react"
-import { Link } from "gatsby"
+import { Link, graphql } from "gatsby"
 import Layout from "../components/layout"
 
 class BlogPostTemplate extends React.Component {
@@ -8,7 +8,7 @@ class BlogPostTemplate extends React.Component {
     const { previous, next } = this.props.pageContext
 
     return (
-      <Layout>
+      <Layout title={post.frontmatter.title}>
         <div className="blog-post">
           <h1>{post.frontmatter.title}</h1>
           <div className="blog-content" dangerouslySetInnerHTML={{ __html: post.html }} />
@@ -37,7 +37,6 @@ export const pageQuery = graphql`
     site {
       siteMetadata {
         title
-        author
       }
     }
     markdownRemark(fields: { slug: { eq: $slug } }) {

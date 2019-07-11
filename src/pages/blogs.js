@@ -25,7 +25,7 @@ const BlogPage = () => {
     `);
 
     return (
-        <Layout>
+        <Layout title="Blogs">
           <h1>Blog Posts</h1>
           <ul className="project-list">
               {result.allMarkdownRemark.edges.map(edge => {
