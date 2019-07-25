@@ -20,6 +20,7 @@ const ProjectPage = ({pageContext}) => {
                         {Object.keys(pageContext.pages).map(page => {
                             return <li><Link to={getLinkPath(pageContext.projectName, page, pageContext.index)}>{page}</Link></li>
                         })}
+                        {pageContext.hasApi && <li><Link to={`/${pageContext.projectName}/apidocs`}>Api Documentation</Link></li>}
                     </ul>
                 </div>
                 <div className="project-area">
