@@ -1,6 +1,6 @@
 const path = require('path');
 const marked = require('marked');
-const { processDocumentation } = require('./src/docBuilder');
+const { processDocumentation, processMarkdownImages } = require('./src/docBuilder');
 const { createFilePath } = require(`gatsby-source-filesystem`);
 const unzipper = require('unzipper');
 const fs = require('fs');
@@ -66,7 +66,7 @@ function createGitPages(graphql, boundActionCreators) {
           for (const node of nodes) {
             let content = '';
             if (node.first && node.first.text) {
-              content = marked(node.first.text);
+              content = marked(processMarkdownImages(node.first.text, `${node.url}/raw/master`));
             }
             
             if (!content) {

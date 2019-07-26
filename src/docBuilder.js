@@ -37,7 +37,7 @@ function processMarkdownImages(content, url) {
             return;
         }
 
-        const newValue = match.replace(link, `${url}/raw/master/doc/${link.substring(2, link.length)}`);
+        const newValue = match.replace(link, `${url}/${link.substring(2, link.length)}`);
         content = content.replace(match, newValue);
     });
 
@@ -52,7 +52,7 @@ function processDocumentation(pages, repo, data, graphql) {
         for (const page of pageKeys) {
             if (!p) {
                 p = getContent(data.pages[page], repo, graphql).then(result => {
-                    pages[page] = marked(processMarkdownImages(result.data.github.viewer.repository.first.text, result.data.github.viewer.repository.url));
+                    pages[page] = marked(processMarkdownImages(result.data.github.viewer.repository.first.text, `${result.data.github.viewer.repository.url}/raw/master/doc`));
 
                     if (pageKeys.indexOf(page) + 1 === pageKeys.length) {
                         resolve();
@@ -61,7 +61,7 @@ function processDocumentation(pages, repo, data, graphql) {
             } else {
                 p.then(() => {
                     getContent(data.pages[page], repo, graphql).then(result => {
-                        pages[page] = marked(processMarkdownImages(result.data.github.viewer.repository.first.text, result.data.github.viewer.repository.url));
+                        pages[page] = marked(processMarkdownImages(result.data.github.viewer.repository.first.text, `${result.data.github.viewer.repository.url}/raw/master/doc`));
 
                         if (pageKeys.indexOf(page) + 1 === pageKeys.length) {
                             resolve();
@@ -74,5 +74,6 @@ function processDocumentation(pages, repo, data, graphql) {
 }
 
 module.exports = {
-    processDocumentation
+    processDocumentation,
+    processMarkdownImages
 };
