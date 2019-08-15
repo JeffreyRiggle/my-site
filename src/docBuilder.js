@@ -1,5 +1,5 @@
 const marked = require('marked');
-const linkRegex = /\[(.*)\]\((.*)\)/g;
+const linkRegex = /\[(.*)\]\(([^#].*)\)/g;
 const linkLocationRegex = /\((.*)\)/;
 const webRequest = /http:|https:/i;
 
