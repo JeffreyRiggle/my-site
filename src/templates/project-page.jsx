@@ -18,7 +18,22 @@ const ProjectPage = ({pageContext}) => {
                 <div className="project-sidebar">
                     <ul>
                         {Object.keys(pageContext.pages).map(page => {
-                            return <li><Link to={getLinkPath(pageContext.projectName, page, pageContext.index)}>{page}</Link></li>
+                            const content = pageContext.pages[page];
+
+                            if (typeof content === 'string' || content instanceof String) {
+                                return <li><Link to={getLinkPath(pageContext.projectName, page, pageContext.index)}>{page}</Link></li>;
+                            }
+
+                            return (
+                                <li>
+                                    {page}
+                                    <ul className="nested">
+                                        {content.children.map(childPage => {
+                                            return <li><Link to={getLinkPath(pageContext.projectName, childPage.displayName, pageContext.index)}>{childPage.displayName}</Link></li>;
+                                        })}
+                                    </ul>
+                                </li>
+                            )
                         })}
                         {pageContext.hasApi && <li><Link to={`/${pageContext.projectName}/apidocs`}>Api Documentation</Link></li>}
                     </ul>

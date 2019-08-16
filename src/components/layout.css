@@ -103,6 +103,10 @@ body {
     padding: 4px;
 }
 
+.project .project-sidebar .nested {
+    padding: 4px 8px;
+}
+
 .project .project-content {
     flex: 1 1 auto;
 }

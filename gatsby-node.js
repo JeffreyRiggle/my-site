@@ -24,6 +24,23 @@ function createPageFromMd(createPage, projectPageTemplate, node, currentPage, pa
   });
 }
 
+function generateDocumentationPages(pages, createPage, projectPageTemplate, node, nodeData) {
+  for (const page of Object.keys(pages)) {
+    const pageData = pages[page];
+
+    if (typeof pageData === 'string' || pageData instanceof String) {
+      createPageFromMd(createPage, projectPageTemplate, node, page, pages, nodeData.index, !!nodeData.api);
+      continue;
+    }
+
+    console.log(`Found parent page ${pageData.displayName} with children`);
+
+    pageData.children.forEach(child => {
+      createPageFromMd(createPage, projectPageTemplate, node, child.displayName, pages, nodeData.index, !!nodeData.api);
+    });
+  }
+}
+
 function createGitPages(graphql, boundActionCreators) {
   const { createPage } = boundActionCreators;
   return new Promise((resolve, reject) => {
@@ -82,9 +99,7 @@ function createGitPages(graphql, boundActionCreators) {
               if (!p) {
                 p = processDocumentation(pages, node.name, nodeData, graphql).then(() => {
                   pages['Github'] = content;
-                  for (const page of Object.keys(pages)) {
-                    createPageFromMd(createPage, projectPageTemplate, node, page, pages, nodeData.index, !!nodeData.api);
-                  }
+                  generateDocumentationPages(pages, createPage, projectPageTemplate, node, nodeData);
 
                   if (nodeData.api) {
                     return createAPIDoc(graphql, node.name);
@@ -94,9 +109,7 @@ function createGitPages(graphql, boundActionCreators) {
                 p = p.then(() => {
                   return processDocumentation(pages, node.name, nodeData, graphql).then(() => {
                     pages['Github'] = content;
-                    for (const page of Object.keys(pages)) {
-                      createPageFromMd(createPage, projectPageTemplate, node, page, pages, nodeData.index, !!nodeData.api);
-                    }
+                    generateDocumentationPages(pages, createPage, projectPageTemplate, node, nodeData);
 
                     if (nodeData.api) {
                       return createAPIDoc(graphql, node.name);
