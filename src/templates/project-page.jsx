@@ -10,6 +10,30 @@ function getLinkPath(projectName, page, index) {
     return `/${projectName}/${page}`;
 }
 
+function getPageContent(pages, currentPage) {
+    let retVal = pages[currentPage];
+
+    if (retVal) {
+        return retVal;
+    }
+
+    for (const pageId in pages) {
+        const page = pages[pageId];
+        if (!page.children) {
+            continue;
+        }
+
+        for (const childPageId in page.children) {
+            const childPage = page.children[childPageId];
+            if (childPage.displayName === currentPage) {
+                return childPage.content;
+            }
+        }
+    }
+
+    return '';
+}
+
 const ProjectPage = ({pageContext}) => {
     return (
         <Layout title={pageContext.projectName}>
@@ -39,7 +63,7 @@ const ProjectPage = ({pageContext}) => {
                     </ul>
                 </div>
                 <div className="project-area">
-                    <div className="project-content-page" dangerouslySetInnerHTML={{ __html: pageContext.pages[pageContext.currentPage] }}></div>
+                    <div className="project-content-page" dangerouslySetInnerHTML={{ __html: getPageContent(pageContext.pages, pageContext.currentPage) }}></div>
                 </div>
             </div>
         </Layout>
