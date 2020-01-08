@@ -144,11 +144,13 @@ jobs:
 ```
 
 # UI
-Run output
-![Run output](./basicview.png)
+### Run output
 
-Commit feedback
-![Commit feedback](./commit.png)
+![Run output](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/github-actions/basicview.png)
+
+### Commit feedback
+
+![Commit feedback](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/github-actions/commit.png)
 
 # Final thoughts
 
