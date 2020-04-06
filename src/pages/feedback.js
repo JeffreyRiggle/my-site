@@ -34,6 +34,8 @@ const FeedbackPage = () => {
   const [project, setProject] = React.useState(projects[0].name)
   const [summary, setSummary] = React.useState('')
   const [detail, setDetail] = React.useState('')
+  const [posted, setPosted] = React.useState('')
+  const [error, setError] = React.useState('')
 
   function sendFeedback() {
     const request = new Request('http://localhost:8080/sona/v1/incidents', {
@@ -48,7 +50,18 @@ const FeedbackPage = () => {
         })
     })
 
-    fetch(request);
+    fetch(request).then(() => {
+        setPosted(true)
+    }).catch(() => {
+        setError(true)
+    });
+  }
+
+  function clearState() {
+      if (posted || error) {
+        setPosted(false)
+        setError(false)
+      }
   }
 
   return (
@@ -57,13 +70,15 @@ const FeedbackPage = () => {
         <div>
             <label>Name</label>
             <input type="text" value={name} onChange={(event) => {
-                setName(event.target.value);
+                setName(event.target.value)
+                clearState()
             }}/>
         </div>
         <div>
             <label>Feedback type</label>
             <select value={feedbackType} onChange={(event) => {
-                setFeedbackType(event.target.value);
+                setFeedbackType(event.target.value)
+                clearState()
             }}>
                 {feedbackTypes.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -71,7 +86,8 @@ const FeedbackPage = () => {
         { requiresProject(feedbackType) && (
                 <div>
                     <select value={project} onChange={(event) => {
-                        setProject(event.target.value);
+                        setProject(event.target.value)
+                        clearState()
                     }}>
                         {projects.map(p => <option key={p.name} value={p.name}>{p.name}</option>)}
                     </select>
@@ -81,16 +97,24 @@ const FeedbackPage = () => {
         <div>
             <label>Feedback Summary</label>
             <input type="text" value={summary} onChange={(event) => {
-                setSummary(event.target.value);
+                setSummary(event.target.value)
+                clearState()
             }}/>
         </div>
         <div>
             <label>Feedback Full Detail</label>
             <textarea value={detail} onChange={(event) => {
-                setDetail(event.target.value);
+                setDetail(event.target.value)
+                clearState()
             }}/>
         </div>
         <button onClick={sendFeedback}>Submit</button>
+        {
+            posted && <h3>Your feedback has been submitted.</h3>
+        }
+        {
+            error && <h3>Your feedback submission has failed try again later.</h3>
+        }
     </Layout>
   );
 }
