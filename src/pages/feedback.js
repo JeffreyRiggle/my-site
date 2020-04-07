@@ -5,13 +5,15 @@ import { sortProjects } from '../util/util'
 
 const feedbackTypes = [
     'Bug',
-    'Contact',
+    'Documentation',
     'Feature request',
-    'General',
+    'Contact',
+    'Blog',
+    'General'
 ];
 
 function requiresProject(type) {
-    return type === 'Bug' || type === 'Feature request';
+    return type === 'Bug' || type === 'Feature request' || type === 'Documentation';
 }
 
 const FeedbackPage = () => {
@@ -67,14 +69,12 @@ const FeedbackPage = () => {
   return (
     <Layout title="feedback">
         <h1>Feedback</h1>
-        <div>
+        <div className="feedback-form">
             <label>Name</label>
             <input type="text" value={name} onChange={(event) => {
                 setName(event.target.value)
                 clearState()
             }}/>
-        </div>
-        <div>
             <label>Feedback type</label>
             <select value={feedbackType} onChange={(event) => {
                 setFeedbackType(event.target.value)
@@ -82,39 +82,36 @@ const FeedbackPage = () => {
             }}>
                 {feedbackTypes.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
-        </div>
-        { requiresProject(feedbackType) && (
-                <div>
-                    <select value={project} onChange={(event) => {
-                        setProject(event.target.value)
-                        clearState()
-                    }}>
-                        {projects.map(p => <option key={p.name} value={p.name}>{p.name}</option>)}
-                    </select>
-                </div>
-            )
-        }
-        <div>
+            { requiresProject(feedbackType) && (
+                    <>
+                        <label>Project</label>
+                        <select value={project} onChange={(event) => {
+                            setProject(event.target.value)
+                            clearState()
+                        }}>
+                            {projects.map(p => <option key={p.name} value={p.name}>{p.name}</option>)}
+                        </select>
+                    </>
+                )
+            }
             <label>Feedback Summary</label>
             <input type="text" value={summary} onChange={(event) => {
                 setSummary(event.target.value)
                 clearState()
             }}/>
-        </div>
-        <div>
             <label>Feedback Full Detail</label>
             <textarea value={detail} onChange={(event) => {
                 setDetail(event.target.value)
                 clearState()
             }}/>
+            <button onClick={sendFeedback}>Submit</button>
+            {
+                posted && <span className="result">Your feedback has been submitted.</span>
+            }
+            {
+                error && <span className="result error">Your feedback submission has failed try again later.</span>
+            }
         </div>
-        <button onClick={sendFeedback}>Submit</button>
-        {
-            posted && <h3>Your feedback has been submitted.</h3>
-        }
-        {
-            error && <h3>Your feedback submission has failed try again later.</h3>
-        }
     </Layout>
   );
 }
