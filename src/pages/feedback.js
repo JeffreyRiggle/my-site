@@ -13,7 +13,7 @@ const feedbackTypes = [
 ];
 
 function requiresProject(type) {
-    return type === 'Bug' || type === 'Feature request' || type === 'Documentation';
+    return type === 'Bug' || type === 'Feature request' || type === 'Documentation'
 }
 
 const FeedbackPage = () => {
@@ -104,7 +104,7 @@ const FeedbackPage = () => {
                 setDetail(event.target.value)
                 clearState()
             }}/>
-            <button onClick={sendFeedback}>Submit</button>
+            <button onClick={sendFeedback} disabled={!name || !summary || posted}>Submit</button>
             {
                 posted && <span className="result">Your feedback has been submitted.</span>
             }
