@@ -38,6 +38,8 @@ const FeedbackPage = () => {
   const [detail, setDetail] = React.useState('')
   const [posted, setPosted] = React.useState('')
   const [error, setError] = React.useState('')
+  const [updateMe, setUpdateMe] = React.useState(false)
+  const [emailAddress, setEmailAddress] = React.useState('')
 
   function sendFeedback() {
     const request = new Request('http://localhost:8080/sona/v1/incidents', {
@@ -47,7 +49,8 @@ const FeedbackPage = () => {
             description: detail,
             attributes: {
                 project,
-                summary
+                summary,
+                emailAddress
             }
         })
     })
@@ -104,6 +107,22 @@ const FeedbackPage = () => {
                 setDetail(event.target.value)
                 clearState()
             }}/>
+            <label>Send me updates</label>
+            <input type="checkbox" value={updateMe} onChange={(event) => {
+                setUpdateMe(event.target.checked)
+                clearState()
+            }} />
+            {
+                updateMe && (
+                    <>
+                        <label>Email Address</label>
+                        <input type="text" value={emailAddress} onChange={(event) => {
+                            setEmailAddress(event.target.value)
+                            clearState()
+                        }} />
+                    </>
+                )
+            }
             <button onClick={sendFeedback} disabled={!name || !summary || posted}>Submit</button>
             {
                 posted && <span className="result">Your feedback has been submitted.</span>
