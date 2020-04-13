@@ -42,7 +42,7 @@ const FeedbackPage = () => {
   const [emailAddress, setEmailAddress] = React.useState('')
 
   function sendFeedback() {
-    const request = new Request('http://localhost:8080/sona/v1/incidents', {
+    const request = new Request('http://api.ilusr.com:8080/sona/v1/incidents', {
         method: 'POST',
         body: JSON.stringify({
             reporter: name,
