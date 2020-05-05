@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '../components/layout';
 import { Link, useStaticQuery, graphql } from 'gatsby';
+import { sortProjects } from '../util/util';
 
 const ProjectsPage = () => {
     const result = useStaticQuery(graphql`query {
@@ -32,20 +33,7 @@ const ProjectsPage = () => {
         <Layout title="projects">
           <h1>Projects</h1>
           <ul className="project-list">
-              {projects.sort((first, second) => {
-                const firstName = first.name.toUpperCase();
-                const secondName = second.name.toUpperCase();
-
-                if (firstName < secondName) {
-                  return -1;
-                }
-
-                if (firstName > secondName) {
-                  return 1;
-                }
-
-                return 0;
-              }).map(node => {
+              {sortProjects(projects).map(node => {
                   return <li><Link to={`/${node.name}`}>{node.name}</Link>{node.description && <span className="description"> - {node.description}</span>}</li>;
               })}
           </ul>
