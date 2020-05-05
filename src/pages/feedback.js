@@ -48,7 +48,7 @@ const FeedbackPage = () => {
             reporter: name,
             description: detail,
             attributes: {
-                project,
+                project: requiresProject(feedbackType) ? project : undefined,
                 summary,
                 emailAddress
             }
