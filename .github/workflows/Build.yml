@@ -20,7 +20,7 @@ jobs:
 
     - name: Setup
       env:
-        TOKEN: ${{ GITHUB_TOKEN }}
+        TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo $TOKEN > token
 
