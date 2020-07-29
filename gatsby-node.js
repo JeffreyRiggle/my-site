@@ -41,104 +41,80 @@ function generateDocumentationPages(pages, createPage, projectPageTemplate, node
   }
 }
 
-function createGitPages(graphql, boundActionCreators) {
+async function createGitPages(graphql, boundActionCreators) {
   const { createPage } = boundActionCreators;
-  return new Promise((resolve, reject) => {
-      const projectPageTemplate = path.resolve('src/templates/project-page.jsx');
+  const projectPageTemplate = path.resolve('src/templates/project-page.jsx');
 
-      graphql(`query {
-        github {
-          viewer {
+  const result = await graphql(`query {
+    github {
+      viewer {
+        name
+        repositories(last: 100) {
+          nodes {
             name
-            repositories(last: 100) {
-              nodes {
-                name
-                id
-                descriptionHTML
-                url
-                first: object(expression: "master:README.md") {
-                  id
-                  ... on Github_Blob {
-                    text
-                  }
-                }
-                second: object(expression: "master:doc/doc.json") {
-                  id
-                  ... on Github_Blob {
-                    text
-                  }
-                }
+            id
+            descriptionHTML
+            url
+            first: object(expression: "master:README.md") {
+              id
+              ... on Github_Blob {
+                text
+              }
+            }
+            second: object(expression: "master:doc/doc.json") {
+              id
+              ... on Github_Blob {
+                text
               }
             }
           }
         }
       }
-    `).then(result => {
-          if (result.errors) {
-              reject(result.errors);
-          }
-          
-          const nodes = result.data.github.viewer.repositories.nodes;
-          let p;
-          for (const node of nodes) {
-            let content = '';
-            if (node.first && node.first.text) {
-              content = marked(processMarkdownImages(node.first.text, `${node.url}/raw/master`));
-            }
-            
-            if (!content) {
-              console.log(`No content found for ${node.name} so no project page will be generated`);
-              continue;
-            }
+    }
+  }
+`);
 
-            let pages = {};
+  if (result.errors) {
+    throw result.errors;
+  }
 
-            if (node.second && node.second.text) {
-              let nodeData = JSON.parse(node.second.text);
+  const nodes = result.data.github.viewer.repositories.nodes;
+  for (const node of nodes) {
+    console.log(`Processing ${node.name}`);
+    let content = '';
+    if (node.first && node.first.text) {
+      content = marked(processMarkdownImages(node.first.text, `${node.url}/raw/master`));
+    }
 
-              if (!p) {
-                p = processDocumentation(pages, node.name, nodeData, graphql).then(() => {
-                  pages['Github'] = content;
-                  generateDocumentationPages(pages, createPage, projectPageTemplate, node, nodeData);
+    if (!content) {
+      console.log(`No content found for ${node.name} so no project page will be generated`);
+      continue;
+    }
 
-                  if (nodeData.api) {
-                    return createAPIDoc(graphql, node.name);
-                  }
-                });
-              } else {
-                p = p.then(() => {
-                  return processDocumentation(pages, node.name, nodeData, graphql).then(() => {
-                    pages['Github'] = content;
-                    generateDocumentationPages(pages, createPage, projectPageTemplate, node, nodeData);
+    let pages = {};
 
-                    if (nodeData.api) {
-                      return createAPIDoc(graphql, node.name);
-                    }
-                  });
-                });
-              }
-            } else {
-              pages['Github'] = content;
-              createPageFromMd(createPage, projectPageTemplate, node, 'Github', pages, 'Github');
-            }
-          }
+    if (node.second && node.second.text) {
+      console.log(`found doc file ${node.name} with ${node.second.text}`);
+      let nodeData = JSON.parse(node.second.text);
+      await processDocumentation(pages, node.name, nodeData, graphql);
+      pages['Github'] = content;
+      generateDocumentationPages(pages, createPage, projectPageTemplate, node, nodeData);
 
-          if (p) {
-            p.then(() => {
-              resolve();
-            });
-          } else {
-            resolve();
-          }
-      })
-  });
+      if (nodeData.api) {
+        await createAPIDoc(graphql, node.name);
+      }
+    } else {
+      console.log(`No doc file for ${node.name}`);
+      pages['Github'] = content;
+      createPageFromMd(createPage, projectPageTemplate, node, 'Github', pages, 'Github');
+    }
+  }
 }
 
-function createBlogPosts(graphql, boundActionCreators) {
+async function createBlogPosts(graphql, boundActionCreators) {
   const { createPage } = boundActionCreators;
   const blogPost = path.resolve('./src/templates/blog-post.jsx');
-
-  return graphql(
+  const result = await graphql(
     `
       {
         allMarkdownRemark(
@@ -158,36 +134,33 @@ function createBlogPosts(graphql, boundActionCreators) {
         }
       }
     `
-  ).then(result => {
-    if (result.errors) {
-      throw result.errors;
-    }
+  );
 
-    const posts = result.data.allMarkdownRemark.edges;
+  if (result.errors) {
+    throw result.errors;
+  }
 
-    posts.forEach((post, index) => {
-      const previous = index === posts.length - 1 ? null : posts[index + 1].node
-      const next = index === 0 ? null : posts[index - 1].node
+  const posts = result.data.allMarkdownRemark.edges;
 
-      createPage({
-        path: post.node.fields.slug,
-        component: blogPost,
-        context: {
-          slug: post.node.fields.slug,
-          previous,
-          next
-        }
-      })
+  posts.forEach((post, index) => {
+    const previous = index === posts.length - 1 ? null : posts[index + 1].node
+    const next = index === 0 ? null : posts[index - 1].node
+
+    createPage({
+      path: post.node.fields.slug,
+      component: blogPost,
+      context: {
+        slug: post.node.fields.slug,
+        previous,
+        next
+      }
     })
-
-    return null;
   })
 }
 
-exports.createPages = ({ graphql, boundActionCreators }) => {
-  return createGitPages(graphql, boundActionCreators).then(() => {
-    return createBlogPosts(graphql, boundActionCreators);
-  });
+exports.createPages = async ({ graphql, boundActionCreators }) => {
+  await createGitPages(graphql, boundActionCreators);
+  await createBlogPosts(graphql, boundActionCreators);
 }
 
 exports.onCreateNode = ({ node, actions, getNode }) => {
