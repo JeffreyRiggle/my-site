@@ -18,6 +18,12 @@ jobs:
     - name: Install
       run: npm ci
 
+    - name: Setup
+      env:
+        TOKEN: ${{ GITHUB_TOKEN }}
+      run: |
+        echo $TOKEN > token
+
     - name: Build
       run: npm run build
 
