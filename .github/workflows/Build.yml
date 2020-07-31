@@ -23,6 +23,7 @@ jobs:
         TOKEN: ${{ secrets.BUILD_TOKEN }}
       run: |
         echo $TOKEN > token
+        ls
 
     - name: Build
       run: npm run build
