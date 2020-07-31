@@ -22,7 +22,7 @@ jobs:
       env:
         TOKEN: ${{ secrets.BUILD_TOKEN }}
       run: |
-        echo $TOKEN > token
+        printf $TOKEN > token
         ls
 
     - name: Build
