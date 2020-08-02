@@ -20,7 +20,7 @@ jobs:
 
     - name: Setup
       env:
-        TOKEN: ${{ secrets.BUILD_TOKEN }}
+        TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         printf $TOKEN > token
         ls

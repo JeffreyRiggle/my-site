@@ -41,7 +41,7 @@ module.exports = {
         fieldName: "github",
         url: 'https://api.github.com/graphql',
         headers: {
-          Authorization: `${fs.readFileSync('token', 'utf8')}`
+          Authorization: `Bearer ${fs.readFileSync('token', 'utf8')}`
         },
         fetchOptions: {}
       }
