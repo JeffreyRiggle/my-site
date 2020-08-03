@@ -1,0 +1,55 @@
+name: BuildSite
+on: [push, pull_request]
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Install node
+      uses: actions/setup-node@v1
+      with:
+          node-version: '10.x'
+
+    - name: Check out code
+      uses: actions/checkout@v1
+    
+    - name: Install
+      run: npm ci
+
+    - name: Setup
+      env:
+        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        printf $TOKEN > token
+
+    - name: Build
+      run: npm run build
+
+    - name: Bundle
+      run: zip -r site.zip public
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        body: |
+          New release
+        draft: false
+        prerelease: false
+    
+    - name: Upload zip
+      id: upload_zip
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./site.zip
+        asset_name: site.zip
+        asset_content_type: application/zip

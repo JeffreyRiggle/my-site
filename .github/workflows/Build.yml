@@ -23,7 +23,6 @@ jobs:
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         printf $TOKEN > token
-        ls
 
     - name: Build
       run: npm run build
