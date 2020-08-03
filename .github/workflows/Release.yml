@@ -1,4 +1,4 @@
-name: BuildSite
+name: ReleaseSite
 on: [push, pull_request]
 jobs:
 
