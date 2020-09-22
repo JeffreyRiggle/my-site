@@ -1,2 +1,2 @@
 ## Personal site.
-This is a generator for what I hope to be my personal site. This is build using [gastbyjs](https://www.gatsbyjs.org/)
+This is a generator for [my site](http://ilusr.com). This is build using [gastbyjs](https://www.gatsbyjs.org/)

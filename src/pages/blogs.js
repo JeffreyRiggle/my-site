@@ -25,11 +25,11 @@ const BlogPage = () => {
     `);
 
     return (
-        <Layout title="Blogs">
+        <Layout title="blogs">
           <h1>Blog Posts</h1>
           <ul className="project-list">
               {result.allMarkdownRemark.edges.map(edge => {
-                  return <li><Link to={`/${edge.node.fields.slug}`}>{edge.node.frontmatter.title} - {edge.node.frontmatter.date}</Link></li>;
+                  return <li><Link to={edge.node.fields.slug}>{edge.node.frontmatter.title} - {edge.node.frontmatter.date}</Link></li>;
               })}
           </ul>
         </Layout>
