@@ -1,11 +1,11 @@
 const path = require('path');
-const marked = require('marked');
 const { processDocumentation, processMarkdownImages } = require('./src/docBuilder');
 const { createFilePath } = require(`gatsby-source-filesystem`);
 const unzipper = require('unzipper');
 const fs = require('fs');
 const https = require('https');
 const apiToken = fs.readFileSync('token', 'utf8');
+const { getMarkedContent } = require('./src/getMarkedContent');
 
 function createPageFromMd(createPage, projectPageTemplate, node, currentPage, pages, parent, apiDoc) {
   const p = parent !== currentPage ? `${node.name}/${currentPage}` : node.name;
@@ -83,7 +83,7 @@ async function createGitPages(graphql, boundActionCreators) {
     console.log(`Processing ${node.name}`);
     let content = '';
     if (node.first && node.first.text) {
-      content = marked(processMarkdownImages(node.first.text, `${node.url}/raw/master`));
+      content = getMarkedContent(processMarkdownImages(node.first.text, `${node.url}/raw/master`));
     }
 
     if (!content) {

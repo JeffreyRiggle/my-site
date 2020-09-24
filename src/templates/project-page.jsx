@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '../components/layout';
 import { Link } from 'gatsby';
+import 'prismjs/themes/prism-tomorrow.css';
 
 function getLinkPath(projectName, page, index) {
     if (page === index) {

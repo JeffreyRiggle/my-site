@@ -1,4 +1,4 @@
-const marked = require('marked');
+const { getMarkedContent } = require('./getMarkedContent');
 const linkRegex = /\[(.*)\]\(([^#].*)\)/g;
 const linkLocationRegex = /\((.*)\)/;
 const webRequest = /http:|https:/i;
@@ -82,7 +82,7 @@ async function processDocumentation(pages, repo, data, graphql) {
 
     for (const page of allPages) {
         const result = await getContent(page.file, repo, graphql);
-        const content = marked(processMarkdownImages(result.data.github.viewer.repository.first.text, `${result.data.github.viewer.repository.url}/raw/master/doc`));    
+        const content = getMarkedContent(processMarkdownImages(result.data.github.viewer.repository.first.text, `${result.data.github.viewer.repository.url}/raw/master/doc`));    
         
         if (page.parent && pages[page.parent]) {
             pages[page.parent].children.push({

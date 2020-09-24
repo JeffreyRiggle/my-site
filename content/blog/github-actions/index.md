@@ -23,7 +23,7 @@ In a workflow there are a couple of important properties to know about.
     - run: This is the script that will run in the step. In the case of ubuntu, this should be a bash script.
 
 Simple example workflow
-```yml
+```yaml
 name: My CI
 on: [push, pull_request]
 jobs:
@@ -57,7 +57,7 @@ In the integration test job, a couple more things would be done.
 7. Run integration tests that were written in python to test the go server.
 
 The end result for all of this is the following yml file.
-```yml
+```yaml
 name: Go
 on: [push, pull_request]
 jobs:
