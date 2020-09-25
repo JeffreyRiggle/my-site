@@ -34,7 +34,12 @@ const ProjectsPage = () => {
           <h1>Projects</h1>
           <ul className="project-list">
               {sortProjects(projects).map(node => {
-                  return <li><Link to={`/${node.name}`}>{node.name}</Link>{node.description && <span className="description"> - {node.description}</span>}</li>;
+                  return (
+                    <li>
+                      <Link to={`/${node.name}`}>{node.name}</Link>
+                      {node.description && <div className="description">{node.description}</div>}
+                    </li>
+                  );
               })}
           </ul>
         </Layout>
