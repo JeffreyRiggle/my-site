@@ -82,6 +82,32 @@ body {
     margin-right: 16px;
 }
 
+@media(max-width: 400px) {
+    .page-header h1 {
+        padding: 8px 2px;
+        font-size: 16px;
+    }
+
+    .page-header a:before {
+        height: 2px;
+    }
+}
+
+@media(min-width: 401px) and (max-width: 649px) {
+    .page-header h1 {
+        padding: 8px 2px;
+        font-size: 24px;
+    }
+
+    .page-header a:before {
+        height: 2px;
+    }
+
+    .header-link {
+        margin-right: 10px;
+    }
+}
+
 .project {
     display: flex;
 }
