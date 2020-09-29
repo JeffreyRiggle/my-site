@@ -122,6 +122,11 @@ body {
     text-align: center;
 }
 
+.project-title button {
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
 .project .project-sidebar {
     flex: 0 1 auto;
     margin-right: 32px;
@@ -141,6 +146,39 @@ body {
 
 .project .project-content {
     flex: 1 1 auto;
+}
+
+.popup-projects {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 40%;
+    margin: 0;
+    background-color: #2d2d2d;
+    color: #007938;
+}
+
+.popup-projects h1 {
+    background-color: black;
+    margin: 0;
+    text-align: end;
+}
+
+.popup-projects h1 button {
+    background-color: initial;
+    color: #007938;
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    vertical-align: middle;
+}
+
+.popup-projects ul {
+    list-style: none;
+}
+.popup-projects a {
+    color: #00a14b;
 }
 
 @media(max-width: 400px) {
