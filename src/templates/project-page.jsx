@@ -2,6 +2,7 @@ import React from 'react';
 import Layout from '../components/layout';
 import 'prismjs/themes/prism-tomorrow.css';
 import ProjectItems from '../components/project-items';
+import 'font-awesome/css/font-awesome.min.css';
 
 function getPageContent(pages, currentPage) {
     let retVal = pages[currentPage];
@@ -33,7 +34,7 @@ const ProjectPage = ({pageContext}) => {
     return (
         <Layout title={pageContext.projectName}>
             <h1 className="project-title">
-                <button onClick={() => setPopup(!popup)} aria-label="Additional pages">\/</button>
+                <button onClick={() => setPopup(!popup)} aria-label="Additional pages"><i className="fa fa-book"></i></button>
                 <a href={pageContext.projectUrl}>{pageContext.projectName}</a>
             </h1>
             { popup && (
