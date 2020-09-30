@@ -1,16 +1,7 @@
 import React from 'react';
 import Layout from '../components/layout';
-import { Link } from 'gatsby';
 import 'prismjs/themes/prism-tomorrow.css';
 import ProjectItems from '../components/project-items';
-
-function getLinkPath(projectName, page, index) {
-    if (page === index) {
-        return `/${projectName}`;
-    }
-
-    return `/${projectName}/${page}`;
-}
 
 function getPageContent(pages, currentPage) {
     let retVal = pages[currentPage];
@@ -42,12 +33,12 @@ const ProjectPage = ({pageContext}) => {
     return (
         <Layout title={pageContext.projectName}>
             <h1 className="project-title">
-                <button onClick={() => setPopup(!popup)}>\/</button>
+                <button onClick={() => setPopup(!popup)} aria-label="Additional pages">\/</button>
                 <a href={pageContext.projectUrl}>{pageContext.projectName}</a>
             </h1>
             { popup && (
                 <div className="popup-projects">
-                    <h1><button onClick={() => setPopup(false)}>x</button></h1>
+                    <h1><button onClick={() => setPopup(false)} aria-label="Close">x</button></h1>
                     <ProjectItems
                         pages={pageContext.pages}
                         projectName={pageContext.projectName}
