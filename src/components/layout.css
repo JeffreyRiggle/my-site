@@ -131,7 +131,7 @@ body {
 }
 
 @media(min-width: 801px) {
-    .project-title button{
+    .project-title button {
         visibility: hidden;
         margin-right: 0;
     }
@@ -245,6 +245,10 @@ body {
     height: 100%;
 }
 
+.blog-post img {
+    max-width: 100vw;
+}
+
 .blog-post .blog-content {
     flex: 1 1 auto;
 }
@@ -253,7 +257,32 @@ body {
     flex: 0 0 auto;
     display: flex;
     justify-content: space-between;
-    margin: 8px 4px;
+    padding: 8px 4px;
+    background-color: #2f3131;
+    font-weight: bold;
+}
+
+.blog-post .blog-selector a {
+    color: #00a14b;
+}
+
+.blog-post .blog-selector a:visited {
+    color: #007938;
+}
+
+.blog-post table {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.blog-post table td,
+.blog-post table th {
+    border: 1px solid black;
+    padding: 4px;
+}
+
+.blog-post table thead {
+    background-color: lightgray;
 }
 
 .feedback-form {
