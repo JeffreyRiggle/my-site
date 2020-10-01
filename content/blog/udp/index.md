@@ -109,7 +109,7 @@ The client in this case is an electron-based application. To reduce complexity t
 
 Overview of the architecture
 
-![UDP Server Diagram](./UDPServerDiagram.png)
+![UDP Server Diagram](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/udp/UDPServerDiagram.png)
 
 For now to show that UDP does not enforce any structure on the payload the messages sent to the server use a binary like structure. However, the response from the UDP server is in JSON and can be parsed.
 
@@ -118,7 +118,7 @@ To take a look at how this application works at the network layer [Wireshark](ht
 
 Once Wireshark has installed a capture of network traffic can be issued. Since I am running this on my local machine I need to capture network on my loopback interface.
 
-![Loopback Interface](./loopback.png)
+![Loopback Interface](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/udp/loopback.png)
 
 Now that the capture is running using the very simple example application we should be able to see UDP traffic flowing from the electron application to the UDP server.
 
