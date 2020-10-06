@@ -4,6 +4,7 @@ date: '2020-10-02'
 ---
 
 # TCP Transport
+* Transmission Control Protocol
 * Second protocol
 * More reliable than UDP
 * Fits into a layered protocol architecture
@@ -32,9 +33,62 @@ date: '2020-10-02'
         * Since the hosts and network can be unreliable a handshake mechanism with clock-based sequence numbers is used to avoid erroneous initialization of connections.
     * Precedence and Security
         * Users of TCP may indicate the security and precedence of their communication.
+* Is able to support higher level protocols (Telnet, FTP, HTTP)
+* A Transmission Control Block (TCB) stores information about the connection.
 
-### Reviewing the network protocol
-* Header format (see section 3.1)
+## Reviewing the network protocol
+
+### Source Port
+16 bit source port number.
+
+### Destination Port
+16 bit destination port number.
+
+### Sequence Number
+32 bit sequence number of the first data octet in the segement. If SYN is present the sequence number is the initial sequence number (ISN) and the first data octect is ISN+1.
+
+### Acknowledgment Number
+32 bit field that contains the value of the next sequence number the sender of the segments is expecting to recieve.
+
+### Data Offset
+4 bit number that specifies where the data begins. This number represents the number of 32 bit words in the TCP header itself.
+
+### Reserved
+6 bits that are reserved for future use.
+
+### Control bits
+6 bits that take on any of the following
+
+| Value | Meaning |
+|-|-|
+| URG | Urgent pointer field |
+| ACK | Acknowledgment field |
+| PSH | Push function |
+| RST | Reset the function |
+| SYN | Synchornize sequence numbers |
+| FIN | No more data to transfer |
+
+### Window
+16 bit field that specifies the number of data octets starting with the one indicated in the acknowledgment field which the sender is willing to accept.
+
+### Checksum
+16 bit field which is the one's complement of the one's complement sum of all 16 bit words in the header and text. 
+
+TODO Expand on this.
+
+### Urgent Pointer
+16 bit field that communicates the current value of the urgent pointer. This pointer points to the sequence number of the octet following the urgent data.
+
+### Options
+Options is variable in size but must be a multiple of 8 bits in length. All options are included in the checksum.
+
+TODO more research
+
+### Padding
+Padding is a variable sized field used to ensure that the header ends and data begins on a 32 bit boundary.
+
+### Data
+The data you would like to send.
 
 ### Example of a standard library
 Much like UDP, TCP is a standard protocol and it is relatively easy to find support for it in most languages standard library. Below are just a few examples of programming languages and their associated TCP library.
