@@ -38,25 +38,26 @@ date: '2020-10-02'
 
 ## Reviewing the network protocol
 
-### Source Port
+### Fields
+#### Source Port
 16 bit source port number.
 
-### Destination Port
+#### Destination Port
 16 bit destination port number.
 
-### Sequence Number
+#### Sequence Number
 32 bit sequence number of the first data octet in the segement. If SYN is present the sequence number is the initial sequence number (ISN) and the first data octect is ISN+1.
 
-### Acknowledgment Number
+#### Acknowledgment Number
 32 bit field that contains the value of the next sequence number the sender of the segments is expecting to recieve.
 
-### Data Offset
+#### Data Offset
 4 bit number that specifies where the data begins. This number represents the number of 32 bit words in the TCP header itself.
 
-### Reserved
+#### Reserved
 6 bits that are reserved for future use.
 
-### Control bits
+#### Control bits
 6 bits that take on any of the following
 
 | Value | Meaning |
@@ -68,27 +69,67 @@ date: '2020-10-02'
 | SYN | Synchornize sequence numbers |
 | FIN | No more data to transfer |
 
-### Window
+#### Window
 16 bit field that specifies the number of data octets starting with the one indicated in the acknowledgment field which the sender is willing to accept.
 
-### Checksum
+#### Checksum
 16 bit field which is the one's complement of the one's complement sum of all 16 bit words in the header and text. 
 
+* This appears very similar to the UDP checksum it might be a good idea just to refer back to that.
 TODO Expand on this.
 
-### Urgent Pointer
+#### Urgent Pointer
 16 bit field that communicates the current value of the urgent pointer. This pointer points to the sequence number of the octet following the urgent data.
 
-### Options
-Options is variable in size but must be a multiple of 8 bits in length. All options are included in the checksum.
+#### Options
+Options is variable in size but must be a multiple of 8 bits in length. All options are included in the checksum. All options have a option-kind and may have an option length.
 
-TODO more research
+##### End of Option List
+* Kind = 0
+* indicates the end of the option list.
+* Might now be the end of the header based off of the data offset field.
+* Used at the end of all options.
+* only needed if the end of options would not match up with the end of the TCP header.
 
-### Padding
+##### No-Operation
+* Kind = 1
+* May be used between options.
+* There is no guarantee that sends will use this option.
+
+##### Maximum Segment Size
+* Kind = 2
+* Length = 4
+* Has Maximum Segement Size option data.
+    * data is 16 bits
+    * Communicates the maximum receive segment size at the TCP which sends this segment.
+    * Must only be sent in the initial connection request.
+
+#### Padding
 Padding is a variable sized field used to ensure that the header ends and data begins on a 32 bit boundary.
 
-### Data
+#### Data
 The data you would like to send.
+
+### Terminology?
+
+#### Send Sequence Variables
+| Variable | Meaning |
+|-|-|
+| SND.UNA | send unacknowledged |
+| SND.NXT | send next |
+| SND.WND | send window |
+| SND.UP | send urgent pointer |
+| SND.WL1 | segment sequence number used for last window update |
+| SND.WL2 | segment acknowledgement number used for last window update |
+| ISS | initial send sequence number |
+
+#### Recieve Sequence Variables
+| Variable | Meaning |
+|-|-|
+| RCV.NXT | receive next |
+| RCV.WND | receive window |
+| RCV.UP | receive urgent pointer |
+| IRS | initial receive sequence number |
 
 ### Example of a standard library
 Much like UDP, TCP is a standard protocol and it is relatively easy to find support for it in most languages standard library. Below are just a few examples of programming languages and their associated TCP library.
