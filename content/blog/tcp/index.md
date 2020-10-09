@@ -131,6 +131,89 @@ The data you would like to send.
 | RCV.UP | receive urgent pointer |
 | IRS | initial receive sequence number |
 
+#### Segment Variables
+| Variable | Meaning |
+|-|-|
+| SEG.SEQ | segment sequence number |
+| SEG.ACK | segement acknowledgment number |
+| SEG.LEN | segument length |
+| SEG.WND | segment window |
+| SEG.UP | segment urgent pointer |
+| SEG.PRC | segement precedence value |
+
+#### Connection states
+
+* connection moves from one state to another in response to events.
+* events are user calls OPEN, SEND, RECEIVE, CLOSE, ABORT and STATUS.
+* There is a state diagram for this on page 22 of the RFC
+
+##### LISTEN
+In this state we are waiting for a connection request from any remote TCP and port.
+
+##### SYN-SENT
+In this state we are waiting for a matching connection request after having sent a connection request.
+
+##### SYN-RECEIVED
+In this state we are waiting for a confirmation connection request acknowldgement after having both send and received a connection request.
+
+##### ESTABLISHED
+In this state we have an open connection. This is the normal data transfer phase of the connection.
+
+##### FIN-WAIT-1
+In this state we are waiting for a connection termination request from the remote TCP or an acknowledgement of the connection terminiation request that had previously been sent.
+
+##### FIN-WAIT-2
+In this state we are wiating for a connection termiation request from the remote TCP.
+
+##### CLOSE-WAIT
+In this state we are waiting for a connection termination request from the local user.
+
+##### CLOSING
+In this state we are waiting for a connection termiation request acknowledgment from the remote TCP.
+
+##### LAST-ACK
+In this state we are waiting for an acknowledgment of the connection termination request that had previously been sent to the remote TCP.
+
+##### TIME-WAIT
+In this state we are waiting for enough time to pass to be sure the remote TCP received the acknoledgment of its connection termination request.
+
+##### CLOSED
+In this state there is no connection at all.
+
+#### Sequence Numbers
+* Every octet of data send over TCP has a sequence number
+* Each sequence can be acknowledged
+* acknowledgment mechamism is cumulative (acknowledgment of sequence X means that all octets up to but not including X have been recieved)
+* This acts as duplicate detection in retransmission
+* Sequence space is finite but very large. (0 to 2**32 - 1)
+* All arithmetic dealing with sequence numbers must be performed modulo 2**32
+* Typical number comparisions for TCP would include
+    * Determining that an acknowledgment refers to some sequence number sent but not acknowledged.
+    * Determining that all sequence numbers occupied by a segement have been acknowledged.
+    * Determining that an incoming segment contains sequence numbers that are expected.
+* The following comparisions are needed to process acknowledgments
+    * SND.UNA: oldest unacknowledged sequence number.
+    * SND.NXT: next sequence number to be sent.
+    * SEG.ACK: acknowledgment from the receiving TCP
+    * SEG.SEQ: first sequence number of a segement
+    * SEG.LEN: the number of octets occupied by the data in the segment.
+    * SEG.SEQ+SEG.LEN-1: last sequence number of a segement.
+    * A segment on the retransmission queue is fully acknowledged if the sum of its sequence number and length is less or equal than the acknowledgement value in the incoming request. SND.UNA < SEG.ACK =< SND.NXT
+* When data is recieved the following comparisions are needed
+    * RCV.NXT: next sequence number expected on an incoming segments, and is the left or lower edge of the receive window
+    * RCV.NXT+RCV.WND-1: last sequence number expected on an incoming segment, and is the right or upper edge of the receive window.
+    * SEG.SEQ: first sequence number occupied by the incoming segment.
+    * SEG.SEQ+SEG.LEN-1: last sequence number occupied by the incoming segment.
+* Segment occupies a portion of a valid receive sequence if RCV.NXT =< SEG.SEQ < RCV.NXT+RCV.WND or RCV.NXT =< SEG.SEQ+SEG.LEN-1 < RCV.NXT+RCV.WND
+    * first part checks to see if the beginning of the segment falls in a window.
+    * second part checks to see if the end of the segment falls in a window.
+* zero windows and zero segments can complicate this.
+* SYN and FIN are special cases since those controls do not use this numbering schema.
+* SYN is always expected to occur before the first data octect.
+* FIN is always expected to occur after the last data octect.
+
+TODO pick up from Initial Sequence Number selection (page 26)
+
 ### Example of a standard library
 Much like UDP, TCP is a standard protocol and it is relatively easy to find support for it in most languages standard library. Below are just a few examples of programming languages and their associated TCP library.
 
