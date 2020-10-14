@@ -242,7 +242,48 @@ steps 2 and 3 can be combined in a single message. This the three way handshake.
     * Specification defaults this value at 2 minutes.
 
 #### Establishing a connection
-TODO continue from page 30.
+
+##### Simple Three-way handshake
+| TCP A | TCP A Direction | Data | TCP B Direction | TCP B |
+|-|-|-|-|-|
+| CLOSED | | | | LISTEN |
+| SYN-SENT | --> | <SEQ=100><CTL=SYN> | --> | SYN-RECEIVED |
+| ESTABLISHED | <-- | <SEQ=300><ACK=101><CTL=SYN,ACK> | <-- | SYN-RECEIVED |
+| ESTABLISHED | --> | <SEQ=101><ACK=301><CTL=ACK> | --> | ESTABLISHED |
+| ESTABLISHED | --> | <SEQ=101><ACK=301><CTL=ACK><DATA> | --> | ESTABLISHED |
+
+##### Simultaneous Three-way handshake
+| TCP A | TCP A Direction | Data | TCP B Direction | TCP B |
+| CLOSED | | | | CLOSED |
+| SYN-SENT | --> | <SEQ=100><CTL=SYN> | In transit | |
+| SYN-RECEIVED | <-- | <SEQ=300><CTL=SYN> | <-- | SYN-SENT |
+| | In transit | <SEQ=100><CTL=SYN> | --> | SYN-RECIEVED |
+| SYN-RECIEVED | --> | <SEQ=100><ACK=301><CTL=SYN,ACK> | In transit | |
+| ESTABLISHED | <-- | <SEQ=300><ACK=101><CTL=SYN,ACK> | <-- | SYN-RECEIVED |
+| | In transit | <SEQ=101><ACK=301><CTL=ACK> | --> | ESTABLISHED |
+
+* Three-way handshake can recover from duplicate messages by using the reset (RST) function.
+* half-open connections are connections in which one of the TCPs has closed or aborted the connection from its end without the knowledge of the other TCP. This can also happen if the connection has become desynchronized.
+
+##### Recovery from a crash (half-open)
+| TCP A | TCP A Direction | Data | TCP B Direction | TCP B |
+| (Crash) | | | | | Last sent 300, last receive 100 |
+| CLOSED | | | | | ESTABLISHED |
+| SYN-SENT | --> | <SEQ=400><CTL=SYN> | --> | invalid |
+| bad response | <-- | <SEQ=300><ACK=100><CTL=ACK> | <-- | ESTABLISHED |
+| SYN-SENT | --> | <SEQ=100><CTL=RST> | --> | Abort |
+| SYN-SENT | | | | CLOSTED |
+| SYN-SENT | --> | <SEQ=400><CTL=SYN> | --> | |
+
+* Similar half open aborts can occur when one TCP tries to send a message to a crashed TCP.
+
+##### Resets
+* A reset must be sent whenever a segment arrives which is no intended for the current connection.
+* If a connection does not exist then a reset should be sent in response to any incoming segment execpt another reset.
+* If the connection is in a non-synchronized state and the incoming segment acknowledges something not yet sent a reset should be sent.
+* If the connection is in a synchronized state any unacceptable segment must elicit only an empy acknowledgement segment containing the current send-sequence number and an acknowledgement indicating the next sequence number expected to be received.
+
+TODO Continue from RESET PROCESSING (page 36)
 
 ### Example of a standard library
 Much like UDP, TCP is a standard protocol and it is relatively easy to find support for it in most languages standard library. Below are just a few examples of programming languages and their associated TCP library.
