@@ -282,9 +282,29 @@ steps 2 and 3 can be combined in a single message. This the three way handshake.
 * If a connection does not exist then a reset should be sent in response to any incoming segment execpt another reset.
 * If the connection is in a non-synchronized state and the incoming segment acknowledges something not yet sent a reset should be sent.
 * If the connection is in a synchronized state any unacceptable segment must elicit only an empy acknowledgement segment containing the current send-sequence number and an acknowledgement indicating the next sequence number expected to be received.
+* Reset segments are validated by checking their SEQ fields
+* A reset is valid if the sequence number is in the window.
+* Receiver of a reset validates the request then changes state.
+* In the case the receiver is in the LISTEN state it ignores the request.
+* If the receiver is in the SYN-RECEIVED state then they return to the LISTEN state.
+* If neither of the above is true the receiver aborts the connection and goes to the CLOSED state.
 
-TODO Continue from RESET PROCESSING (page 36)
 
+##### Closing connection
+* CLOSE operation means "I have no more data to send."
+* A user who closes may continue to receive until he is told that the other side has closed as well.
+* TCP will reliably deliver all buffers SENT before the connection was CLOSED.
+* Users must keep reading connections they close for sending until the TCP says no more data.
+* Close cases
+    * Local user initiates the close
+        * FIN segment constructed and placed on the outgoing segment queue.
+        * No further SENDs from the user will be accepted by the TCP.
+        * RECEIVEs are allowed in this state.
+        * When other TCP has acknowledged the FIN and sent a FIN of its own the closing TCP can ACK this FIN.
+    * TCP receives a FIN from the network
+    * both users close simultaneously
+
+TODO continue documenting close cases.
 ### Example of a standard library
 Much like UDP, TCP is a standard protocol and it is relatively easy to find support for it in most languages standard library. Below are just a few examples of programming languages and their associated TCP library.
 
