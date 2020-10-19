@@ -302,9 +302,33 @@ steps 2 and 3 can be combined in a single message. This the three way handshake.
         * RECEIVEs are allowed in this state.
         * When other TCP has acknowledged the FIN and sent a FIN of its own the closing TCP can ACK this FIN.
     * TCP receives a FIN from the network
+        * Unsolicited FIN from the network.
+        * User responses with a CLOSE
+        * If ACK does not come a user timeout is used to abort the connection.
     * both users close simultaneously
+        * Both sides echange FIN segments.
+        * After both sides have received ACKs the connection will be deleted.
 
-TODO continue documenting close cases.
+#### Precednece and security
+* Intent is that connection between ports is operating on same security and compartment values.
+* A connection attempt with mismatched security/compartment values must be rejected by sending a reset.
+
+#### Data Communication
+* data is communicated by the exchange of segments.
+* Since segments can be lost due to errors or network congestion, TCP uses retransmission.
+    * duplicate segments may arrive due to retransimission.
+* Sender keeps track of next sequence number in SND.NXT
+* Receiver keeps track of next sequence number to expect using RCV.NXT.
+* Sender keeps track of the oldest unacknowledged sequence number in SND.UNA.
+* Variables (SND.NXT, RCV.NXT) are advanced by the length of data in the segment.
+* retransmission timeout is dynamically determined.
+* large windows encourages transmissions.
+* small windows can restrict the transmission of data to the point of introducing a round trip delay between each new segment.
+* Sending TCP must send at least one octet of data even if the window size is zero.
+
+#### Interfaces
+TODO document interfaces.
+
 ### Example of a standard library
 Much like UDP, TCP is a standard protocol and it is relatively easy to find support for it in most languages standard library. Below are just a few examples of programming languages and their associated TCP library.
 
