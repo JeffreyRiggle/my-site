@@ -327,7 +327,50 @@ steps 2 and 3 can be combined in a single message. This the three way handshake.
 * Sending TCP must send at least one octet of data even if the window size is zero.
 
 #### Interfaces
-TODO document interfaces.
+* Section documents proposed interface for TCP
+* User Commands
+    * Open - opens the TCP connection.
+    * Send - sends data in a buffer. Send is considered an error if it occurs on a connection that is not open. Multiple sends can be called before closing connection.
+    * Receive - Waits for data and returns to program once buffer is filled.
+    * Close - causes connection to be closed.
+    * Status - Information from the TCB about the connection.
+        * foreign socket
+        * local connection name
+        * receive window
+        * send window
+        * connection state
+        * number of buffers awaiting ack
+        * number of buffers pending receipt
+        * urgent state
+        * precedence
+        * security
+        * transmission timeout
+    * Abort - cancels all pending SENDs and RECEIVEs
+* TCP to user messages
+    * When TCP signals a user program it should provide the following information
+        * Local Connection Name
+        * Response String
+        * Buffer Address
+        * Byte count
+        * Push flag
+        * Urgent flag
+
+#### Event Processing
+* Activity of TCP can be defined as responding to events.
+* There are 3 different kind of events
+    * user calls
+        * OPEN
+        * SEND
+        * RECEIVE
+        * CLOSE
+        * ABORT
+        * STATUS
+    * arriving segments
+        * SEGMENT ARRIVES
+    * timeouts
+        * USER TIMEOUT
+        * RETRANSMISSION TIMEOUT
+        * TIME-WAIT TIMEOUT
 
 ### Example of a standard library
 Much like UDP, TCP is a standard protocol and it is relatively easy to find support for it in most languages standard library. Below are just a few examples of programming languages and their associated TCP library.
@@ -343,6 +386,9 @@ Much like UDP, TCP is a standard protocol and it is relatively easy to find supp
 ### Look at the results in a network capture
 
 ### Interesting finds
+
+* WoW uses TCP instead of UDP
+* HTTP is usually based on TCP
 
 ### References
 
