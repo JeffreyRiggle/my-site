@@ -4,37 +4,35 @@ date: '2020-10-02'
 ---
 
 # TCP Transport
-* Transmission Control Protocol
-* Second protocol
-* More reliable than UDP
-* Fits into a layered protocol architecture
-* Takes roles in different areas
-    * Basic Data Transfer
-        * Able to transfer a continuous stream of octets in each direction by packaging some number of octets into segments for transmission through the internet system.
-        * A push function is defined for when users need to be sure all data they have submitted has been transmitted.
-    * Reliability
-        * TCP must recover from data that is damaged, lost, duplicated or delivered out of order.
-        * Sequence numbers and acknowledgements (ACK) are used to handle duplicates, lost packages and delivery order.
-        * Checksums are used to detect damaged segments.
-    * Flow Control
-        * TCP allows the receiver to control the amount of data sent by the sender.
-        * This is done with a window.
-    * Multiplexing
-        * In order to allow many processes on a single host to use TCP addresses or ports are used.
-        * The combination of the network and host address from the internet form a socket.
-        * A pair of sockets uniquely identifies a connect.
-        * A socket may be simultaneously used by multiple connections.
-        * Binding of ports to process is handled by the host.
-    * Connections
+As a continuation of the transport layer series, in this blog we will be looking at our second transport layer protocol. Now that we have taken a look at UDP and understand its reliability issues its time to look at its more reliable alternative. This protocol is the transmission control protocol or TCP for short. TCP is ment to be a layered protocol architecture. In this case TCP is a layer that builds on IP much like UDP, but TCP is also ment to be extended by other protocols like telnet, FTP and HTTP. The philosophy of TCP puts empasis on a couple different roles that TCP plays.
+
+## Basic Data Transfer
+TCP should be able to transfer a continuous stream of octets in each direction by packaging some number of octets into segments for transmission. The availability of a push function should be defined for when users need to be sure all data they have sent has been transmitted.
+
+## Reliability
+TCP must be able to recover from data that is damanged, lost, duplicated or delivered out of order. This could happen for multiple reasons such as a faulty network connection or switch. The reason for loss is not particulary important what is important is that TCP is resiliant to such failures. This is one way in which TCP is drastically different from UDP as UDP had no protection of any such problem. In order to detect damaged segments a checksum is used.
+
+## Flow Control
+TCP provides a window. This window acts as a sizing mechanism that allows the receiver of data to control the amount of data the sender is allow to send at at time.
+
+## Multiplexing
+Since TCP wants to allow multiple processes on a single host to used the protocol, ports are used. In this case the host is resposible for binding the ports to the processes. The combination of network and host address form a socket. This socket acts as the identifier for one end of a TCP connection. A pair of sockets makes up a unique connection. While a socket identifies one end of a connection it does not have to be used in just one connection. A socket can be reused for multiple different connections at the same time.
+
+## Connections
+* Connections
         * Is the combiniation of sockets, sequence numbers and window sizes.
         * A connection is uniquely specified by a pair of sockets
         * In order for two processes to communicate over TCP they must first establish a connection.
         * When communication is complete the connection is terminated or closed.
         * Since the hosts and network can be unreliable a handshake mechanism with clock-based sequence numbers is used to avoid erroneous initialization of connections.
+
+## Precedence and Security 
     * Precedence and Security
         * Users of TCP may indicate the security and precedence of their communication.
-* Is able to support higher level protocols (Telnet, FTP, HTTP)
+
+
 * A Transmission Control Block (TCB) stores information about the connection.
+    * Can see this information using netstat in linux `netstat -at`
 
 ## Reviewing the network protocol
 
@@ -272,7 +270,7 @@ steps 2 and 3 can be combined in a single message. This the three way handshake.
 | SYN-SENT | --> | <SEQ=400><CTL=SYN> | --> | invalid |
 | bad response | <-- | <SEQ=300><ACK=100><CTL=ACK> | <-- | ESTABLISHED |
 | SYN-SENT | --> | <SEQ=100><CTL=RST> | --> | Abort |
-| SYN-SENT | | | | CLOSTED |
+| SYN-SENT | | | | CLOSED |
 | SYN-SENT | --> | <SEQ=400><CTL=SYN> | --> | |
 
 * Similar half open aborts can occur when one TCP tries to send a message to a crashed TCP.
