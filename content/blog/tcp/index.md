@@ -6,33 +6,25 @@ date: '2020-10-02'
 # TCP Transport
 As a continuation of the transport layer series, in this blog we will be looking at our second transport layer protocol. Now that we have taken a look at UDP and understand its reliability issues its time to look at its more reliable alternative. This protocol is the transmission control protocol or TCP for short. TCP is ment to be a layered protocol architecture. In this case TCP is a layer that builds on IP much like UDP, but TCP is also ment to be extended by other protocols like telnet, FTP and HTTP. The philosophy of TCP puts empasis on a couple different roles that TCP plays.
 
-## Basic Data Transfer
+### Basic Data Transfer
 TCP should be able to transfer a continuous stream of octets in each direction by packaging some number of octets into segments for transmission. The availability of a push function should be defined for when users need to be sure all data they have sent has been transmitted.
 
-## Reliability
+### Reliability
 TCP must be able to recover from data that is damanged, lost, duplicated or delivered out of order. This could happen for multiple reasons such as a faulty network connection or switch. The reason for loss is not particulary important what is important is that TCP is resiliant to such failures. This is one way in which TCP is drastically different from UDP as UDP had no protection of any such problem. In order to detect damaged segments a checksum is used.
 
-## Flow Control
+### Flow Control
 TCP provides a window. This window acts as a sizing mechanism that allows the receiver of data to control the amount of data the sender is allow to send at at time.
 
-## Multiplexing
+### Multiplexing
 Since TCP wants to allow multiple processes on a single host to used the protocol, ports are used. In this case the host is resposible for binding the ports to the processes. The combination of network and host address form a socket. This socket acts as the identifier for one end of a TCP connection. A pair of sockets makes up a unique connection. While a socket identifies one end of a connection it does not have to be used in just one connection. A socket can be reused for multiple different connections at the same time.
 
-## Connections
-* Connections
-        * Is the combiniation of sockets, sequence numbers and window sizes.
-        * A connection is uniquely specified by a pair of sockets
-        * In order for two processes to communicate over TCP they must first establish a connection.
-        * When communication is complete the connection is terminated or closed.
-        * Since the hosts and network can be unreliable a handshake mechanism with clock-based sequence numbers is used to avoid erroneous initialization of connections.
+### Connections
+A connection is made up by the combination of sockets, sequence numbers and window sizes. This connection is uniquely identified by a pair of sockets. The connection must first be successfully established before two processes can communicate over TCP. This is done using a handshaking mechanism with clock-based sequence numbers to avoid erroneous initializations of connections. When the communication between the two processes is completed the connection is terminated or closed.
 
-## Precedence and Security 
-    * Precedence and Security
-        * Users of TCP may indicate the security and precedence of their communication.
+### Precedence and Security
+TCP includes mechanisms for setting connection precedence and security. In the case of TCP users can indicate the security and precedence their communication will use. If this is not honored by both sides of the connection than a successful connection cannot be established.
 
-
-* A Transmission Control Block (TCB) stores information about the connection.
-    * Can see this information using netstat in linux `netstat -at`
+One other important thing to note before moving on is that TCP introduces the concept of a Transmission Control Block or TCB for short. The TCB stores information about the connection on the host. In a linux based environment you can see this information by running the command `netstat -at` in a terminal.
 
 ## Reviewing the network protocol
 
