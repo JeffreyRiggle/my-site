@@ -63,10 +63,7 @@ One other important thing to note before moving on is that TCP introduces the co
 16 bit field that specifies the number of data octets starting with the one indicated in the acknowledgment field which the sender is willing to accept.
 
 #### Checksum
-16 bit field which is the one's complement of the one's complement sum of all 16 bit words in the header and text. 
-
-* This appears very similar to the UDP checksum it might be a good idea just to refer back to that.
-TODO Expand on this.
+16 bit field which is the one's complement of the one's complement sum of all 16 bit words in the header and text. In the [UDP blog](http://ilusr.com/udp/) I talked more about calculating the checksum, a very similar calculation would happen for TCP.
 
 #### Urgent Pointer
 16 bit field that communicates the current value of the urgent pointer. This pointer points to the sequence number of the octet following the urgent data.
@@ -75,32 +72,21 @@ TODO Expand on this.
 Options is variable in size but must be a multiple of 8 bits in length. All options are included in the checksum. All options have a option-kind and may have an option length.
 
 ##### End of Option List
-* Kind = 0
-* indicates the end of the option list.
-* Might now be the end of the header based off of the data offset field.
-* Used at the end of all options.
-* only needed if the end of options would not match up with the end of the TCP header.
+The end of option list has a Kind of 0. This option indicates the end of the options list. This option is only needed if the end of the options would not match up with the end of the TCP header. That is to say if there are extra bytes after the options this option must be provided.
 
 ##### No-Operation
-* Kind = 1
-* May be used between options.
-* There is no guarantee that sends will use this option.
+The no-operation has a Kind of 1. This can be used between options; However, there is no guarantee that senders will use this option.
 
 ##### Maximum Segment Size
-* Kind = 2
-* Length = 4
-* Has Maximum Segement Size option data.
-    * data is 16 bits
-    * Communicates the maximum receive segment size at the TCP which sends this segment.
-    * Must only be sent in the initial connection request.
+The maximum segment size has a Kind of 2 and a length of 4 bytes. This option communicates the maximum receive segment size to the TCP that sends this segment. This option can only be used in the initial connection request.
 
 #### Padding
 Padding is a variable sized field used to ensure that the header ends and data begins on a 32 bit boundary.
 
 #### Data
-The data you would like to send.
+The data that is being sent.
 
-### Terminology?
+### Terminology
 
 #### Send Sequence Variables
 | Variable | Meaning |
