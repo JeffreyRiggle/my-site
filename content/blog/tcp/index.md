@@ -118,75 +118,75 @@ The data that is being sent.
 | SEG.PRC | segement precedence value |
 
 #### Connection states
+TCP is driven by different connection states. A connection moves from one connection state to another in response to events. The events a user can call to influence connection state are: OPEN, SEND, RECEIVE, CLOSE, ABORT, and STATUS. Information about the connection state can be found on the TCB.
 
-* connection moves from one state to another in response to events.
-* events are user calls OPEN, SEND, RECEIVE, CLOSE, ABORT and STATUS.
-* There is a state diagram for this on page 22 of the RFC
+TODO Diagram?
 
 ##### LISTEN
-In this state we are waiting for a connection request from any remote TCP and port.
+In the listen state socket is waiting for connection request from any remote TCP and port.
 
 ##### SYN-SENT
-In this state we are waiting for a matching connection request after having sent a connection request.
+In the SYN-SENT state the socket is waiting for a matching connection request after having sent a connection request of its own.
 
 ##### SYN-RECEIVED
-In this state we are waiting for a confirmation connection request acknowldgement after having both send and received a connection request.
+In the SYN-RECEIVED state the socket is waiting for a confirmation connection request acknowldgement after having both sent and received a connection request.
 
 ##### ESTABLISHED
-In this state we have an open connection. This is the normal data transfer phase of the connection.
+In the ESTABLISHED state the socket is an open connection. This is the normal data transfer phase of the connection.
 
 ##### FIN-WAIT-1
-In this state we are waiting for a connection termination request from the remote TCP or an acknowledgement of the connection terminiation request that had previously been sent.
+In the FIN-WAIT-1 state the socket is waiting for a connection termination request from the remote TCP or an acknowledgement of the connection terminiation request that had previously been sent.
 
 ##### FIN-WAIT-2
-In this state we are wiating for a connection termiation request from the remote TCP.
+In the FIN-WAIT-2 state the socket is waiting for a connection termiation request from the remote TCP.
 
 ##### CLOSE-WAIT
-In this state we are waiting for a connection termination request from the local user.
+In the CLOSE-WAIT state the socket is waiting for a connection termination request from the local user.
 
 ##### CLOSING
-In this state we are waiting for a connection termiation request acknowledgment from the remote TCP.
+In the CLOSING state the socket is waiting for a connection termiation request acknowledgment from the remote TCP.
 
 ##### LAST-ACK
-In this state we are waiting for an acknowledgment of the connection termination request that had previously been sent to the remote TCP.
+In the LAST-ACK state the socket is waiting for an acknowledgment of the connection termination request that had previously been sent to the remote TCP.
 
 ##### TIME-WAIT
-In this state we are waiting for enough time to pass to be sure the remote TCP received the acknoledgment of its connection termination request.
+In the TIME-WAIT state the socket is waiting for enough time to pass to be sure the remote TCP received the acknoledgment of its connection termination request.
 
 ##### CLOSED
-In this state there is no connection at all.
+In the CLOSED state the socket has no connection.
 
 #### Sequence Numbers
-* Every octet of data send over TCP has a sequence number
-* Each sequence can be acknowledged
-* acknowledgment mechamism is cumulative (acknowledgment of sequence X means that all octets up to but not including X have been recieved)
-* This acts as duplicate detection in retransmission
-* Sequence space is finite but very large. (0 to 2**32 - 1)
-* All arithmetic dealing with sequence numbers must be performed modulo 2**32
-* Typical number comparisions for TCP would include
-    * Determining that an acknowledgment refers to some sequence number sent but not acknowledged.
-    * Determining that all sequence numbers occupied by a segement have been acknowledged.
-    * Determining that an incoming segment contains sequence numbers that are expected.
-* The following comparisions are needed to process acknowledgments
-    * SND.UNA: oldest unacknowledged sequence number.
-    * SND.NXT: next sequence number to be sent.
-    * SEG.ACK: acknowledgment from the receiving TCP
-    * SEG.SEQ: first sequence number of a segement
-    * SEG.LEN: the number of octets occupied by the data in the segment.
-    * SEG.SEQ+SEG.LEN-1: last sequence number of a segement.
-    * A segment on the retransmission queue is fully acknowledged if the sum of its sequence number and length is less or equal than the acknowledgement value in the incoming request. SND.UNA < SEG.ACK =< SND.NXT
-* When data is recieved the following comparisions are needed
-    * RCV.NXT: next sequence number expected on an incoming segments, and is the left or lower edge of the receive window
-    * RCV.NXT+RCV.WND-1: last sequence number expected on an incoming segment, and is the right or upper edge of the receive window.
-    * SEG.SEQ: first sequence number occupied by the incoming segment.
-    * SEG.SEQ+SEG.LEN-1: last sequence number occupied by the incoming segment.
-* Segment occupies a portion of a valid receive sequence if RCV.NXT =< SEG.SEQ < RCV.NXT+RCV.WND or RCV.NXT =< SEG.SEQ+SEG.LEN-1 < RCV.NXT+RCV.WND
-    * first part checks to see if the beginning of the segment falls in a window.
-    * second part checks to see if the end of the segment falls in a window.
-* zero windows and zero segments can complicate this.
-* SYN and FIN are special cases since those controls do not use this numbering schema.
-* SYN is always expected to occur before the first data octect.
-* FIN is always expected to occur after the last data octect.
+Sequence numbers are a key part of how TCP ensures no packet loss or duplication. In TCP every octet of data sent on the wire has a sequence number. Each of these sequence numbers can be acknowledged by the remote TCP. In the case of TCP acknowledgement is a cumulative mechanism. In the case of acknowledgment, if you acknowledge sequence N that means the receiving TCP has acknowledged all data octets up to but not including N. Sequence numbers occupy a finite space, however that space is rather large 0 - 2<sup>32</sup> - 1. Since the space a sequence number occupies is finite all arithmetic dealing with sequence numbers must be performed with modulo 2<sup>32</sup>.
+
+Some examples of arithmetic required for dealing with sequence numbers includes the following.
+* Determining that an acknowledgment refers to some sequence number sent but not acknowledged.
+* Determining that all sequence numbers occupied by a segement have been acknowledged.
+* Determining that an incoming segment contains sequence numbers that are expected.
+
+When it comes to processing acknowledgments there are a couple different comparisions that are required.
+
+| Variable | Meaning |
+|-|-|
+| SND:UNA | The oldest unacknowledged sequence number. |
+| SND.NXT | The next sequence number to be sent. |
+| SEG.ACK | An acknowledgement from the receiving TCP. |
+| SEG.SEQ | The first sequence number of a segement. |
+| SEG.LEN | The number of octets occupied by the data in the segement. |
+
+With these variables you can combine values to produce additional information. For example, `SEG.SEQ+SEG.LEN-1` represents the last sequence number of a segement. Likewise you can tell if a segment on the retransmission queue is fully acknowledged. In this case if the sum of its sequence number and length is less or equal than the acknowledgement value in the incoming request. This could be represented in this way `SND.UNA < SEG.ACK =< SND.NXT`.
+
+When it comes to processing recieved data a different set of comparisions are required.
+
+| Variable | Meaning |
+|-|-|
+| RCV.NXT | The next sequence number expected on an incoming segment. This is the left or lower edge of the receive window |
+| RVC.NXT+RCV.WND-1 | The last sequence number expected on an incoming segement. This is the right of upper edge of the receive window. |
+| SEG.SEQ | The first sequence number occupied by the incoming segment. |
+| SEG.SEQ+SEG.LEN-1 | The last sequence number occupied by the incoming segment. |
+
+TCP can determine if a segment occupies a portion of a valid receive sequence using either `RCV.NXT =< SEG.SEQ < RCV.NXT+RCV.WND` or `RCV.NXT =< SEG.SEQ+SEG.LEN-1 < RCV.NXT+RCV.WND`. In the case of `RCV.NXT =< SEG.SEQ < RCV.NXT+RCV.WND` this operation is checking to see if the beginning of the segment falls in a window. In the case of `RCV.NXT =< SEG.SEQ+SEG.LEN-1 < RCV.NXT+RCV.WND` this operation is checking to see if the end of the segment falls in a window. One thing that can really complicate this logic is if the window size is zero or a zero segment exists. This is possible but a bit of an edge case.
+
+There are a couple special cases when it comes to sequence numbers. In the case of TCP SYN and FIN are not subject to sequence numbers. SYN is always expected to occur before the first data octet while FIN is always expected to occur after the last data octet.
 
 ##### Initial Sequence number
 * No restriction on connection reuse (incarnation)
