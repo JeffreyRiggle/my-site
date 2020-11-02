@@ -247,24 +247,14 @@ The second case is when a TCP receives a FIN from the network. This is FIN is co
 The third case is when both sides of the connection close at the same time. In this case both sides exchange FIN segments. Once both sides have received ACKs the connection will be deleted.
 
 #### Precednece and security
-* Intent is that connection between ports is operating on same security and compartment values.
-* A connection attempt with mismatched security/compartment values must be rejected by sending a reset.
+Precednence and security is used to make sure the connection between ports are operating on the same security and compartment values. Any connection attempt with mismatched security or compartment values must be rejected by sending a reset.
 
 #### Data Communication
-* data is communicated by the exchange of segments.
-* Since segments can be lost due to errors or network congestion, TCP uses retransmission.
-    * duplicate segments may arrive due to retransimission.
-* Sender keeps track of next sequence number in SND.NXT
-* Receiver keeps track of next sequence number to expect using RCV.NXT.
-* Sender keeps track of the oldest unacknowledged sequence number in SND.UNA.
-* Variables (SND.NXT, RCV.NXT) are advanced by the length of data in the segment.
-* retransmission timeout is dynamically determined.
-* large windows encourages transmissions.
-* small windows can restrict the transmission of data to the point of introducing a round trip delay between each new segment.
-* Sending TCP must send at least one octet of data even if the window size is zero.
+TCP is a data communication protocol, so the exchange of data is very important. In the case of TCP data is communicated by the exchange of segments. Unlike with UDP TCP uses retransmission to handle loss of segments due to errors or network congestion. Since TCP does use retransmission duplicate segments can arrive but this is not an issue due to the way segments are acknowledged. In these cases the sender keeps track of the next expected sequence number in the SND.NXT while the receiver keeps track the next sequence number in the RCV.NXT. The sender also keeps track of the oldest unacknowledged sequence number in the SND.UNA. One important thing to note is that SND,NXT and RCV.NXT are incremented by the length of data in the segment.
+
+When sending data over TCP and important thing to consider is window size. In the case of a large window transmissions are encouraged, but in the case of a small window transmission of data can be restricted to the point of introducing a round trip delay.
 
 #### Interfaces
-* Section documents proposed interface for TCP
 * User Commands
     * Open - opens the TCP connection.
     * Send - sends data in a buffer. Send is considered an error if it occurs on a connection that is not open. Multiple sends can be called before closing connection.
@@ -293,21 +283,21 @@ The third case is when both sides of the connection close at the same time. In t
         * Urgent flag
 
 #### Event Processing
-* Activity of TCP can be defined as responding to events.
-* There are 3 different kind of events
-    * user calls
-        * OPEN
-        * SEND
-        * RECEIVE
-        * CLOSE
-        * ABORT
-        * STATUS
-    * arriving segments
-        * SEGMENT ARRIVES
-    * timeouts
-        * USER TIMEOUT
-        * RETRANSMISSION TIMEOUT
-        * TIME-WAIT TIMEOUT
+The activity of TCP can be defined as responding to events. In the case of TCP there are 3 different kind of events.
+
+* User Calls
+    * OPEN
+    * SEND
+    * RECEIVE
+    * CLOSE
+    * ABORT
+    * STATUS
+* Arriving Segments
+    * SEGMENT ARRIVES
+* Timeouts
+    * USER TIMEOUT
+    * RETRANSMISSION TIMEOUT
+    * TIME-WAIT TIMEOUT
 
 ### Example of a standard library
 Much like UDP, TCP is a standard protocol and it is relatively easy to find support for it in most languages standard library. Below are just a few examples of programming languages and their associated TCP library.
