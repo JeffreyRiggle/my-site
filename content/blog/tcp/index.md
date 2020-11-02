@@ -235,36 +235,16 @@ The three way handshake allows for recovery from duplicate messages by using the
 | SYN-SENT | --> | <SEQ=400><CTL=SYN> | --> | |
 
 ##### Resets
-* A reset must be sent whenever a segment arrives which is no intended for the current connection.
-* If a connection does not exist then a reset should be sent in response to any incoming segment execpt another reset.
-* If the connection is in a non-synchronized state and the incoming segment acknowledges something not yet sent a reset should be sent.
-* If the connection is in a synchronized state any unacceptable segment must elicit only an empy acknowledgement segment containing the current send-sequence number and an acknowledgement indicating the next sequence number expected to be received.
-* Reset segments are validated by checking their SEQ fields
-* A reset is valid if the sequence number is in the window.
-* Receiver of a reset validates the request then changes state.
-* In the case the receiver is in the LISTEN state it ignores the request.
-* If the receiver is in the SYN-RECEIVED state then they return to the LISTEN state.
-* If neither of the above is true the receiver aborts the connection and goes to the CLOSED state.
-
+Resets are used to reset the connection in the case of invalid or unexpected data. For example, if a segment arrives which is not intended for the current connection, or the connection does not exist then a reset mush be sent. Another case in which a reset should be sent would be when the connection gets into a non-synchorized state. An example of this state would be a TCP receiving a acknowldgement for a segment that has not been sent yet. In order to validate a reset the sequence fields are used. If the sequence number is in the window then the reset is considered valid. Once a receiver validates a reset request it then changes state. In the case that the receiver was in the LISTEN state the reset request is ignored. In the case that the receiver is in the SYN-RECEIVED state they will return to the LISTEN state. In all other cases the receiver will abort the connection and go to the CLOSED state.
 
 ##### Closing connection
-* CLOSE operation means "I have no more data to send."
-* A user who closes may continue to receive until he is told that the other side has closed as well.
-* TCP will reliably deliver all buffers SENT before the connection was CLOSED.
-* Users must keep reading connections they close for sending until the TCP says no more data.
-* Close cases
-    * Local user initiates the close
-        * FIN segment constructed and placed on the outgoing segment queue.
-        * No further SENDs from the user will be accepted by the TCP.
-        * RECEIVEs are allowed in this state.
-        * When other TCP has acknowledged the FIN and sent a FIN of its own the closing TCP can ACK this FIN.
-    * TCP receives a FIN from the network
-        * Unsolicited FIN from the network.
-        * User responses with a CLOSE
-        * If ACK does not come a user timeout is used to abort the connection.
-    * both users close simultaneously
-        * Both sides echange FIN segments.
-        * After both sides have received ACKs the connection will be deleted.
+In the case of TCP the CLOSE operations signals that, "I have no more data to send." In this case the issuer of the close request may continue to receive data until they are told that the other side has closed the connection as well. By doing this TCP ensures that all data buffers sent before the connection was closed had actually been delivered. There are a couple cases in which a connection can be closed.
+
+The first case is when the local user initiates the close. In this case a FIN segment is created and placed on the outgoing segment queue. Past this point no further SENDs from the user will be accepted, only receives are allowed from this state. When the other TCP has acknowledged the FIN and sent a FIN of its own the closing TCP can ACK the FIN and end the connection.
+
+The second case is when a TCP receives a FIN from the network. This is FIN is considered unsolicited. In this case the TCP that received the FIN will respond with a CLOSE. If an ACK does not come within a timeout then the connection is aborted.
+
+The third case is when both sides of the connection close at the same time. In this case both sides exchange FIN segments. Once both sides have received ACKs the connection will be deleted.
 
 #### Precednece and security
 * Intent is that connection between ports is operating on same security and compartment values.
