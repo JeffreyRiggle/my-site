@@ -189,19 +189,7 @@ TCP can determine if a segment occupies a portion of a valid receive sequence us
 There are a couple special cases when it comes to sequence numbers. In the case of TCP SYN and FIN are not subject to sequence numbers. SYN is always expected to occur before the first data octet while FIN is always expected to occur after the last data octet.
 
 ##### Initial Sequence number
-* No restriction on connection reuse (incarnation)
-* Common problem how does TCP identify duplicate segments from previous connections
-    * Common cases in which this could be an issue: connection opened and closed in quick succession, connection breaks with loss of memory and then is reestablished.
-* Even if TCP crashes and loses all knowledge of sequence numbers it has been using, this protocol must prevent segement reuse.
-* When new connections are created an initial sequence number (ISN) generator is used. This generator selects a 32 bit ISN.
-* This generator is tied to a 32 bit clock, this clocks lowest order bit is incremeted around every 4 microseconds. (Cycle time of 4.55 hours).
-* Since segements will stay in the network no more than the Maxium Segement Lifetime (MSL) and the MSL is less than 4.55 hours we can assume that ISN's are unique.
-* Each connection has a send sequence number and a receive sequence number.
-* Initial send sequence number (ISS) is chosen by the data sending TCP
-* Initial receive sequence number (IRS) is learned during the connection establishing procedure.
-* In order to establish or initialize a connection both TCPs must synchronize on each others ISN.
-* Exchange of connection establishing segments is done with a SYN and the sequence numbers.
-* Synchronization requires each side to sned its own ISN and to recieve confirmation of it in an ACK.
+The initiial sequence number or ISN for short is used to help TCP identify duplicate segments from previous connections. This kind of problem and typically happen when a connection is opened and closed in quick succession or when a connection breaks with loss of memory and is reestablished. Even in the case of a crash with a total loss of knowldge of sequence numbers TCP must prevent segment reuse. In order to prevent segment reuse an ISN generator is used to create a rather unique number. This generator selects a 32 bit ISN based on a 32 bit clock. The 32 bit clock is incremeted around every 4 microseconds giving the ISN cycle time a 4.55 hour window. Since 4.55 hours is not quite unique enough due to the long lived nature of some TCP connections, the addition of a Maxium Segement Lifetime or MSL is required. The MSL is used to make sure TCP does not create a segment that carries a duplicated sequence number. TCP must keep quiet for the MSL before it is allowed to assign any sequence numbers after recovering from a crash in which memory loss of sequence numbers in use occured. When the MSL is less than 4.55 hours we can assume that ISN's are unique. Every connection has a send sequence number and a receive sequence number. The initial send sequence number or ISS is decided by the data sending TCP. The initial receive sequece number or IRS is learned during the connection establishing prodecure. For a TCP connection to actually be established or initialized both TCPs must synchronize based on each others ISN. This exchange of segments is done with a SYN and the sequence numbers. The process of synchronzation requires each TCP to send its own ISN and recieve confirmation of it in an ACK.
 
 Example flow
 
@@ -212,12 +200,8 @@ Example flow
 
 steps 2 and 3 can be combined in a single message. This the three way handshake.
 
-* The three way handshake is necessary because sequence numbers are not tied to a global clock.
-* Maxium Segment lifetime, is used to make sure TCP does not create a segment that carries a duplicated sequence number.
-    * TCP must keep quiet for the MSL before it is allowed to assign any sequence numbers after recovering from a crash in which memory loss of sequence numbers in use occured.
-    * Specification defaults this value at 2 minutes.
-
 #### Establishing a connection
+Since TCP is not able to be tied to a global clock for ISN generation, the process of exchanging ISNs is done through a three way handshake. Below are some examples of how this handshake works.
 
 ##### Simple Three-way handshake
 | TCP A | TCP A Direction | Data | TCP B Direction | TCP B |
@@ -238,8 +222,7 @@ steps 2 and 3 can be combined in a single message. This the three way handshake.
 | ESTABLISHED | <-- | <SEQ=300><ACK=101><CTL=SYN,ACK> | <-- | SYN-RECEIVED |
 | | In transit | <SEQ=101><ACK=301><CTL=ACK> | --> | ESTABLISHED |
 
-* Three-way handshake can recover from duplicate messages by using the reset (RST) function.
-* half-open connections are connections in which one of the TCPs has closed or aborted the connection from its end without the knowledge of the other TCP. This can also happen if the connection has become desynchronized.
+The three way handshake allows for recovery from duplicate messages by using the reset function.
 
 ##### Recovery from a crash (half-open)
 | TCP A | TCP A Direction | Data | TCP B Direction | TCP B |
@@ -250,8 +233,6 @@ steps 2 and 3 can be combined in a single message. This the three way handshake.
 | SYN-SENT | --> | <SEQ=100><CTL=RST> | --> | Abort |
 | SYN-SENT | | | | CLOSED |
 | SYN-SENT | --> | <SEQ=400><CTL=SYN> | --> | |
-
-* Similar half open aborts can occur when one TCP tries to send a message to a crashed TCP.
 
 ##### Resets
 * A reset must be sent whenever a segment arrives which is no intended for the current connection.
