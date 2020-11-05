@@ -309,8 +309,19 @@ Much like UDP, TCP is a standard protocol and it is relatively easy to find supp
 * Rust - https://doc.rust-lang.org/beta/std/net/struct.TcpStream.html
 
 ### Example of a client-server application using the protocol
+https://github.com/JeffreyRiggle/tcp-example-app
+
+This application is very similar in nature to the one covered in the last blog about UDP. The notable differences in this example are: there is a disconnect button, and the application uses TCP instead of UDP.
 
 ### Look at the results in a network capture
+
+#### Initial connection
+
+#### Client sending a message
+
+#### Client disconnect
+
+#### Server disconnect
 
 ### Interesting finds
 
