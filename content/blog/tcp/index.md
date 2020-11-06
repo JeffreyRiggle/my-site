@@ -314,19 +314,36 @@ https://github.com/JeffreyRiggle/tcp-example-app
 This application is very similar in nature to the one covered in the last blog about UDP. The notable differences in this example are: there is a disconnect button, and the application uses TCP instead of UDP.
 
 ### Look at the results in a network capture
+Similar to the UDP analysis we will be using [Wireshark](https://www.wireshark.org/) to look at the network captures. For more information on install and setup see the previous blog.
 
 #### Initial connection
+In this case we can see a simple threeway handshake occur between the connecting client at port 50174 and the server on port 7000.
+
+| Source Port | Destination Port | Flags | Notes | Content |
+|-|-|-|-|-|
+| 50174 | 7000 | SYN | Initial connection request from the client with an ISN of 1047673890 | 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00   ..............E.<br>0010   00 3c ad db 40 00 40 06 8e de 7f 00 00 01 7f 00   .<.Û@.@..Þ......<br>0020   00 01 c3 fe 1b 58 3e 72 3c 22 00 00 00 00 a0 02   ..Ãþ.X>r<".... .<br>0030   ff d7 fe 30 00 00 02 04 ff d7 04 02 08 0a 66 e1   ÿ×þ0....ÿ×....fá<br>0040   a0 f1 00 00 00 00 01 03 03 07                      ñ........<br> |
+| 7000 | 50174 | SYN, ACK | Acknowledge the connection and provide ISN 3883755340 | 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00   ..............E.<br>0010   00 3c 00 00 40 00 40 06 3c ba 7f 00 00 01 7f 00   .<..@.@.<º......<br>0020   00 01 1b 58 c3 fe e7 7d 67 4c 3e 72 3c 23 a0 12   ...XÃþç}gL>r<# .<br>0030   ff cb fe 30 00 00 02 04 ff d7 04 02 08 0a 66 e1   ÿËþ0....ÿ×....fá<br>0040   a0 f2 66 e1 a0 f1 01 03 03 07                      òfá ñ.... |
+| 50174 | 7000 | ACK | Acknowledge the ISN | 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00   ..............E.<br>0010   00 34 ad dc 40 00 40 06 8e e5 7f 00 00 01 7f 00   .4.Ü@.@..å......<br>0020   00 01 c3 fe 1b 58 3e 72 3c 23 e7 7d 67 4d 80 10   ..Ãþ.X>r<#ç}gM..<br>0030   02 00 fe 28 00 00 01 01 08 0a 66 e1 a0 f2 66 e1   ..þ(......fá òfá<br>0040   a0 f2                                              ò |
+
 
 #### Client sending a message
+In this case we send a simple hello world message to the server. Just like in the UDP example the client sends a custom byte structure while the server sends a JSON response.
+
+| Source Port | Destination Port | Flags | Notes | Content |
+|-|-|-|-|-|
+| 50174 | 7000 | PSH,ACK | Client is sending a hello world message to the server. | 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00   ..............E.<br>0010   00 41 ad df 40 00 40 06 8e d5 7f 00 00 01 7f 00   .A.ß@.@..Õ......<br>0020   00 01 c3 fe 1b 58 3e 72 3c 24 e7 7d 67 65 80 18   ..Ãþ.X>r<$ç}ge..<br>0030   02 00 fe 35 00 00 01 01 08 0a 66 f1 44 8d 66 e1   ..þ5......fñD.fá<br>0040   a1 52 02 48 65 6c 6c 6f 20 57 6f 72 6c 64 21      ¡R.Hello World! |
+| 7000 | 50174 | PSH,ACK | Server acknowledges message and sends a message of its own. | 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00   ..............E.<br>0010   00 7b 8c 49 40 00 40 06 b0 31 7f 00 00 01 7f 00   .{.I@.@.°1......<br>0020   00 01 1b 58 c3 fe e7 7d 67 65 3e 72 3c 31 80 18   ...XÃþç}ge>r<1..<br>0030   02 00 fe 6f 00 00 01 01 08 0a 66 f1 44 8e 66 f1   ..þo......fñD.fñ<br>0040   44 8d 7b 22 69 74 65 6d 73 22 3a 5b 7b 22 74 69   D.{"items":[{"ti<br>0050   6d 65 22 3a 31 36 30 34 36 35 39 35 31 36 36 30   me":160465951660<br>0060   30 2c 22 6d 65 73 73 61 67 65 22 3a 22 48 65 6c   0,"message":"Hel<br>0070   6c 6f 20 57 6f 72 6c 64 21 22 7d 5d 2c 22 73 65   lo World!"}],"se<br>0080   67 6d 65 6e 74 22 3a 31 7d                        gment":1} |
+| 50174 | 7000 | ACK | Client acknowledges last message from server | 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00   ..............E.<br>0010   00 34 ad e0 40 00 40 06 8e e1 7f 00 00 01 7f 00   .4.à@.@..á......<br>0020   00 01 c3 fe 1b 58 3e 72 3c 31 e7 7d 67 ac 80 10   ..Ãþ.X>r<1ç}g¬..<br>0030   02 00 fe 28 00 00 01 01 08 0a 66 f1 44 8e 66 f1   ..þ(......fñD.fñ<br>0040   44 8e                                             D. |
 
 #### Client disconnect
-
-#### Server disconnect
+| Source Port | Destination Port | Flags | Notes | Content |
+|-|-|-|-|-|
+| 50174 | 7000 | FIN,ACK | Request to close connection from client | 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00   ..............E.<br>0010   00 34 ad e1 40 00 40 06 8e e0 7f 00 00 01 7f 00   .4.á@.@..à......<br>0020   00 01 c3 fe 1b 58 3e 72 3c 31 e7 7d 67 ac 80 11   ..Ãþ.X>r<1ç}g¬..<br>0030   02 00 fe 28 00 00 01 01 08 0a 66 f6 ea 0e 66 f1   ..þ(......föê.fñ<br>0040   44 8e                                             D. |
+| 7000 | 50174 | FIN,ACK | Acknowledge close and request close from server | 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00   ..............E.<br>0010   00 34 8c 4a 40 00 40 06 b0 77 7f 00 00 01 7f 00   .4.J@.@.°w......<br>0020   00 01 1b 58 c3 fe e7 7d 67 ac 3e 72 3c 32 80 11   ...XÃþç}g¬>r<2..<br>0030   02 00 fe 28 00 00 01 01 08 0a 66 f6 ea 0e 66 f6   ..þ(......föê.fö<br>0040   ea 0e                                             ê. |
+| 50174 | 7000 | ACK | Acknowledge the close connection from the server | 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00   ..............E.<br>0010   00 34 ad e2 40 00 40 06 8e df 7f 00 00 01 7f 00   .4.â@.@..ß......<br>0020   00 01 c3 fe 1b 58 3e 72 3c 32 e7 7d 67 ad 80 10   ..Ãþ.X>r<2ç}g...<br>0030   02 00 fe 28 00 00 01 01 08 0a 66 f6 ea 0e 66 f6   ..þ(......föê.fö<br>0040   ea 0e                                             ê. |
 
 ### Interesting finds
-
-* WoW uses TCP instead of UDP
-* HTTP is usually based on TCP
+While looking into this I did find a couple interesting finds. One find that I was remotely aware of is that many variants of HTTP are actually built on TCP. One notable execption to that rule is the upcoming HTTP3 or QUICK which is actually built on a multiplexed UDP connection. Another interesting find was that many online games actually use TCP as the transmission protocol. The thing that was a bit suprizing about this is that TCP adds a lot of overhead with all of the acknowledgements so I was unsure that an online game could preform at the speed expected with all that additional checking.
 
 ### References
 
