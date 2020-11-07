@@ -1,6 +1,6 @@
 ---
 title: 'TCP Transport'
-date: '2020-10-02'
+date: '2020-11-07'
 ---
 
 # TCP Transport
@@ -120,8 +120,6 @@ The data that is being sent.
 #### Connection states
 TCP is driven by different connection states. A connection moves from one connection state to another in response to events. The events a user can call to influence connection state are: OPEN, SEND, RECEIVE, CLOSE, ABORT, and STATUS. Information about the connection state can be found on the TCB.
 
-TODO Diagram?
-
 ##### LISTEN
 In the listen state socket is waiting for a connection request from any remote TCP and port.
 
@@ -204,6 +202,7 @@ steps 2 and 3 can be combined in a single message. This the three-way handshake.
 Since TCP is not able to be tied to a global clock for ISN generation, the process of exchanging ISNs is done through a three-way handshake. Below are some examples of how this handshake works.
 
 ##### Simple Three-way handshake
+
 | TCP A | TCP A Direction | Data | TCP B Direction | TCP B |
 |-|-|-|-|-|
 | CLOSED | | | | LISTEN |
@@ -213,7 +212,9 @@ Since TCP is not able to be tied to a global clock for ISN generation, the proce
 | ESTABLISHED | --> | <SEQ=101><ACK=301><CTL=ACK><DATA> | --> | ESTABLISHED |
 
 ##### Simultaneous Three-way handshake
+
 | TCP A | TCP A Direction | Data | TCP B Direction | TCP B |
+|-|-|-|-|-|
 | CLOSED | | | | CLOSED |
 | SYN-SENT | --> | <SEQ=100><CTL=SYN> | In transit | |
 | SYN-RECEIVED | <-- | <SEQ=300><CTL=SYN> | <-- | SYN-SENT |
@@ -225,7 +226,9 @@ Since TCP is not able to be tied to a global clock for ISN generation, the proce
 The three-way handshake allows for recovery from duplicate messages by using the reset function.
 
 ##### Recovery from a crash (half-open)
+
 | TCP A | TCP A Direction | Data | TCP B Direction | TCP B |
+|-|-|-|-|-|
 | (Crash) | | | | | Last sent 300, last receive 100 |
 | CLOSED | | | | | ESTABLISHED |
 | SYN-SENT | --> | <SEQ=400><CTL=SYN> | --> | invalid |
