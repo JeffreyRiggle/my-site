@@ -61,7 +61,23 @@ This preface while outlining the books contents also contains another interestin
 * Statement I am not sure I agree with. If you caused a bug that cost the company 10k you should be willing to pay for it out of your paycheck.
 
 ### Saying No
-* refresh on this
+* starts off with a tale of bob being pressured to complete a project too quickly.
+ * Manager would not budget on date
+ * bob and team did not have the spine to stand up to the manager.
+ * result was a disaster
+  * intermittent bug caused terminals to lock up at a rate of 1 time per hour.
+  * could not roll back the change but pressure to fix it faster was mounted (4 weeks was unacceptible)
+* Professionals know how to say no.
+* Saying no to your boss is not unprofessional, agreeing and falling short is.
+* Advesity is a good thing. Developers should stand their ground that is doing your job. Likewise managers should pressure for quicker turn around while understanding the developers. It is also their job to see things done on time.
+* Never agree to try. That implies you can do more and you have been holding something in reserve.
+* Do not compromise estimates, stand your ground. If timelines are an issue provide a reasonable feature expecatation (we can have feature x but it will be missing y is that alright?)
+* Be direct with your estimates.
+* If you hit a snag that could comprimise an estimate let management know as soon as possible.
+* Be a team player.
+* Do not be passive agressive. An example is keeping a log of memos to use against someone later instead of trying to resolve the issue.
+* cost of saying yes. This is an interesting article about a developer that agreed to an unreasonable project with shifting requirements under a rediculous time frame. In the end this project died and the developer felt remourse about the terrible code they created.
+ * bob aruges that the developer or his employer is at fault.
 
 ### Saying Yes
 * refresh on this
