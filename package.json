@@ -17,7 +17,7 @@
     "gatsby-source-graphql": "^2.7.4",
     "gatsby-transformer-remark": "^2.8.35",
     "gatsby-transformer-sharp": "^2.5.15",
-    "marked": "^0.6.3",
+    "marked": "^0.7.0",
     "prismjs": "^1.21.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
