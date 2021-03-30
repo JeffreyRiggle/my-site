@@ -80,7 +80,20 @@ This preface while outlining the books contents also contains another interestin
  * bob aruges that the developer or his employer is at fault.
 
 ### Saying Yes
-* refresh on this
+* starts off with interesting story about how bob had and lost a patent for voicemail and wanted to start a project around it not knowning the patent was not renewed.
+* parts of a commitment: say you will do it, mean you will do it, actually do it.
+* words that indicate a lack of commitment: need/should, hope/wish, let's. These imply a lack of concrete commitment.
+* an example of a strong commitment sounds more like this: I will ... by ...
+* Good commitments are binary (either you did it or you did not do it)
+* You can only commit to things you have full control of, to help mitigate this some suggestions are offered.
+  * work with external parties to understand your dependencies
+  * create an interface that mirrors the dependency.
+  * work with build team to make sure your work will build.
+  * use integration tests.
+* Just because it cannot be done does not mean you cannot commit to things that move you in the right direction.
+* life happens and sometimes commitments cannot be made. The resposible thing to do in these cases is raise a red flag as soon as possible.
+* Don't use try also do not agree to try.
+* professionals know how much overtime they can handle and require people to respect their time. For example in the end of this chaper overtime needs to be done. The programmer agrees to work the weekend with the pre-requisit that their family is alright with it and the understanding that they will take Tuesday off to make up for lost time on the weekend.
 
 ### Coding
 * refresh on this
