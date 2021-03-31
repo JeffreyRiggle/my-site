@@ -96,7 +96,59 @@ This preface while outlining the books contents also contains another interestin
 * professionals know how much overtime they can handle and require people to respect their time. For example in the end of this chaper overtime needs to be done. The programmer agrees to work the weekend with the pre-requisit that their family is alright with it and the understanding that they will take Tuesday off to make up for lost time on the weekend.
 
 ### Coding
-* refresh on this
+* mentions the clean code book.
+* talks about the unique challenge of code.
+ * it must work
+ * it must solve a customer problem
+ * it has to fit well in an existing system.
+ * it has to be readable to other programmers.
+* Don't write code while tired or distracted, it will end up having to be redone.
+ * Bob tells a story about some 3am code he regreted for a long time to come.
+* life events can impact quality of code since your focus is not on the code.
+ * find a way to "shut down the background process" (life event)
+ * take time to deal with your personal issue but not at the expense of your employer.
+* Bob comments on the "flow state" or the "Zone".
+ * coding in the zone is a bad thing.
+ * more of a form of meditation than a mechanism for good.
+ * the zone is only where you want to be when practicing.
+ * it is a non-communicative state.
+* Music while programming in bobs opinion is bad and is just a tool to enter the "zone".
+* handling interruptions.
+ * when in the zone the natural response might be to respond in a rude way.
+ * pair programming and TDD can help since the pair programmer or test can keep your context.
+ * remember to be professional next time you might be the one causing an interruption.
+* To deal with writers block consider pair programming.
+* coding is a creative process so focusing on creativity is a good thing (just not while coding).
+ * read books
+ * watch videos (unless you are bob)
+ * listen to music, etc.
+* contains interesting story about bob debuging a terminal lockup problem he mentioned earlier in the book.
+* Professional programmers should strive to spend less time debugging (use TDD to help with this).
+* Debugging is part of programming.
+* Software development is a marathon not a sprint, pace yourself.
+* When stuck on a problem disengadge from it and come back to it later. You just might find yourself solving the problem in the shower, etc.
+* Inevidtably you will be late on some work, the goal is to be transparent about it. (I feel like this has been talked about before)
+* Hope is not a strategy hope is a project killer. Do not hope you will get something done in 10 days.
+* Do not rush, rushing never solves problems faster. Do not give into pressure and rush thought something
+* Only take overtime if you can handle it. The following are recommended.
+ * you can personally afford it.
+ * it is short term.
+ * your boss has a fallback plan.
+* The most unprofessional behavior a programmer can engage in is changing the definition of "done".
+ * don't say something is done when it is not.
+ * This is an overt lie.
+ * It is too easy to rationalize.
+ * This practice is contageous, if someone sees you doing it they are likely to do it themselves.
+ * This leads to bad communication between managers and developers.
+ * Example calling a task done with a failing build.
+ * Best way to avoid this is to have business analysts and testers create automated acceptance tests.
+* No matter how skilled you are you can and should still ask for help.
+ * when being help accept the help do not "protect your turf"
+ * Do not push away help. Give it time.
+ * It is unprofessional to remain stuck on an issue when help is available.
+ * In general programmers need to work on collaboration. Bob uses the example of the stereotype that often plays out in software (arrogant, self-absorbed introverts)
+ * More experience programmers have the resposibility to mentor less experienced programmers.
+ * Mentoring is a good way to learn.
 
 ### Test Driven Development
 * refresh on this
