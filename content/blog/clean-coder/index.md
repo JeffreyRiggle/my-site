@@ -151,7 +151,23 @@ This preface while outlining the books contents also contains another interestin
  * Mentoring is a good way to learn.
 
 ### Test Driven Development
-* refresh on this
+* TDD was part of the XP (extreme programming wave)
+* TDD helps reduce cycle time.
+* TDD works and everyone should accept that.
+* Interesting section from chapter (I like this). "How can you consider yourself to be a professional if you do not know that all your code works? How can you know all your code works if you don't test it every time you make a change? How can you test it every time you make a change if you don't have automated unit tests with very high coverage? How can you get automated unit tests with very high coverage without practicing TDD?"
+* Laws of TDD
+ * you cannot write any production code until you have a failing test.
+ * you are not allowed to write more of a unit test than is sufficient to fail.
+ * you are not allowed to write more production code than is sufficient to pass the currently failing test.
+* Benefits
+ * Certainty, you know the code works so you can release at any time.
+ * Defect rate is very low.
+ * You have the courage to fix bugs because tests will let you know when you mess up another use case.
+ * Tests act as documentation.
+* TDD is the professional option.
+* Warning what TDD is not
+ * You can still write bad code even if your tests pass.
+ * There are rare situations where TDD is not appropriate and being dogmatic about it can be wrong to do.
 
 ### Practicing
 * refresh on this
