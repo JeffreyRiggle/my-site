@@ -170,7 +170,17 @@ This preface while outlining the books contents also contains another interestin
  * There are rare situations where TDD is not appropriate and being dogmatic about it can be wrong to do.
 
 ### Practicing
-* refresh on this
+* All professionals practice (exmaples: doctors, musicians, sports players, etc)
+* practicing is not a new concept consider "Hello, World!"
+* cycle times on development have gotten better due to moores law.
+* There are things called coding dojo's in which you can solve a know issue with other developers in a room.
+* A coding kata is a good way to sharpen your skills. Solve a known issue practicing TDD.
+* A wasa is like a kata but done as a team.
+ * example one person might write a test then the next might get it to pass and write the next test and so on until the issue is solved.
+* Open source is a good way to practice and build a resume.
+* Professional programmers practice on their own time.
+* become a polyglot
+* "Practicing is what you do when you are not getting paid. You do it so that you will be paid, and paid well"
 
 ### Acceptance Testing
 * refresh on this
