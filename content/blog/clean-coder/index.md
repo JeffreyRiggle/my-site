@@ -217,7 +217,46 @@ This preface while outlining the books contents also contains another interestin
 * If tests are broken in CI this should be viewed as an emergency.
 
 ### Testing Strategies
-* refresh on this
+* Every professional developer has a good testing strategy.
+* Bug hunts can be a testing strategy.
+* QA should find nothing wrong. This will almost never happen but when QA finds a bug this should cause alarm for the development team (how did we let this happen)
+* QA and development should work together and not be adversarial.
+* QA should create automated acceptance tests.
+* QA should use the discipline of exploratory testing.
+* Mention of the test automation pyramid.
+ * ~100% unit test (xunit, junit, jest, etc)
+ * ~50% component tests (api)
+ * ~20% integration tests (api)
+ * ~10% system tests (gui)
+ * ~5% manual exploratory tests
+* unit tests
+ * written by programmers for programmers
+ * in programming language of system.
+ * Are executed in CI
+ * Should provide as close to 100% coverage as possible
+* Component tests
+ * written against individual components of a system.
+ * these are acceptance tests for the business rules of the component.
+ * appropriate mocking should be used.
+ * written by QA.
+ * cover about 50% of the system.
+* Integration tests.
+ * test a collection of components
+ * basically a connections test.
+ * Often written by system architects or lead designers of the system.
+ * might include performance or throughput tests.
+ * These are not part of CI
+ * Run periodically (weekly or nightly)
+* System tests
+ * execute against the entier integrated system.
+ * do not test business rules directly.
+ * written by system architects and technical leads.
+* Manual Exploratory tests
+ * not automated or scripted.
+ * intended to find unexpected behaviors.
+ * it helps to have human brains and human creativity to find issues with the system.
+ * There should be no written test plan for these.
+ * Goal is not coverage instead it is to make sure the system works correctly.
 
 ### Time Management
 * current chapter
