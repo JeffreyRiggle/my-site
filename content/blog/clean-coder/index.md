@@ -183,7 +183,38 @@ This preface while outlining the books contents also contains another interestin
 * "Practicing is what you do when you are not getting paid. You do it so that you will be paid, and paid well"
 
 ### Acceptance Testing
-* refresh on this
+* A professional developer is a communications role as well as a development role.
+* Starts off with an interesting story about how Bob wrote a feature from start to finish with a coworker and gained insights on how features are communicated.
+* permature precision is an issue on both sides.
+ * Business poeple what you know what they are going to get before they ok a project
+ * developers wnat to know what they are supposed to deliver before they estimate the project.
+* Things appear differently on a peice of paper than they do in a working system.
+* Even with perfect information developer estimates will have huge variance.
+* requirements will change making perfect information impossible
+* professional developers know that estimates can, and should be made based on low precision requirements.
+* a solution to premature precision is to defer as long as possible.
+ * This can lead to late ambiguity.
+   * This can lead to incorrect features being developed.
+* Acceptance tests are the answer. In this case an acceptance test are "tests written by a collaboration of stakeholders and the programmers in order to define when a requirement is done."
+* done is when all tests pass, QA and stakeholders have accepted.
+* Professional developers work with stakeholders and QA to ensure that automated tests are a complete specification of done.
+* The purpose of acceptance tests is communication, clarity and precision.
+* Acceptance tests should always be automated. The reason for doing this is simple manual tests cost more money.
+* While it does appear that it is more work in the long run it is less work than having manual tests.
+* In a perfect world QA and stakeholders would collaborate to write tests and developers would review for consistency.
+* If developers write tests then the developer who wrote the feature must not also write the test. (interesting)
+* Business analysts tend to write happy path tests.
+* QA tends to write unhappy path tests.
+* developers should negotiate with tests authors for better tests when the test does not make sense.
+* Don't be passive aggressive "Well, that's what the test says, so that's what I'm going to do." should never be the answer.
+* Acceptance tests are not unit tests.
+ * unit tests are written by developers for developers.
+ * acceptance tests are written by business for business.
+* GUIs are hard to acceptance test.
+* GUIs should follow SRP (single responsibility principle)
+* Test using the correct interface. Its often better to test via an API instead of via the GUI.
+* Acceptance tests should be run often in CI.
+* If tests are broken in CI this should be viewed as an emergency.
 
 ### Testing Strategies
 * refresh on this
