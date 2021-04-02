@@ -259,6 +259,87 @@ This preface while outlining the books contents also contains another interestin
  * Goal is not coverage instead it is to make sure the system works correctly.
 
 ### Time Management
-* current chapter
+* 8 hours is not a lot of time?
+* meetings
+ * According to bob meetings cost around 200$ per attendee
+ * meetings are necessary
+ * meetings are huge time wasters.
+ * some attendees may find a meeting to be invaluable while others can find it redundant or useless.
+ * You don't have to go to every meeting you are invited to, doing so would be unprofessional?
+ * be careful about which meetings to politely refuse.
+ * person inviting you to the meeting is not responsible for your time you are.
+ * examples that are choices you must make
+  * something you are interested in but is not immediately necessary.
+  * something you can contribute to but is not immediately significant.
+  * In these cases you can work with your manager to see if you should participate.
+  * One of the most important duties for your manager is to keep you out of meetings.
+ * Leaving is an option, when meetings get boring leave?
+  * Do this politely by asking if your presence is still required.
+ * Meetings should have an agenda and a goal.
+ * things you should know going into the meeting
+  * what discussions are on the table
+  * how much time is allotted for them.
+  * what is the goal to be achieved.
+ * If meeting agenda has been high-jacked or abandoned, request the new topic be tabled and the agenda forwarded.
+ * Stand-up meetings.
+  * part of the Agile cannon.
+  * The only thing that should be discussed are these three topics.
+   * What did I do yesterday?
+   * What am I going to do today?
+   * What's in my way?
+  * each question should require no more than 20 seconds.
+ * Iteration planning meetings
+  * Also part of agile cannon.
+  * It takes skill for these meetings to go well.
+  * Point is to select backlog items to work on next iteration.
+  * Estimates should be done for candidate items.
+  * In an exceptionally good organization acceptance/component tests will already be written or at least sketched out.
+  * No more than 5 or 10 minutes should be spent on any one item.
+   * If more discussion is needed it should be scheduled at a different time with a smaller subset of people.
+  * Bobs rule of thumb this meeting should take no longer than 5% of the total time in the iteration. (ex: 1 week iteration should be over within two hours.)
+* Iteration Retrospective and demo
+ * Discuss what went right and wrong.
+ * stakeholders see a demo.
+ * These meetings are often abused.
+ * Bobs rule of thumb these should take 45 mintues. 20 for retrospective and 25 for demo.
+* Disagreements
+ * "Any argument that can't be settled in five minutes can't be settled by arguing." Kent Beck.
+ * Technical disagreements are rarely grounded in data.
+ * Force does not settle disagrements data does.
+ * Being passive agressive in a agrument just to sabotage it later is the worst kind of unprofessional.
+  * If you agree you must engage.
+ * How to settle a disagrement.
+  * run experiments.
+  * sometimes flipping a coin is the best option.
+ * It is a good idea to agree to a time and set of critera for abandoning a path.
+ * Avoid meetings that exist just to vent a disagreement.
+ * If argument must be settled ask each arguer to present their case to the team in five minutes or less.
+* Programming is an intellectual exercise that requires extended periods of concentration and focus. After you have used up all your focus you will have to recharge by doing unfocused activities for an hour or more.
+* Managing focus is a key skill for professional developers.
+* Sleep is key to good focus.
+* Caffeine can help with focus but too much can cause jitter focus
+* Good ways to recharge focus
+ * take a walk
+ * spend some time looking out the window.
+ * talk with friends
+ * meditate
+ * get a power nap.
+ * listen to a podcast
+* physical focus can help mental focus (workout)
+* A good way to manage time and focus is to use the pomodoro technique (kindly reject all distractons over a 25 minute period). Repeat this process with 5-30 minute breaks in between.
+* priority inversion is when you convince yourself something is more important or urgent than a task you do not want to do (for whatever reason). Professionals should not engage in this behavior.
+* Avoid blind alleys its easy to get too far down a technical pathway that will go nowhere. Keep an open mind to other ideas so when you hit a dead end you still have options.
+* Messes are worse than blind alleys. A mess can be worked by sheer brute force but are major progress impeders
+* Messes are often the result of a bad design choice realized late into the product.
+* Once you realize you have a mess you hit an inflection point: you can go back and fix the design or you can continue to go forward.
+ * Going back means reworking existing code.
+ * Going back is never easy.
+ * If you go foward you may never escape.
+ * Professional are always on the lookout for messes and will expend all necessary effort to escape from them as early as possible.
+
+### Estimation
+* next chapter.
+
+
 
 ## Insights
