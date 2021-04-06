@@ -338,6 +338,39 @@ This preface while outlining the books contents also contains another interestin
  * Professional are always on the lookout for messes and will expend all necessary effort to escape from them as early as possible.
 
 ### Estimation
+* Businesses view estimates as commitments
+* developers view estimates as guesses.
+* Professionals do not make commitments unless they know they can achieve them.
+ * never commit to something you are uncertain about.
+ * missing a commitment is an act of dishonesty.
+* An estimate is a guess, no commitment is implied.
+* developers are bad a estimates.
+* estimates are a probability disribution.
+* professionals draw clear distinction between estimates and commitments.
+* PERT
+ * simple but effective way to convert estimates into probability distributions.
+ * when estimating a task provide 3 numbers (trivariate analysis)
+  * O: Optimistic Estimate. A wildly optimistic number. (less than a 1% chance of happening)
+  * N: Nominal Estimate. The most likely estimate to be true.
+  * P: Pessimistic Estimate. A wildly pessimistic number. (less than a 1% chance of happening)
+ * Distribution based on these numbers. µ = O+4N+P/6
+ * µ is the expected duration of the task
+ * To calculate the standard deviate one can use this equation. σ = P-O/6 (how uncertain is the task)
+ * PERT is a good way to prevent overly optimistic estimates.
+* Estimating should be done with teammates, the group can estimate better than the individual.
+* wideband delphi, is a technique that aims at consensus in estimation.
+* Flying fingers is a strategy where everyone sits at a table, discusses the issue carefully and puts up a number of fingers 1-5. If agreement is not reached the topic is discussed further (this seems like the only way I have really known estimation to work)
+* Planning poker (what I have actually used) for the most part this is a software refinement on the flying fingers stragegy.
+* Affinity estimation
+ * all cards of stories are layed out.
+ * No talking is to happen.
+ * Cards are moved left to right (left being easiest relative to others and right being hardest)
+ * Anyone can move a card at any time.
+ * If a card is moved N times then it is set aside for discussion.
+* you can use these same strategies to generate your optimistic and pessimistic values.
+* To mitigate error you can take advantage of the Law of Large Numbers.
+
+### Pressure.
 * next chapter.
 
 
