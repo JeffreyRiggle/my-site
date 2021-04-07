@@ -371,6 +371,33 @@ This preface while outlining the books contents also contains another interestin
 * To mitigate error you can take advantage of the Law of Large Numbers.
 
 ### Pressure.
+* starts off with a comparision of a surgeon to a typical developer. The surgeon is cool and collected under pressure the developer is not.
+* goes on to explain his time at what sounds like a toxic startup with insane time pressures.
+* a good way to stay calm under pressure is to avoid situations that cause pressure.
+* avoidance is not always an option so limit the required high pressure situations.
+* avoid making commitments unless you are sure they can be met.
+* accepting unrelasitc commitments is a disservice to developers and the business.
+* sometimes commitments are made for us. In those cases we must help the business find a way to meet those commitments. That being said we do not have to accept the commitments. (Interesting)
+ * By not accepting the commitment we hold those who made the commitment resposible instead of taking the fall.
+* You can always hunt for a new job.
+* It is important to stay clean in order to meet deadlines.
+* "Quick and dirty" is an oxymoron, dirty is always slow.
+* Crisis is a good measure of what you really believe. If you follow your disciplines in a crisis then you believe in those disciplines.
+ * Example if you use TDD in noncrisis times but abandon it in a crisis you do not think TDD is helpful.
+* Handling Pressure.
+ * Sometimes you cannot avoid it.
+ * Manage stress, get sleep.
+ * Resist temptation and do not rush. Rushing only makes things worse.
+ * Let your team and manager know you are in trouble.
+  * Let them know your plans for getting out of that trouble.
+  * ask for input/guidance.
+  * avoid suprises.
+ * trust your disciplines. you have then for a reason now is not the time to abandon them.
+ * Instead of looking for a solution to get it done faster buckle down on what you know and your disciplines.
+ * Do pair programming. Partners help you find things you missed and often have helpful ideas.
+ * When someone else is under pressure offer them help.
+
+### Collaboration
 * next chapter.
 
 
