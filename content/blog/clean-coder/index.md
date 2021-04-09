@@ -398,8 +398,34 @@ This preface while outlining the books contents also contains another interestin
  * When someone else is under pressure offer them help.
 
 ### Collaboration
-* next chapter.
+* It is unprofessional to be a loner or a recluse on a team.
+* Starts with an interesting tale of Bob and Tim working together to speed up a searching algorithm for their code base.
+* Most programmers are introverts that would rather work alone (based on stereotypes which are often true)
+* It's good to be passionate about what we do, but its also good to keep your eyes on the goals of the people who pay you.
+* It is your job to meet the needs of your employer
+ * This means you will have to work with other people: testers, business analyists, managers, etc.
+ * You need to understand why you are writing the code you are writing and the benefit of that code.
+ * The worst thing you can do is get wrapped up in the technology while the business is burning all around you.
+ * take time to understand the business. Talk to people to understand it better
+ * pay attention to the companies health.
+ * Bob goes on to tell the story of the time he was fired from a job for not understanding his employers needs and work culture.
+* Programmer conflict
+ * a symptom of a dysfunctional team is when each programmer safe guards there code and does not let anyone else touch it.
+  * This often leads to massive code duplication.
+  * It can also lead to incorrect interfaces.
+ * Its important to break down walls of code ownership (silos are bad)
+ * All team members should be allowed to make changes to any module.
+ * Professionals do not prevent others from working in their code.
+ * Professionals learn from working with each other.
+* Pair-programming is the most efficient way to solve a problem(?)
+* Pair programming is a great way to share knowledge.
+* All team members have a position to play.
+* Pairing is the best way to review code.
+* Working alone might be better for you but it is not better for the team.
+* While we might not have gotten into this industry to work with people, programming is all about working with people.
 
+### Teams and Projects
+* next chapter.
 
 
 ## Insights
