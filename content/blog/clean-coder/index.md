@@ -425,6 +425,24 @@ This preface while outlining the books contents also contains another interestin
 * While we might not have gotten into this industry to work with people, programming is all about working with people.
 
 ### Teams and Projects
+* There is no such thing as a half person. Often times we do not fully resource a developer to a task.
+* It does not make sense to have a developer devoted to two different projects especially when there are different project managers, business analysists, developers and testers on each project.
+* It takes time of a team to form/gel
+* A team that has "gelled" is very special as they know how to work with each other very well. In these cases things get done much better.
+* A team should consist of: programmers, testers, analysts and a project manager.
+* analysts develop the requirements and write automated acceptance tests.
+* testers write those acceptance tests.
+* project manager tracks teams progress and makes sure the team understands schedules and priorities.
+* It takes a while for teammembers to work out their differences. This can take up to a year, but once its done it's worth it.
+* Once a team has gelled it would be crazy to break that team up.
+* Professional development organizations allocate projects to exsiting teams, they do not create adhoc teams.
+* To measure these teams look at their velocities.
+* Reallocating priorities in an emergency is virtually impossible with adhoc teams.
+* This allows the business to change priorites on a whim.
+ * This can intemidate project owners(?) however it is part of their job to make a case of their project.
+* Teams are harder to build than projects so keep functioning teams together.
+
+### Mentoring, Apprenticeship, and Craftmanship
 * next chapter.
 
 
