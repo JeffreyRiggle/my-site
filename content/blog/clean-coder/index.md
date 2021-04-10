@@ -503,5 +503,13 @@ This preface while outlining the books contents also contains another interestin
 ### Tooling
 * next chapter.
 
-
 ## Insights
+Coming into this book I did not know if I was going to like it or not. This book is highly focused on the soft skills of programming that are rarely focused on in our industry. While I do not agree with Robert on every point I found myself in agreement a good amount of the time.
+
+There is a common thread I did notice while reading this book. Robert loves to tell a story. What is interesting about this is while some of these stories and annecdotes are amusing they often contain a nugget of wisdom. While I do not fully understand how someone can make some of the mistakes Robert has in his career I did enjoy reading them. I often find the best way to learn is to make a mistake and its even better when you can learn from someone elses mistakes. I am assured that some mistakes shown in this book are not just Robert being a stupid kid and are mistakes even would be professionals could make.
+
+A lot of this book seems to talk about dealing with pressure. Maybe the industry has changed or I am a personally that is not easily impacted by unrealistic requests, but I do not often feel the same pressures as described in this book. I understand that I get pressure from product owners, product managers and business analysts but I am always sure to let them know what is at stake. In general I see it as me doing my job and them doing their job.
+
+The concept of practicing and continued studying seems like a no brainer to me but I could see where others might not be willing to devote time into this practice and it is a good call out. Not everything you learn in this industry is on the job.
+
+I think one of the most impactful parts of this book for me was the apprenticeship discussion. I have always felt like the industry has been missing this. I have often heard of people mixing bootcamps and college but that still doesn't quite feel right to me. Personally I prefer the idealized apprenticeship model discussed in this book. This is a practice that is done in many trades and professions and it still boggels my mind that this is not a common or documented practice in software.
