@@ -443,6 +443,64 @@ This preface while outlining the books contents also contains another interestin
 * Teams are harder to build than projects so keep functioning teams together.
 
 ### Mentoring, Apprenticeship, and Craftmanship
+* cs graduates have not been taught what programming is all about
+* nearly all cs graduates taught themselves to code before college and continued to teach themselves during college.
+ * The system can teach you but it can also act as a diploma farm
+* cs programs often do not prepare people for what they will find in industry.
+ * This is apparently common in most disciplines?
+* Mentoring can happen just through observation
+* Mentoring can happen from a manual that is well written.
+* Mentoring can come in many forms
+* Doctors do not just start on the field. The medical field has a discipline of instense mentoring.
+* The medical profession oversees universities to make sure graduates have the best education.
+* Even with a degree doctors are required to send a year under supervision (intership). After this internship they go on do a residency for 3 to 5 years. Once all of this is done they can finally take an exam to become board certified.
+* If doctors have this intense process why don't we do it for software? While deaths are uncommon from software there are possibilities for major monetary loss.
+* It is insane to expect to hire someone right out of college and ask them to work with a team to build a critical system.
+ * This practice is seen basically nowhere: plumbers, painters and electritions do not even do this.
+* This topic does matter software is far more important than we may realize basically our whole civilization runs on it anymore.
+* Apprenticeship
+ * Masters
+  * Have taken lead on more than one significant project.
+  * typically have 10+ years experience
+  * have worked in many languages, systems and operating systems.
+  * know how to lead and coordinate multiple teams.
+  * are proficient designers and architects.
+  * can code circles around everyone else
+  * Generally have been offered management positions
+  * maintain a techincal role by: reading, studying, practicing, doing and teaching.
+ * Journeymen
+  * Programmers that are trained, competent and energetic
+  * Learns to work well with a team and how to become a team leader.
+  * Knowledge about technology but lack experience with diverse systems.
+  * Tend to know one language, one system and one platform.
+  * Average is around 5 years experience
+  * Inbetween Master and Apprentice stages.
+  * supervised by masters
+  * seldom allowed autonomy
+  * code is scrutinized.
+ * Apprentices/Interns
+  * Starting point
+  * have no autonomy
+  * closely supervised by journeymen
+  * start off taking no tasks at all and instead just provide assistance to journeymen
+  * Intense pair-programming stage.
+  * foundational period for values
+  * journeymen teach them: design principals, design patterns, disciplines, and rituals. For example things like TDD, refactoring and estimation would be taught this way.
+  * Should last at least a year
+  * masters should evaluate a deemed ready apprentice to see if they should really become a journeyman.
+ * In reality
+  * Graduates are generally supervised by young team leads.
+  * supervision is not technical
+  * programmers get raises and promotions because that is just what you do
+  * key difference between reality and ideal (other points before this) is focus on technical teaching, training, supervision and review.
+  * What is missing today is the responsibility of elders to teach the young.
+* A craftsman is someone who works quickly, but without rushing, who provides reasonable estimates and meets commitments.
+* Craftmenship is a mindset held by craftsmen (duh)
+* Craftmenship is handed from one person to another and is taught by elders to young.
+* You can't convince people to be craftsmen. In order to get others to emulate craftmenship you must become a craftsman first and let your craftmenship show.
+* It is time for apprenticeship to be a part of software.
+
+### Tooling
 * next chapter.
 
 
