@@ -501,7 +501,36 @@ This preface while outlining the books contents also contains another interestin
 * It is time for apprenticeship to be a part of software.
 
 ### Tooling
-* next chapter.
+* best source control tooling comes from open source. ones not made this way are generally tools that are sold to managers not developers.
+* pessimistic locking is dead. tooling has become more adavanced and merging issues are now manageable.
+* The power of git is its branching strategy.
+* git and tools like it are the future of source control.
+* editors
+ * vi is tried and true it may be old but it maintains its presence due to its speed and ease of use.
+ * emacs is one of the most powerful editors around.
+ * Eclipse and Intellij, these editors allow for much more suffisticated manipulation of source code. They have powerful tools for renaming variables, class manipulation and other similar features.
+ * TextMate is powerfull and lightweight
+* common tools for issue tracking: Pivotal Tracker, Lighthouse and Wikis. Best place to start if often manual then find a tool that matches your style.
+* Having thousands of bugs or features often means you have done something wrong.
+* CI
+ * Jenkins is a solid tool.
+ * CI should run automatically on every code checkin
+ * Build must be working at all times.
+ * Failure should never be alowed to persist for over a day or two.
+* Unit testing
+ * Bob's favorites: JUnit, RSPEC, NUnit, Midje, CppUTest
+ * features all testing frameworks should have.
+  * should be quick and easy to run tests.
+  * should give a clear pass fail indication.
+  * should give a clear visual indicator of progress.
+  * should discourge individual tests for communicating with one another.
+  * should make it easy to write tests.
+* Component testing
+ * API testing tools
+ * FitNesse, is bobs own creation and he like to use it for component testing.
+ * Other tools in this camp: RobotFx, Green Pepper, Cucumber and JBehave.
+* Good UI testing tools are selenium and Watir.
+* UML has not proven to be a sufficient tool to express all of the detials of a program. This is why we still write code instead of UML documents.
 
 ## Insights
 Coming into this book I did not know if I was going to like it or not. This book is highly focused on the soft skills of programming that are rarely focused on in our industry. While I do not agree with Robert on every point I found myself in agreement a good amount of the time.
