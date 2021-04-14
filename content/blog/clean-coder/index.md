@@ -27,6 +27,13 @@ This forward contains an interesting anecdote in which Robert worked with anothe
 This preface while outlining the book's contents also contains another interesting anecdote. This anecdote is 3rd hand and is about the engineers and the failure of engineering and management on the challenger project. This failure ultimately leads to the death of seven individuals and the slowdown in space exploration in the United States.
 
 ### Professionalism
+Professionalism is all about acting as a professional might in any other industry. As with many industries being a professional is something to be proud of. A major part of being a professional is increased accountability. This means you are responsible for knowing your code works and knowing what you can and cannot do in a given time. It also means respecting your QA. It is not your QA engineer's job to find bugs you knew existed.
+
+A professional software engineer understands the code they are writing and follows good design practices when creating features.
+
+Another major aspect of being a professional is taking responsibility for your own career and career direction. It is not your employer's job to make sure you are keeping up to date in the world of software. This means they do not owe you trips to conferences or training materials. Software is an ever-changing industry and you must spend time outside of work to stay up to date and practiced in this field.
+
+#### Original notes
 * Being a professional is something to be proud of, but it means that you need to take on more accountability.
 * Professionals do not cut corners to meet a deliverable target.
 * Call for a hippocratic oath for software.
@@ -61,6 +68,13 @@ This preface while outlining the book's contents also contains another interesti
 * Statement I am not sure I agree with. If you caused a bug that cost the company 10k you should be willing to pay for it out of your paycheck.
 
 ### Saying No
+A professional knows when and how to say no. Part of this is assessing a situation and making sure you can commit to something. If your boss asks you to mean a deadline and you agree to it knowing you cannot make the deadline you are acting unprofessionally.
+
+Often when something is at stake others might ask you to compromise your initial estimate, or to attempt to "try harder". In these cases, you must stand your ground. Agreeing to "try harder" implies that you are not already giving it your all and that there is still some reserved effort you can exert.
+
+The cost of saying yes can lead to an utter mess. In these cases, we might think we are meeting deadlines and giving the employer what they want but ultimately what often ends up happening is we create an unmaintainable mess.
+
+#### Original notes
 * starts with a tale of Bob being pressured to complete a project too quickly.
   * His manager would not budge on the date
   * Bob and the team did not have the spine to stand up to the manager.
@@ -80,6 +94,17 @@ This preface while outlining the book's contents also contains another interesti
   * Bob argues that the developer or his employer is at fault.
 
 ### Saying Yes
+To be a professional you need to know the right way to say yes to something. Language is everything in this case. There are several statements that you can make that sound non-committal. For example words like need, should, hope, wish and let's imply a lack of commitment. When you commit you need to 
+
+1. say you will do it in a way that sounds like you mean it
+2. mean that you will do it
+3. actually do it
+
+A strong commitment often sounds like this, "I will ... by ...".
+
+There are cases in which life happens and a commitment cannot be made. In these cases, it is imperative to raise a red flag as soon as possible.
+
+#### Original notes
 * starts with an interesting story about how bob had and lost a patent for voicemail and wanted to start a project around it not knowing the patent was not renewed.
 * parts of a commitment: say you will do it, mean you will do it, actually do it.
 * words that indicate a lack of commitment: need/should, hope/wish, let's. These imply a lack of concrete commitment.
@@ -96,6 +121,17 @@ This preface while outlining the book's contents also contains another interesti
 * professionals know how much overtime they can handle and require people to respect their time. For example at the end of this chapter overtime needs to be done. The programmer agrees to work the weekend with the pre-requisite that their family is alright with it and the understanding that they will take Tuesday off to make up for lost time on the weekend.
 
 ### Coding
+This is a topic Bob, has a lot to say on. He has written a different book on this very topic [Clean Code](https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882).
+
+A major part of coding is being in the right mindset. You should not code when you are tired or distracted. In some cases, life events can serve as a distraction to good code. In these cases, you should try to resolve your life events before coding. Failing to do this can lead to code you regret later on.
+
+One common topic that most developers talk about is getting into the zone. Often developers claim that being in the zone is a desirable thing because you feel more productive. In this book, Bob argues that the zone is a dangerous thing. The zone is a meditative state that lacks collaboration. In Bob's eyes, this is a problem is programming is a collaborative effort.
+
+When coding one should strive to reduce debugging time. To do this we should follow strong TDD practices. This should assure us the code works and only does exactly what it is specified to do.
+
+At some point, we all run into issues. In these cases, pairing is the best thing we can do. This is something that quite a few books echo. Although it may be comfortable to work solo, two heads are often better than one and coding is no exception.
+
+#### Original notes
 * mentions the clean code book.
 * talks about the unique challenge of code.
   * it must work
@@ -151,6 +187,11 @@ This preface while outlining the book's contents also contains another interesti
   * Mentoring is a good way to learn.
 
 ### Test Driven Development
+Test Driven Development or TDD is a way of writing code. In this methodology, one writes a test before any code is written. Only enough test code is written to cause a failure. Once this happens no more test code is to be written. After this production code must be written until the test is passing. Once the test is passing no more production code is to be written.
+
+TDD is the professional option. There are very few cases in which this is not the right thing to do.
+
+#### Original notes
 * TDD was part of the XP (extreme programming wave)
 * TDD helps reduce cycle time.
 * TDD works and everyone should accept that.
@@ -170,6 +211,15 @@ This preface while outlining the book's contents also contains another interesti
   * There are rare situations where TDD is not appropriate and being dogmatic about it can be wrong to do.
 
 ### Practicing
+All professionals practice programmers should be no exception. There are several different ways you can practice.
+
+* coding kata
+* wasa
+* Contributing to open source
+
+The important thing is that you practice and practice often to keep your skills sharp.
+
+#### Original notes
 * All professionals practice (examples: doctors, musicians, sports players, etc)
 * practicing is not a new concept consider "Hello, World!"
 * cycle times on development have gotten better due to Moore's law.
