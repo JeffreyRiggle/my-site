@@ -233,6 +233,11 @@ The important thing is that you practice and practice often to keep your skills 
 * "Practicing is what you do when you are not getting paid. You do it so that you will be paid, and paid well"
 
 ### Acceptance Testing
+Acceptance tests are a great way to make sure the business needs are understood and tested when a feature is created. These tests serve as the best form of documentation of requirements for developers. Acceptance tests must be written in a collaborative effort by both programmers and stakeholders.
+
+While acceptance tests are different than integration and unit tests they should be automated much the same as a unit or integration test would be. In a perfect world, developers would not write these tests instead QA or business analysts would write the tests.
+
+#### Original notes
 * A professional developer is a communications role as well as a development role.
 * Starts with an interesting story about how Bob wrote a feature from start to finish with a coworker and gained insights on how features are communicated.
 * premature precision is an issue on both sides.
@@ -267,6 +272,19 @@ The important thing is that you practice and practice often to keep your skills 
 * If tests are broken in CI this should be viewed as an emergency.
 
 ### Testing Strategies
+As a professional developer, it is important to have a good testing strategy. Generally, a testing strategy should have a mix of unit, component, integration, system, and manual tests.
+
+Unit tests should cover most if not all code paths. These unit tests are tests for developers not for business. Unit tests should be run in CI.
+
+Component tests are tests against individual components of a system. These are generally acceptance tests defined by the business. Since these only test a single component mocking strategies should be used. Ideally, these tests cover 50% of your code and are written by QA.
+
+Integration tests are tests that run against multiple components. These tests make sure the connections between components are working properly. Component tests should be written by architects or designers and should not be run in CI. While these do not run in CI they should be automated and they should run periodically.
+
+System tests are tests that run against the entire integrated system. These tests are written by architects or technical leads.
+
+Manual tests are exploratory tests conducted by humans. These are important tests but they should have the least coverage. The important thing is humans are creative and will be able to find new ways to break things or notice subtle bad behaviors.
+
+#### Original notes
 * Every professional developer has a good testing strategy.
 * Bug hunts can be a testing strategy.
 * QA should find nothing wrong. This will rarely happen but when QA finds a bug this should cause alarm for the development team (how did we let this happen)
@@ -309,6 +327,11 @@ The important thing is that you practice and practice often to keep your skills 
   * The goal is not coverage instead it is to make sure the system works correctly.
 
 ### Time Management
+Part of being a professional developer is managing your time appropriately. A major key to this is good meeting etiquette. While meetings are critical they can also be major time wasters. As a professional, you need to balance what meetings you should and should not be attending. Some things to consider when accepting a meeting. It is important to remember, the person inviting you to a meeting is not responsible for your time. One of the most important duties of your manager is to keep you out of meetings. Since meetings are large time sinks it is important to keep them on topic. In general, you should never accept a meeting request if no agenda is present. If at any time a meeting strays from the agenda it is important to stop and consider if a new meeting needs to be created.
+
+Disagreements are common in software engineering. The best way to deal with these is to provide data. Brute force is never the right approach to resolving a disagreement. If there is insufficient data for either side of a disagreement sometimes the best option is a coin flip.
+
+#### Original Notes
 * 8 hours is not a lot of time?
 * meetings
   * According to bob meetings cost around 200$ per attendee
@@ -388,6 +411,11 @@ The important thing is that you practice and practice often to keep your skills 
   * Professionals are always on the lookout for messes and will expend all necessary effort to escape from them as early as possible.
 
 ### Estimation
+Estimation is an important part of feature development. In general, the business views an estimate as a commitment while a developer views an estimate as a guess. A professional developer mustn't commit unless they know they can achieve it. As a professional, it is your job to make a clear distinction between an estimate and a commitment.
+
+Various strategies can be used to generate an estimate. One interesting but somewhat involved estimation process is PERT. In PERT you end up generating an estimate by considering the best possible case, worse possible case, and average case.
+
+#### Original notes
 * Businesses view estimates as commitments
 * developers view estimates as guesses.
 * Professionals do not make commitments unless they know they can achieve them.
@@ -421,6 +449,17 @@ The important thing is that you practice and practice often to keep your skills 
 * To mitigate error you can take advantage of the Law of Large Numbers.
 
 ### Pressure
+A professional software engineer understands how to manage pressure while still behaving professionally. A large portion of this is understanding how to avoid and manage pressure.
+
+As far as avoidance goes it is important to avoid making commitments unless you know they can be met. It is also important to reject unrealistic commitments as it is a disservice to everyone.
+
+An interesting thing is under pressure you find what your disciplines are. If you find that in a bind you stop following TDD then you know that TDD is not something you value. In these cases, it is important to stick with what you believe in. If you start doubling down on practices you do not find value in it will only increase pressure.
+
+When you are under pressure it is important to manage it as best as you can. One great way to help is to make sure you are getting enough sleep. Even though you are under pressure it is very important not to rush. Rushing will lead to problems later on and will likely cause more stress.
+
+When you are under stress communication is a great tool. In these cases make sure your manager is aware and see if there is anything they can do to help. Another great trick is to pair program. This can help reduce your stress while keeping code quality high. Your peer might spot issues you are making while under stress. It is also important that when you see others in these situations you offer your help.
+
+#### Original notes
 * starts with a comparison of a surgeon to a typical developer. The surgeon is cool and collected under pressure the developer is not.
 * goes on to explain his time at what sounds like a toxic startup with insane time pressures.
 * a good way to stay calm under pressure is to avoid situations that cause pressure.
