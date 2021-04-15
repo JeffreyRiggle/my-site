@@ -53,11 +53,11 @@ Another major aspect of being a professional is taking responsibility for your o
   * You should be aware of what is happening in your field
   * Just because a publication or idea is old does not mean that it is irrelevant now. (read old publications)
   * Every software professional should know the following
-    * Design patterns (GOF book mentioned)
-    * Design principles (SOLID)
-    * Methods (XP, Scrum, Waterfall, etc)
-    * Disciplines (TDD, OOP, etc)
-    * Artifacts (UML, DFD, etc)
+    * Design patterns ([GOF](https://www.amazon.com/Design-Patterns-Object-Oriented-Addison-Wesley-Professional-ebook/dp/B000SEIBB8))
+    * Design principles ([SOLID](https://en.wikipedia.org/wiki/SOLID))
+    * Methods ([XP](https://en.wikipedia.org/wiki/Extreme_programming), [Scrum](https://en.wikipedia.org/wiki/Scrum_(software_development)), [Waterfall](https://en.wikipedia.org/wiki/Waterfall_model), etc)
+    * Disciplines ([TDD](https://en.wikipedia.org/wiki/Test-driven_development), [OOP](https://en.wikipedia.org/wiki/Object-oriented_programming), etc)
+    * Artifacts ([UML](https://en.wikipedia.org/wiki/Unified_Modeling_Language), [DFD](https://en.wikipedia.org/wiki/Data-flow_diagram), etc)
 * This is a field of continuous learning.
 * Professional practice often.
 * Collaboration is a key skill
@@ -213,7 +213,7 @@ TDD is the professional option. There are very few cases in which this is not th
 ### Practicing
 All professionals practice programmers should be no exception. There are several different ways you can practice.
 
-* coding kata
+* [coding kata](https://en.wikipedia.org/wiki/Kata_(programming))
 * wasa
 * Contributing to open source
 
@@ -268,7 +268,7 @@ While acceptance tests are different than integration and unit tests they should
 * GUIs are hard to acceptance test.
 * GUIs should follow SRP (single responsibility principle)
 * Test using the correct interface. It's often better to test via an API instead of via the GUI.
-* Acceptance tests should be run often in CI.
+* Acceptance tests should be run often in [CI](https://en.wikipedia.org/wiki/Continuous_integration).
 * If tests are broken in CI this should be viewed as an emergency.
 
 ### Testing Strategies
@@ -292,7 +292,7 @@ Manual tests are exploratory tests conducted by humans. These are important test
 * QA should create automated acceptance tests.
 * QA should use the discipline of exploratory testing.
 * Mention of the test automation pyramid.
-  * ~100% unit test (xunit, junit, jest, etc)
+  * ~100% unit test ([xunit](https://xunit.net/), [junit](https://junit.org/), [jest](https://jestjs.io/), etc)
   * ~50% component tests (api)
   * ~20% integration tests (api)
   * ~10% system tests (gui)
@@ -413,7 +413,7 @@ Disagreements are common in software engineering. The best way to deal with thes
 ### Estimation
 Estimation is an important part of feature development. In general, the business views an estimate as a commitment while a developer views an estimate as a guess. A professional developer mustn't commit unless they know they can achieve it. As a professional, it is your job to make a clear distinction between an estimate and a commitment.
 
-Various strategies can be used to generate an estimate. One interesting but somewhat involved estimation process is PERT. In PERT you end up generating an estimate by considering the best possible case, worse possible case, and average case.
+Various strategies can be used to generate an estimate. One interesting but somewhat involved estimation process is [PERT](https://en.wikipedia.org/wiki/Program_evaluation_and_review_technique). In PERT you end up generating an estimate by considering the best possible case, worse possible case, and average case.
 
 #### Original notes
 * Businesses view estimates as commitments
@@ -425,7 +425,7 @@ Various strategies can be used to generate an estimate. One interesting but some
 * developers are bad at estimates.
 * estimates are a probability distribution.
 * professionals draw a clear distinction between estimates and commitments.
-* PERT
+* [PERT](https://en.wikipedia.org/wiki/Program_evaluation_and_review_technique)
   * a simple but effective way to convert estimates into probability distributions.
   * when estimating a task provide 3 numbers (trivariate analysis)
     * O: Optimistic Estimate. A wildly optimistic number. (less than a 1% chance of happening)
@@ -487,6 +487,11 @@ When you are under stress communication is a great tool. In these cases make sur
   * When someone else is under pressure offer them help.
 
 ### Collaboration
+Software development is all about working with others. There is a stereotype that is sadly often true in this industry that all programmers are arrogant introverts. It is important for professionals not to act in such ways.
+
+Outside of working well with other developers, a professional software engineer must also be able to work with a variety of other roles in the company with varying levels of technical skill. To help these communications you must understand the business's problems, not just technical solutions.
+
+#### Original notes
 * It is unprofessional to be a loner or a recluse on a team.
 * Starts with an interesting tale of Bob and Tim working together to speed up a searching algorithm for their codebase.
 * Most programmers are introverts that would rather work alone (based on stereotypes that are often true)
@@ -514,6 +519,11 @@ When you are under stress communication is a great tool. In these cases make sur
 * While we might not have gotten into this industry to work with people, programming is all about working with people.
 
 ### Teams and Projects
+A good team is something to be envied in software development. The best way to create a good team is to keep that team consistent. It often takes a long time for people to get used to working with one another and creating ad-hoc teams constantly does not help.
+
+By keeping a consistent team it becomes easy to change priorities on a whim since a new team does not have to be formed and the team members are already used to working with one another.
+
+#### Original notes
 * There is no such thing as a half-person. Often we do not fully resource a developer to a task.
 * It does not make sense to have a developer devoted to two different projects especially when there are different project managers, business analysts, developers, and testers on each project.
 * It takes time for a team to form/gel
@@ -532,6 +542,19 @@ When you are under stress communication is a great tool. In these cases make sur
 * Teams are harder to build than projects so keep functioning teams together.
 
 ### Mentoring, Apprenticeship, and Craftmanship
+Mentoring is a major gap in the software industry currently. Often college graduates are expected to be able to go straight into the industry and be productive. This mentality is crazy. There are plenty of other fields in which this would never happen and software is becoming too critical to be built by un-prepared individuals.
+
+One idea as to how to handle this issue is to introduce the concept of apprenticeships into the software industry. In this program, there would be three major roles the master, the journeyman, and the apprentice. 
+
+Masters are veterans in the industry and have worked in many different programming languages and systems. The master needs to stay up to date on the technology. Part of the responsibilities of the master is working with journeymen and testing apprentices to see if they are ready to become journeymen.
+
+Journeymen are individuals that are knowledgeable but have not quite yet proven themselves to be masters. They are often very skilled at one language and one system. For the most part, it is the responsibility of the journeyman to work closely with the apprentices and mentor them.
+
+The apprentice is where everyone should start their career. Apprentices should be under close supervision by journeymen and should spend a good amount of time peer programming without actually directly authoring any code.
+
+While this might not be the best approach it certainly seems better than the current approach of trial by fire on production-grade software.
+
+#### Original Notes
 * cs graduates have not been taught what programming is all about
 * nearly all cs graduates taught themselves to code before college and continued to teach themselves during college.
   * The system can teach you but it can also act as a diploma farm
@@ -590,24 +613,27 @@ When you are under stress communication is a great tool. In these cases make sur
 * It is time for apprenticeship to be a part of software.
 
 ### Tooling
+As time has gone on tooling has become better. This chapter is mostly about Bob's preferences for tooling.
+
+#### Original notes
 * best source control tooling comes from open source. ones not made this way are generally tools that are sold to managers, not developers.
 * pessimistic locking is dead. tooling has become more advanced and merging issues are now manageable.
 * The power of git is its branching strategy.
 * git and tools like it are the future of source control.
 * editors
-  * vi is tried and true it may be old but it maintains its presence due to its speed and ease of use.
-  * emacs is one of the most powerful editors around.
-  * Eclipse and Intellij, these editors allow for much more sophisticated manipulation of source code. They have powerful tools for renaming variables, class manipulation, and other similar features.
-  * TextMate is powerful and lightweight
-* common tools for issue tracking: Pivotal Tracker, Lighthouse, and Wikis. The best place to start is often manual then find a tool that matches your style.
+  * [vi](https://en.wikipedia.org/wiki/Vi) is tried and true it may be old but it maintains its presence due to its speed and ease of use.
+  * [emacs](https://en.wikipedia.org/wiki/Emacs) is one of the most powerful editors around.
+  * [Eclipse](https://www.eclipse.org/ide/) and [Intellij](https://www.jetbrains.com/idea/), these editors allow for much more sophisticated manipulation of source code. They have powerful tools for renaming variables, class manipulation, and other similar features.
+  * [TextMate](https://macromates.com/) is powerful and lightweight
+* common tools for issue tracking: [Pivotal Tracker](https://www.pivotaltracker.com/), [Lighthouse](https://lighthouseapp.com/), and Wikis. The best place to start is often manual then find a tool that matches your style.
 * Having thousands of bugs or features often means you have done something wrong.
 * CI
-  * Jenkins is a solid tool.
+  * [Jenkins](https://www.jenkins.io/) is a solid tool.
   * CI should run automatically on every code check-in
   * The build must be working at all times.
   * Failure should never be allowed to persist for over a day or two.
 * Unit testing
-  * Bob's favorites: JUnit, RSPEC, NUnit, Midje, CppUTest
+  * Bob's favorites: [JUnit](https://junit.org/), [RSPEC](https://rspec.info/), [NUnit](https://nunit.org/), [Midje](https://github.com/marick/Midje), [CppUTest](http://cpputest.github.io/)
   * features all testing frameworks should have.
     * should be quick and easy to run tests.
     * should give a clear pass-fail indication.
@@ -616,9 +642,9 @@ When you are under stress communication is a great tool. In these cases make sur
     * should make it easy to write tests.
 * Component testing
   * API testing tools
-  * FitNesse, is Bob's own creation and he likes to use it for component testing.
-  * Other tools in this camp: RobotFx, Green Pepper, Cucumber, and JBehave.
-* Good UI testing tools are selenium and Watir.
+  * [FitNesse](http://fitnesse.org/), is Bob's own creation and he likes to use it for component testing.
+  * Other tools in this camp: RobotFx, Green Pepper, [Cucumber](https://cucumber.io/), and [JBehave](https://jbehave.org/).
+* Good UI testing tools are [selenium](https://www.selenium.dev/) and [Watir](http://watir.com/).
 * UML has not proven to be a sufficient tool to express all of the details of a program. This is why we still write code instead of UML documents.
 
 ## Insights
