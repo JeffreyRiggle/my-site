@@ -59,9 +59,53 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
     * In many cases, the product you have been laboring over is obsolete by the time you are ready to release it. This can lead to massive frustration.
 
 ### The Mythical Man-Month
-* Notes needed
+* Techniques of estimating are poorly developed
+* estimating techniques confuse effort with progress. (This hides the assumption that people and months are interchangeable)
+* since we are unsure of our estimates it makes software managers lives difficult
+* progress is poorly monitored.
+* when slipage is seen often the idea of adding more manpower is assumed to be a solution.
+* All programmers are optimists
+    * Often we assume things like "The time time this will surely run"
+    * Often we assume all will go well.
+    * Reference to The [Mind of the Maker](https://www.amazon.com/Mind-Maker-Dorothy-L-Sayers/dp/1520215185)
+    * In many creative activities (not programming) there are physical limitations that can be expressed. The difficulty in these cases is often implementation
+    * Since programming is pure thought we expect very few issues in implementation because it is all thought matter.
+    * Since our ideas are faulty we end up with bugs. This invalidates our optimism.
+* Man-Month
+    * Cost varies as the number of men or months are tweaked. However, progress does not.
+    * A man-month is a bad unit for measuring the size of a job.
+    * Men and months are only interchangeable in tasks that do not require communication. Programming is not one of these tasks.
+    * If a task cannot be partitioned due to sequential blockers more effort will have no effect on the schedule.
+    * In the case that a task can be partitioned it often still requires a lot of communication. This adds to the amount of time required to complete the task.
+    * There is a burden to adding more developers
+        * training, every new member must be brought up to speed and trained accordingly.
+        * intercommunication, as you add more people there is even more communication that needs to happen.
+    * Often adding more developers lengthens instead of shortens a project.
+* System test
+    * Debugging of a component and testing of a system are very dependant on sequential constraints.
+    * Time required is dependant on the subtlety and number of errors found.
+    * Breakdown of a software task
+        * 1/3 Planning
+        * 1/6 coding
+        * 1/4 component test and early systems test
+        * 1/4 system test
+    * The time devoted to planning is larger than normal
+    * half of time schedule is debugging
+    * the easy part to estimate only makes up for 1/6th of the work.
+    * Failure to plan enough time for a system test is dangerous. This is often found out later into the project and the impact is usually severe.
+* Estimating
+    * It is easy to promise something that cannot be delivered. I can promise you an omelet in two minutes but when that time is up the customer must choose to wait or eat it raw.
+    * False scheduling to meet customer demands is far more common in this industry.
+    * We need to publicize productivity, bug incidents figures. The whole industry would benefit from this. (Maybe open source and github has helped with this)
+    * Managers need stronger backbones until our estimation techniques get better.
+* What to do when a task is falling behind
+    * You can add more heads but do it smartly. There are limits to how much and to what effect adding more heads will do.
+    * reschedule, push the task out.
+    * Trim the task, drop scope.
+    * Brooks Law simplified "Adding manpower to a late software project makes it later"
 
 ### The Surgical Team
+* Notes needed
 
 ### Aristocracy, Democracy, and System Design
 
