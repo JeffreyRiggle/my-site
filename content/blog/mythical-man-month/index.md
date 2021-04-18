@@ -139,7 +139,7 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
         * Maintains all records of the team in a programming-product library
         * Is a secretary for but machine and human-readable files.
         * Makes all computer runs visible
-        * Basically agregates program output/build information. (I suspect this role is largely un-needed now with advanced CI pipelines)
+        * aggregates program output/build information. (I suspect this role is largely un-needed now with advanced CI pipelines)
     * The toolsmith
         * Creates and maintains special tools for the surgeon
         * each team has their own toolsmith
@@ -153,9 +153,33 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
         * Can aid many surgeons
 
 ### Aristocracy, Democracy, and System Design
-* Notes needed
+* Conceptual integrity is the most important consideration in system design.
+* it's better to omit some features if it makes design ideas consistent.
+* Programming systems are intended to make a computer easy to use.
+* Ease of use is only enhanced if time gained in functional specification exceeds time lost in learning, remembering, and searching manuals.
+* Every part of a system should reflect the same philosophies and use the same techniques in syntax.
+* There are two ways to keep the design consistent with multiple people working on a project
+    * Careful division of labor between architecture and implementation.
+    * Structured teams discussed in the surgical team
+* Separation of architecture and implementation is a powerful tool for conceptual integrity.
+* Architect of the system
+    * job is to bring professional and technical knowledge to bear in the interest of the user. This is as opposed to the interested of the salesman
+    * must carefully be distinguished from implementation.
+* Architecture is what happens implementation is how it happens.
+* Just because implementers or users have good ideas does not mean they are the right ideas. It is more important to keep the system consistent and that is the job of the architect.
+* There should be few architects
+* Architecture work is not more creative than implementation. Just because you are setting the external boundaries does not mean you have made all the creative choices.
+* The cost-performance ratio is often where the implementors creativity lies.
+* Form can be liberating. Sometimes having additional constraints makes your work more creative. this is not just seen in software as it has been seen in other practices like art.
+* Common concerns for implementors that can have from an architecture team.
+    * Specifications can be too rich in function and not reflect practical cost considerations. This concern is valid.
+    * Architects will get all the creative fun. This is argued to not be true.
+    * They will have to sit by idly while waiting on specifications to arrive. Don't hire implementors until you have the specs.
+* Implementors can start as soon as a vague idea of the specification exists.
+* The Implementor has tons of work to do even before the specification exists.
 
 ### The Second-System Effect
+* Notes needed
 
 ### Passing the Word
 
