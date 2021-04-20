@@ -197,7 +197,7 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
     * avoid functional ornamentation
     * avoid extrapolation of functions
     * discipline is key
-* If a second system is required consider having an architect who has already done two systems take on the job of lead architect as they will have learn from their mistakes in their second system.
+* If a second system is required consider having an architect who has already done two systems take on the job of the lead architect as they will have learned from their mistakes in their second system.
 
 ### Passing the Word
 * Notes needed
