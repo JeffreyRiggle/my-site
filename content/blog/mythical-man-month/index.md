@@ -179,9 +179,28 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
 * The Implementor has tons of work to do even before the specification exists.
 
 ### The Second-System Effect
-* Notes needed
+* When a cost is too high the software architect has two options
+    1. Cut the design
+    2. challenge the estimate by suggesting cheaper impelementations.
+* The second option gets in the way of the implementer doing their job correctly.
+* To do this right the architect must
+    * remember that the implementor has inventive and creative control over implementation.
+    * always be prepared to suggest a way of implementing what he specifies.
+    * deal with these suggestions
+    * be ready to forego credit for suggested improvements.
+* When an architect designs a system they often keep track of embellishments that could be used in a second system.
+* second systems are dangerous
+    * tendency to over-design the second system
+    * tends to change the system a bit. Fundamental aspects of the first system might be lost
+    * aspects of the old system can become obsolete.
+* when starting on a second system
+    * avoid functional ornamentation
+    * avoid extrapolation of functions
+    * discipline is key
+* If a second system is required consider having an architect who has already done two systems take on the job of lead architect as they will have learn from their mistakes in their second system.
 
 ### Passing the Word
+* Notes needed
 
 ### Why Did the Tower of Babel Fail?
 
