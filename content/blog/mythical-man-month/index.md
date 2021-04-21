@@ -200,9 +200,34 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
 * If a second system is required consider having an architect who has already done two systems take on the job of the lead architect as they will have learned from their mistakes in their second system.
 
 ### Passing the Word
-* Notes needed
+* a manual is a necessary tool
+* a manual is an external specification of the product.
+* manuals should not only include what a user sees but it should also refrain from describing everything a user does not see.
+* The style of a manual should be precise.
+* Writers of manuals must strain the language they use to create the level of precision required for a manual.
+* Merits of formal definitions
+    * They are precise
+    * They tend to be complete
+* Problems with formal definitions
+    * They lack comprehensibility
+* many tools exist for formal definitions
+* care should be made in distinguishing externals in a formal definition
+* formal definition is an implementation.
+* implementation can also serve as a formal definition
+* using implementation as a definition has these advantages
+    * All questions can be answered unambiguously with experimentation.
+    * debate is never needed
+    * answers are always a precise as one needs and are always correct
+* implementation may over-prescribe
+* In an unpoliced system side effects can occur.
+* implementation as formal definition can lead to confusion on if it is in fact standard.
+* meetings help keep everyone on board. This can prevent hardware and software specifications from drifting
+* telephone logs should be kept by architects.
+    * These logs record all questions and answers.
+    * each week this log is concatenated amongst all architects and sent out to implementors.
 
 ### Why Did the Tower of Babel Fail?
+* Notes needed
 
 ### Calling the Shot
 
