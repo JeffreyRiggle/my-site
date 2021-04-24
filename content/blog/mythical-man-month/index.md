@@ -227,9 +227,55 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
     * each week this log is concatenated amongst all architects and sent out to implementors.
 
 ### Why Did the Tower of Babel Fail?
-* Notes needed
+* Many project failures occur because two groups of people in a large organization are not talking
+    * Each team often has assumptions that have not been verified about the other team.
+* How to communicate cross team
+    * Informally. Keeping everyone informed and having a clear understanding of intergroup dependencies helps.
+    * Meetings. Have project meetings in which team after team gives a technical briefing.
+    * Workbook. Create a formal workbook.
+* Project workbook
+    * It is a structure imposed on documents.
+    * All documents of a project should follow this structure
+    * Things that should be included: objectives, external specifications, interface specifications, technical standards, internal specifications, and administrative memoranda.
+    * This is important because technical prose lasts a long time.
+    * It is important to get the structure right so that memos can be turned into product-quality manuals.
+    * This also serves to control the distribution of information. This is to not restrict information but instead to get it into all the hands that need it.
+    * To keep every programmer in the loop every programmer should have a workbook and that workbook should be current.
+    * Maintenance of a physical workbook can get very difficult over a long period with many contributors.
+        * In this example, they solved the problem with microfiche
+        * Later goes on to reflect on how it might be done today (when the book was published several decades ago). In this, we imagine a direct access file that is LIFO and everyone can see it. No one could directly change the document but they could provide updates that later get aggregated and put back into this read-only LIFO document.
+        * I imagine today something like wikis or confluence is serving a similar purpose.
+* Organization in a large programming project
+    * Tree-like structures are good for authority and responsibility but are terrible for communication.
+    * A tree-like programming organization must have these roles to be successful
+        * a mission
+        * a producer
+        * a technical director or architect
+        * a schedule
+        * a division of labor
+        * interface definitions
+    * What is a producer?
+        * The produce assembles a team, divides work, and creates a schedule.
+        * They require the necessary resources for the team.
+        * A major role is communication outside of the team.
+        * ensures the schedule is met.
+    * What is a technical director?
+        * thinks up the design to be built
+        * identifies parts of the design
+        * specifies how things will look from the outside.
+        * sketches the internal structure.
+        * brings unity and conceptual integrity to the design.
+        * limits technical complexity.
+        * invents solutions or redesigns the system as problems arise.
+    * The producer and the technical director can be the same person.
+        * Can often work on small teams but gets harder to maintain on larger teams.
+        * A person with strong management and technical skills is super rare.
+    * In some cases, the producer can be the boss and the technical direction his right-hand man.
+        * the producer can do subtle things to help the technical director to avoid power struggles. Examples include office size, carpet, furnishing, carbon copies, etc.
+    * Just like the producer can be the boss the roles could be inverted. In some cases, the technical director is the boss and the producer is the right-hand man.
 
 ### Calling the Shot
+* Notes needed
 
 ### Ten Pounds in a Five-Pound Sack
 
