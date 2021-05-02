@@ -275,9 +275,34 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
     * Just like the producer can be the boss the roles could be inverted. In some cases, the technical director is the boss and the producer is the right-hand man.
 
 ### Calling the Shot
-* Notes needed
+* Estimations should not be based on coding alone since that is only 1/6th the effort
+* Charles Portman conducted a study on productivity.
+    * Found that tasks had been taking twice as long as estimated.
+    * 50% of the time was found to be debugging time and programming time
+    * The remaining time was split between unrelated jobs, meetings, paperwork, company business, sickness, personal time, etc.
+    * Data suggested that there are unrealistic assumptions around technical work hours in a man-year.
+* Joel Anon studied programmer productivity.
+    * In this study, the relationship of interactions amongst developers and instructions written per year had been used.
+    * With few interactions, 10,000 instructions should be able to be completed in a man-year
+    * With some interactions, 5,000 instructions should be able to be completed in a man-year
+    * With many interactions, 1,500 instructions should be able to be completed in a man-year
+* John Harr did another study on this topic
+    * productivity was measured in debugged words per man-year
+
+| | Prog units | Number of programs | Years | Man-years | Program words | Words/man-year |
+|-|-|-|-|-|-|-|
+| Operational | 50 | 83 | 4 | 101 | 52,000 | 515 |
+| Maintenance | 36 | 60 | 4 | 81 | 51,00 | 630 |
+| Compiler | 13 | 9 | 2.25 | 17 | 38,000 | 2230 |
+| Translator | 15 | 13 | 2.5 | 11 | 25,000 | 2270 |
+* Data from IBM OS/360 experience, Aron and Harr confirm that productivity is related to the complexity and difficulty of a task.
+* According to this data, compilers are three times as bad as batch application programs, and operating systems are three times as bad as compilers.
+* Corbto data looks at lines of PL/I per man-year instead of words per man-year. In this study, the lines of debugged PL/I code was found to be 1,200.
+    * According to this data, productivity is constant in terms of statements
+    * According to this data, productivity may increase as much as five times with a high-level programming language.
 
 ### Ten Pounds in a Five-Pound Sack
+* Notes needed
 
 ### The Documentary Hypothesis
 
