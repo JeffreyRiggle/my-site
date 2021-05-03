@@ -302,9 +302,31 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
     * According to this data, productivity may increase as much as five times with a high-level programming language.
 
 ### Ten Pounds in a Five-Pound Sack
-* Notes needed
+* Much of this is based on the memory consumption of applications on hardware. At the time this was authored renting even 1KB of data a month was not cheap.
+* builder of software must set size targets, control size and devise size-reduction techniques.
+* hardware builder sets component-count targets, controls component count, and devises count-reduction techniques.
+* Size is not a bad thing but unnecessary size is
+* Size control
+    * This is partially a technical job and partly a managerial one for a product manager.
+    * users and applications need to be studied to get sizes right
+    * Setting targets is not all that needs to be done. In addition, all aspects of size must be budgeted.
+    * disk access is slow. At this time magnetic tape was common and round trips to the disk had been very expensive.
+    * A good way to help avoid issues around this kind of thing is to define exactly what a module must do.
+    * During implementation, architects must be vigilant in ensuring system integrity.
+* Space techniques
+    * Making a program small requires invention and craftsmanship.
+    * More function means more space.
+    * The first area of craftmanship is trading function for size.
+        * The more fine-grained the user's options are the more space the program will take up.
+        * Breaking functions into small modules costs performance and space?
+    * The second area of craftmanship is space-time trade-offs.
+        * To do this make sure your team is trained in programming techniques and not just reliant on previous experience.
+        * Each program should have access to two different library sets for the common functionality. The quick one and the squeezed one.
+* Often time gains are made via strategic breakthrough instead of tactical cleverness.
+* Most breakthroughs will come from redoing the representation of data.
 
 ### The Documentary Hypothesis
+* Notes needed
 
 ### Plan to Throw One Away
 
