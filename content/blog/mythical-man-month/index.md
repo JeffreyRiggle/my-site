@@ -326,9 +326,49 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
 * Most breakthroughs will come from redoing the representation of data.
 
 ### The Documentary Hypothesis
-* Notes needed
+* What are the critical documents for managers?
+    * Objectives define the need to be met and the goals.
+    * Specifications are the computer manual plus performance specifications.
+    * Schedule
+    * Budget is a very useful document for managers.
+    * Organization chart
+    * Space allocations
+    * Estimate, forecast, and prices.
+        * determine the success or failure of a project
+        * To generate a forecast you need performance specifications and postulated prices.
+        * Forecasts determine a per-unit share of development and fixed costs.
+        * Forecasts allow you to determine prices.
+        * If prices are below the postulated value then a success spiral occurs.
+            * unit costs can drop
+            * prices can drop
+        * If prices are above the postulated value then a disastrous spiral begins
+            * Performance must be squeezed
+            * costs must be squeezed down.
+* Documents for University departments
+    * Objectives
+    * Course descriptions
+    * Degree requirements
+    * Research proposals
+    * Class schedule and teaching assignments
+    * Budget
+    * Space allocation
+    * Assignment of staff and graduate students.
+* Documents for a Software Project
+    * What: Objectives. These define the needs, goals, desiderata, constraints, and priorities
+    * What: Product specifications. Starts as a proposal but ends up a manual/internal document.
+    * When: schedule
+    * How much: budget
+    * Where: space allocation
+    * Who: organization chart
+        * If the system is free to change the organization must be prepared to change as well.
+* Need for formal documents
+    * Gaps can only be found once inconsistencies arise in written documents.
+    * They communicate decisions to others.
+    * Provides a database and checklist to help managers figure out where to put their efforts.
+* The task of a manager is to develop a plan and then to realize it. A written plan is precise and communicable.
 
 ### Plan to Throw One Away
+* Notes needed
 
 ### Sharp Tools
 
