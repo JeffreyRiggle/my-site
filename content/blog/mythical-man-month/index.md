@@ -368,9 +368,60 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
 * The task of a manager is to develop a plan and then to realize it. A written plan is precise and communicable.
 
 ### Plan to Throw One Away
-* Notes needed
+* Chemical engineers build a pilot plant before making a fully operational factory since what works in a lab does not necessarily work in a factory.
+* Programmers do not seem to have this process and this is a constantly repeated mistake.
+* In many projects, the first version is barely usable.
+* Even the best planning will not be sufficient and eventually, all code gets rewritten.
+* This is an interesting dilemma for managers. Do you plan to build a pilot to throw away?
+    * You should because you are going to do it anyway
+* You need to accept change is an inevitable fact of life.
+    * It's better to be prepared for it than have to comes to terms with it later.
+* Planning a system for change
+    * Use careful modularization
+    * Have a complete and precise definition of inter-module interfaces.
+    * Have complete documentation for modules
+    * Use a high-level language.
+    * Use self-documenting techniques.
+    * Use compile-time operations to enforce standard declarations.
+    * Use module versioning
+    * Have good version releasing practices.
+* Planning for Organizational changes.
+    * All plans should be treated as tentative.
+    * reluctance to generate documentation does not come from laziness. Instead, it comes from a designer's unwillingness to commit themselves to the defense of decisions known to be tentative.
+        * "By documenting a design, the designer exposes himself to the criticisms of everyone, and he must be able to defend everything he writes."
+    * Structuring an organization for change is harder than designing a system for change.
+        * Every developer must be given tasks to broaden their skill set.
+        * The manager needs to keep two or three top programmers to jump in on the toughest issues.
+        * Managers and technical people need to be interchangeable as talents allow.
+        * Often has sociological barriers
+        * A common trap is for managers to think of senior people as "too valuable" to use for actual programming.
+            * Bell labs overcame this issue by getting rid of job titles.
+        * It's easy to increase salary with job tiers, it's harder to give higher job tiers more prestige.
+        * Switching from a technical path to a manager path should never result in a raise.
+            * This is a reassignment, not a promotion.
+        * A manager should have technical refresher courses.
+        * Senior developers should have management training.
+        * Senior people must be kept technically and emotionally ready to manage groups or to build programs.
+* Programs do not stop changing once they are delivered to a customer.
+* Hardware and Software have very different maintenance requirements.
+* Software Maintenance
+    * Requires constant fixing of defects.
+    * The cost of maintenance is typically 40% more than developing it in the first place.
+    * The more users you have the more bugs that are found.
+    * Old bugs found and solved strangely seem to come back in future releases.
+    * New functions of a new release often have defects.
+    * Bugs begin to plateau over time but some of this might be customers becoming complacent with the bugs that are in the system.
+    * Fixing a defect has a 20-50% chance of introducing another.
+        * Unless the program is well documented it is too easy to make a local change at a minimum effort instead of looking at the wider-reaching impact of the change.
+        * The repairer is often not the developer that wrote the code. This is often done by a junior programmer or trainee.
+        * Results in far more system testing
+        * Regression testing must be done but it can be very costly.
+    * The total number of modules increases linearly with each release number. Repairs often destroy the structure and cause disorder to the system.
+    * Over time less effort is spent on fixing the original design flaws and more time is spent fixing flaws introduced by earlier fixes.
+    * Things are always best at their beginning from a statistical model.
 
 ### Sharp Tools
+* Notes needed
 
 ### The Whole and the Parts
 
