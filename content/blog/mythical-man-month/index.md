@@ -421,9 +421,70 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
     * Things are always best at their beginning from a statistical model.
 
 ### Sharp Tools
-* Notes needed
+* Many programmers have their own personal set of tools that they acquire over time and do not share
+    * I do not think this is true anymore, if anything we have too many shared tools.
+* Individualized tools hamper instead of aiding communication
+* There are not enough general-purpose tools
+    * Again not sure I agree with this in modern times.
+* Target machines
+    * machine support can be broken down into target machine and vehicle machines
+        * The target machine is the one that the software is being written for.
+        * The vehicle machines are the ones that provide the services used in the build system.
+    * Teams building new supervisors or core system software need machines of their own.
+        * This comes with the overhead of operators and a system programmer or two to make sure the machines in use are serviceable.
+    * Debugging machines need to be instrumented so that counts and measurements can be made on all kinds of program parameters.
+    * Scheduling can be a real issue when there is a limited supply of the target machine.
+        * Generally speaking, usage starts low but as teams start to get ready to debug their features demand for time on the system is very high. Generally, all teams hit this point at the same time.
+        * In the S/360 project no matter how they tried to divvy up the time it was always an issue and in the end, they need to allocate large segments of time to teams for debugging.
+        * Giving large chunks of time on a target machine tends to work out better for productivity.
+* Vehicle Machines and Data Services
+    * If the target computer is new you need a simulator.
+        * Needs to exist long before the target does.
+        * Gives access to dependable debugging. This is not to be confused with accurate debugging as only the target machine will give that to you.
+        * Anymore hardware works correctly. This means if you have a bug it would be wise to start looking at the software first.
+            * This is not true for new machines. In the case of new machines often there are hardware issues.
+            * Simulators help when these hardware issues do crop up.
+    * Compiler and assemblers
+        * Compilers and assemblers should work on vehicle machines but compile down to the target machine.
+        * With high-level languages, a lot more testing can be done on the vehicle machine before moving to the target machine.
+    * Program Libraries
+        * OS/360 used vehicle machines to maintenance program libraries.
+            * All code tested was kept in the library
+            * Libraries were sub-libraries with different access rules.
+            * Programmers had playpen areas with no restrictions. These had been used for test cases and component scaffolding.
+            * When a program was ready for integration, this code was passed off to a manager that put the code into a system integration sub-library.
+                * At this point, the programmer could no longer change the code with permission from the integration manager.
+            * When the system version was ready for larger use it would be promoted to the current version sub-library.
+                * This version never changes unless there are crippling bugs.
+            * What this did right were control and formal separation. In this case, changes went through different stages.
+                * This reminds me a bit of dev, test stage, prod cycles that are common in the industry now.
+    * Program tools
+        * Developers need dumps, source-file editors, snapshot dumps, and traces.
+        * Developers also need utilities for putting decks on disks, making tape copies, printing files, and changing catalogs.
+            * Not sure I believe this is relevant anymore.
+    * Documentation system
+        * It is better to over document than to under document a system.
+    * Performance simulators are a must-have.
+    * High-Level Language and Interactive Programming
+        * These are powerful tools that had not gotten enough inertia at the time. I think this has changed over time. Anymore I suspect it is harder to find a developer that will work in anything other than a high level-language (assuming you consider c++, rust, etc high level)
+        * High-Level languages
+            * Are far more productive
+            * Have better debugging speeds.
+            * There tend to be fewer bugs.
+                * This is because many semantic bugs are no longer possible. An example would be misusing registers.
+                * The compiler often finds your bugs for you at compile time.
+            * Common objections to high-level languages
+                * It doesn't let me do what I want
+                * Object code is too big
+                * Object code is too slow
+            * Objections are no longer valid. Compilers are doing a much better job at optimization.
+            * At the time of authoring the recommended high level-language was [PL/I](https://en.wikipedia.org/wiki/PL/I)
+        * Interactive programming
+            * The author believes interactive programming will never replace batch systems for more applications.
+            * There is no evidence to prove these tools are useful.
 
 ### The Whole and the Parts
+* Notes needed
 
 ### Hatching a Catastrope
 
