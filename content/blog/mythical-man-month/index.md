@@ -484,9 +484,73 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
             * There is no evidence to prove these tools are useful.
 
 ### The Whole and the Parts
-* Notes needed
+* Designing the bugs out
+    * Bug proof definitions
+        * Most subtle bugs come from mismatched assumptions between component authors.
+        * The crucial task is to get the product defined.
+        * Most failures happen around things not specified.
+        * Bugs can be reduced by careful function definition, careful specification, and disciplined exorcism of frills of function.
+    * Testing application
+        * Before code exists specification should be handled to an outside testing group.
+        * developers invent ways around gaps
+    * Top-down design
+        * System building can be divided into architecture, implementation, and realization.
+        * This can be done by top-down methods
+        * refinement steps
+            * sketch rough task definition and solution.
+            * example the definition more closely to see how results differ from what is desired.
+            * take large steps and break them down into smaller steps.
+            * In this process identification of modules of solution or data that can be refined independently are found.
+        * This process avoids bugs by
+            * having clarify of structure and representation.
+            * partitioning modules
+            * suppression of detail makes flaws more apparent.
+            * design can be tested in refinement steps
+        * reduces the temptation to patch over bad design.
+        * Argued to be the most important new programming formalization of the decade.
+    * Structured Programming
+        * Design programs whose control structures consist only of loops and conditionals.
+        * This is an alternative to using GO TO which leads to many logical errors
+        * We should think of the control structures of a system as control structures not as branch statements.
+    * Component Debugging
+        * When debugging on a machine, it is a bad idea to start without planning what you want to test.
+        * Memory dumps
+            * Sometimes access to a machine is scarce and taking up two-plus hour segments to debug is not always a good option.
+            * Allows for postmortem debugging.
+        * Snapshots allowed for insertion into a program without reassembly or recompilation
+        * Interactive debugging
+            * Efficient editing facilities make snapshots easy
+            * provides instant turnaround capability.
+            * preplanning is not as necessary.
+            * The author suggests two hours of desk time for every two hours in the terminal.
+                * Forces you to stop and plan.
+        * Test cases are important.
+    * System Debugging
+        * System Debugging will take longer than one expects.
+        * Only debug after pieces seem to work.
+        * The sooner pieces are put together the sooner bugs will emerge.
+        * Less scaffolding is required when pieces test each other.
+            * This is a bit of a trap and the time spent scaffolding is often worth it.
+        * The "documented bug" approach promotes finding bugs before fixing them.
+            * This is a wishful thinking approach used to rationalize away slipped schedules.
+        * Build scaffolding
+            * It is not unreasonable to have half as much code in scaffolding as in the product.
+            * A form of scaffolding can be the dummy component. This component exists only of interfaces and fake data.
+            * miniature files can be used to make sure formats are correct.
+            * auxiliary programs include
+                * generators for test data.
+                * analysis printouts.
+                * cross-reference table analyzers.
+        * Tight control should happen.
+        * All changes should be logged.
+        * Only add one component at a time.
+        * Though test cases are needed.
+        * Tests should be run after each component is added.
+        * Systematic testing procedures should happen for all updates to existing components.
+        * Be careful about release time, changes can disrupt others who are expecting a stable testbed.
 
 ### Hatching a Catastrope
+* Notes needed
 
 ### The Other Face
 
