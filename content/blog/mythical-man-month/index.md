@@ -550,9 +550,40 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
         * Be careful about release time, changes can disrupt others who are expecting a stable testbed.
 
 ### Hatching a Catastrope
-* Notes needed
+* Disaster in projects is often a bunch of little things instead of one big thing
+* slippages are hard to recognize, harder to prevent, and even harder to make up.
+* You need a schedule
+    * Broken down into milestones with fixed dates
+        * picking the right date is an estimation problem
+        * milestones must be concrete, specific, measurable, and defined with knife-edge sharpness.
+            * This is a departure from coding which is usually 90% complete and debugging which is usually 99% complete.
+        * milestones must also be unambiguous in the sense that they should be easily verifiable by a boss.
+        * If the milestone is defined well enough it is hard for someone to deceive themselves into believing an effort is complete.
+        * Sharp milestones are to the benefit of the team.
+* hustle is a talent that is used in sports and good programming teams. In this case, hustle means trying harder than necessary to cope with routine mishaps.
+* You need to pay attention to a one-day slip it is a big deal.
+* PERT technique acts as a guide for when to apply hustle.
+    * A PERT chart is an elaboration of critical-path scheduling in which one estimates three times for every event. This was covered in an earlier chapter.
+    * The most valuable use is the preparation of the PERT chart. This helps identify dependencies, lays out the network, and estimates all legs of a project.
+    * The first chart is always terrible.
+* It is common for slippages to accidentally get swept under the rug
+    * All bosses need two kinds of information
+        * Exceptions to the plan that requires action.
+        * Status picture
+    * This can cause issues between first-line managers and bosses. The first line manager might want to warn of slippage but there may be no action required.
+    * To help address this
+        * Role conflict must be reduced.
+            * The boss needs to be able to distinguish between action and status information.
+            * The boss must not act on problems the manager can solve.
+            * The boss must never explicitly act on problems when reviewing status.
+            * The boss should label meetings as status review or problem action meetings.
+        * A boss should occasionally yank the rug back.
+            * There need to be review techniques in which true status is known.
+            * PERT charts are often the answer
+    * Preparation of PERT chart is a function of the boss and managers reporting to them.
 
 ### The Other Face
+* Notes needed
 
 ### No Silver Bullet - Essence and Accident
 
