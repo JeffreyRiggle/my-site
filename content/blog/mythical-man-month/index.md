@@ -583,9 +583,67 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
     * Preparation of PERT chart is a function of the boss and managers reporting to them.
 
 ### The Other Face
-* Notes needed
+* There are two faces to software
+    * One is it is a message from man to machine.
+    * The other is human to human. Memory fades ownership changes and we still need to understand what a program does
+* Documentation becomes even more important if the user does not have direct access to the author
+* Documentation and the practices around it are wrong despite efforts to make it better.
+* The most important aspect is the "how" of documentation.
+* What documentation is required?
+    * Different levels of documentation are required for different users.
+    * Documentation to use a program.
+        * Most documentation fails to give a sufficient overview. Big picture stuff is not covered but all the little details are.
+        * This documentation should have the following
+            * Purpose. What is the main function and reason for the program?
+            * Environment. What machines, hardware, and operating systems does it run on?
+            * Domain and Range. What is the type of input? What kinds of output can you expect?
+            * Algorithms used. What does the program do?
+            * Input-Output formats. Complete and precise details on these formats.
+            * Operating Instructions. What are the normal and abnormal end operations?
+            * Options. What choices does the user have? How can the user specify those?
+            * Running time. How long should the program take to run?
+            * Accuracy. How precise are the answers intended to be?
+        * In general, this documentation should fit into 3 or 4 pages.
+    * Documentation to believe a program
+        * To believe it works you need proof. Proof comes in the form of test cases.
+        * Every copy of a program should include some small test cases the user can use to verify the program is correctly loaded on their machine.
+        * Types of tests
+            * Mainline cases that test key functionality for commonly encountered data.
+            * Barely legitimate cases that test the edge cases in input data.
+            * Barely illegitimate cases that test inputs that raise diagnostic messages.
+    * Documentation to modify a program.
+        * Adapting or fixing a program requires more information.
+        * Needs to have a clear and sharp overview of the internal structure.
+        * Components of the overview.
+            * A flow chart or subprogram structure graph.
+            * Complete descriptions of algorithms used.
+            * Explanation of layout of files.
+            * Overview of how data is loaded from disk.
+            * Discussions of modifications considered but not implemented. These observations are critical.
+* Flow charts
+    * Is the most oversold piece of program documentation.
+    * Many do not need flow charts.
+    * Only show one aspect of a program's structure.
+    * Break down when they span more than one page.
+    * blow-by-blow flow charts are an obsolete nuisance whose only purpose is to initiate beginners into algorithmic thinking.
+    * flowcharting is more preached than practiced.
+* Self-documenting programs
+    * It's better to keep all data in one place instead of spreading it out across multiple locations
+    * We break this rule all the time trying to maintain a human and machine-readable version of the code.
+    * Program documentation is notoriously poor and its maintenance is even worse.
+    * Documentation should be in the source of the program.
+    * High-level languages make this more possible.
+    * Approach to minimizing the burden of documentation.
+        * Use parts of the program that have to be there anyway. This would include labels, declaration statements, and symbolic names.
+        * Use space and format to your advantage.
+        * Insert necessary documentation into comments.
+    * Why not do this?
+        * Increased size of source code stored.
+        * Requires more keystrokes.
+        * In general the benefits out-weight the negatives.
 
 ### No Silver Bullet - Essence and Accident
+* Notes needed
 
 ### "No Silver Bullet" Refined
 
