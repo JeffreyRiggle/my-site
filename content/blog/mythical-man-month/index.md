@@ -643,6 +643,69 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
         * In general the benefits out-weight the negatives.
 
 ### No Silver Bullet - Essence and Accident
+* Software construction is made up of essential tasks and accidental tasks.
+    * Essential tasks are the fashioning of complex conceptual structures.
+    * Accidental tasks are the representations of absract entities in programming languages. This includes the management of space and speed constraints.
+* Most gains in software productivity have come from removing artifical barriers that have made accidental tasks harder. Examples include severe hardware contraints, awkward programming languages, and lack of machine time.
+* Ways to address the essential complexity
+    * Exploit mass market. Do not build what can be bought.
+    * Use rapid prototyping
+    * Grow software organically, add function over time as needed.
+    * Develop great conceptual designers in the next generation of software developers.
+* Everyone wants to see software costs drop as fast as hardware costs did.
+* There is no development or management technique which offers even one order of magnitude improvement of productivity in software development.
+* Progress must be made stepwise. It is time to stop expecting some magical solution to this problem.
+* We should never expect the type of gains we have seen in hardware in any field. Hardware has progressed faster than any other technology.
+* Essence includes the interlocking concepts: data sets, relationships among data items, algorithms, and invocations of functions.
+* Essence is abstract but at the same time highly precise and richly detailed.
+* The hard part of building software is the specification, design, and testing, not the labor of representing it.
+* Building software will always be hard.
+* Complexity
+    * Software is more complex for its size than any other human construct.
+    * No two parts are alike and if they are we make them one (DRY).
+    * Digital computers have a very large number of states. This makes conceiving, describing and testing hard.
+    * Software systems have orders of magnitude more states than computers.
+    * Complexity of the software system does not grow linearly.
+    * Complexity of software is essential not accidental.
+    * This complexity leads to the difficulty to communicate between team members. This then leads to bugs, cost overruns and schedule delays.
+    * Complexity of functions is invoking those functions.
+    * With complexity of structure comes extending programs to use new functions without creating side effects.
+    * With complexity of structure comes unvisualized states that become trapdoors.
+    * Complexity creates management burdens as well as learning, and undertanding burdens.
+* Conformity
+    * Unlike in other fields the complexity that software engineers must face is arbitrary.
+    * A lot of complexity comes from conformation to other interfaces which cannot be simplified out.
+* Changeability
+    * Modifications in most manufactured goods is hard but modifications in software is rather easy.
+    * Software can be changed more easily because it is "pure thought-stuff" and therefore infinitely malleable.
+    * All successful software gets changed.
+        * As software becomes more popular more people use it and those people will continue to press the edge cases.
+        * All software survives beyond the normal life of the vehicle for which it was written.
+* Invisibility
+    * Software is invisible and unvisualizable.
+    * Geometrics abstractions are a powerful tool other fields get to use but it does not quite work the same way for software. For instance an architect can use a floor plan.
+    * Software does not really exist in physical space.
+* Past Breakthroughs solved accidental difficulties.
+    * High-level languages
+        * Is believed to have created a productivity increase of at least 5 times.
+        * Also has gains in reliability, simplicity and comprehensibility.
+        * Eliminates a whole level of complexity that was never inherent in programming.
+        * At some point the elaboration of high-level languages becomes a burden and increases, not reduces, complexity.
+        * No additional gains can be found here.
+    * Time-sharing
+        * Had a large increase in productivity just not as much as high-level languages.
+        * This tackled a problem of immediacy.
+        * Slow turn-around is accidental instead of essential.
+        * Turn arounds are getting fast enough that they do not cause a congantive disconnect.
+    * Unified programming environments
+        * Unix and Interlisp changed this space by having integrated libraries, unified file formats, and pipes and filters.
+* Hopes for silver
+    * Ada and other high-level languages
+        * Ada is a high-level language of the 1980s
+        * The philosophy might be more of an advance than the actual language.
+        * The pholosophy is modularization of abstract data types of hierarchical structuring.
+        * Ada will not be a silver bullet because it is just another high-level language.
+    * Object-oriented programming.
 * Notes needed
 
 ### "No Silver Bullet" Refined
