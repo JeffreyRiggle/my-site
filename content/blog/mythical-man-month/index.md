@@ -706,6 +706,48 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
         * The pholosophy is modularization of abstract data types of hierarchical structuring.
         * Ada will not be a silver bullet because it is just another high-level language.
     * Object-oriented programming.
+        * Must be careful to distinguish between two separate ideas under the same name.
+            * abstract data types.
+                * object's type should be defined by a name, set of values, and a set of proper operations. This does not include its storage structure which should be hidden.
+            * hierarchical types, also called classes.
+                * Allow for the definition of interfaces.
+        * This removes more accidental difficulties from the process by allowing the designer to express the essence of design.
+        * This does not solve any problems with essential complexity.
+    * Artificial Intelligence
+        * Many people believe this will be revolutionary and will produce orders of magnituted improvement the author does not agree.
+        * Common definitions for Artifical intelligence
+            * The use of computers to solve problems that previously could only be solved by human intelligence.
+            * The use of a specific set of programming techiniques known as heuristic or rule based programming.
+        * There is not enough in common amongst problem domains. Problems solved with artificial intelligence in speech recognition have little to no overlap with image recognition.
+    * Expert Systems
+        * An expert system is a program containing a generalized inference engine and a rule base.
+        * These systems are designed to take input data and assumptions to explore logical consequences through the inferences derivable from the rule base.
+        * The ultimate outcome is conclusions and advice.
+        * Inference engines can deal with fuzzy probablistic data and purely deterministic logic.
+        * Inference engine technology is developed in an application agnostic way. This allow it to be applied to many uses.
+        * The changeable parts of the inference engine are encoded in the rule base.
+        * Most important advance is the separation of application complexity from the program.
+        * How can this be applied?
+            * Interface rule suggestions
+            * Suggestions for testing strategies
+            * Remembering bug-type frequencies.
+            * Providing optimization hints
+        * May be able to reduce the total effort involved in bringing up test cases.
+        * May help life long maintenance and modification testing.
+        * Problems with this approach
+            * It's hard to generate rules.
+            * It's hard to find self-analytical experts that know why they do things. It's even harder to get these people to distil that into a rule base.
+        * This pays of most for the inexperienced programmer.
+    * Automatic Programming
+        * A program for solving a problem from a statement of the problem specifications.
+        * This has been talked about for a long time but never realised.
+        * In essence, it is the solution method that needs specification not the problem.
+        * There are some exceptions where this does work, but these are already being put to good use.
+        * These exceptions seem to have the following in common
+            * Problems are characterized by few parameters.
+            * There are known methods of solution to provide a library of alternatives.
+            * Extensive analysis has lead to explicit rules for selecting solution techniques.
+    * Graphical Programing
 * Notes needed
 
 ### "No Silver Bullet" Refined
