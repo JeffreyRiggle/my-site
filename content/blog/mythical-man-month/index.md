@@ -645,15 +645,15 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
 ### No Silver Bullet - Essence and Accident
 * Software construction is made up of essential tasks and accidental tasks.
     * Essential tasks are the fashioning of complex conceptual structures.
-    * Accidental tasks are the representations of absract entities in programming languages. This includes the management of space and speed constraints.
-* Most gains in software productivity have come from removing artifical barriers that have made accidental tasks harder. Examples include severe hardware contraints, awkward programming languages, and lack of machine time.
+    * Accidental tasks are the representations of abstract entities in programming languages. This includes the management of space and speed constraints.
+* Most gains in software productivity have come from removing artificial barriers that have made accidental tasks harder. Examples include severe hardware constraints, awkward programming languages, and lack of machine time.
 * Ways to address the essential complexity
     * Exploit mass market. Do not build what can be bought.
     * Use rapid prototyping
     * Grow software organically, add function over time as needed.
     * Develop great conceptual designers in the next generation of software developers.
 * Everyone wants to see software costs drop as fast as hardware costs did.
-* There is no development or management technique which offers even one order of magnitude improvement of productivity in software development.
+* No development or management technique offers even one order of magnitude improvement of productivity in software development.
 * Progress must be made stepwise. It is time to stop expecting some magical solution to this problem.
 * We should never expect the type of gains we have seen in hardware in any field. Hardware has progressed faster than any other technology.
 * Essence includes the interlocking concepts: data sets, relationships among data items, algorithms, and invocations of functions.
@@ -663,133 +663,133 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
 * Complexity
     * Software is more complex for its size than any other human construct.
     * No two parts are alike and if they are we make them one (DRY).
-    * Digital computers have a very large number of states. This makes conceiving, describing and testing hard.
+    * Digital computers have a very large number of states. This makes conceiving, describing, and testing hard.
     * Software systems have orders of magnitude more states than computers.
-    * Complexity of the software system does not grow linearly.
-    * Complexity of software is essential not accidental.
-    * This complexity leads to the difficulty to communicate between team members. This then leads to bugs, cost overruns and schedule delays.
-    * Complexity of functions is invoking those functions.
-    * With complexity of structure comes extending programs to use new functions without creating side effects.
-    * With complexity of structure comes unvisualized states that become trapdoors.
-    * Complexity creates management burdens as well as learning, and undertanding burdens.
+    * The complexity of the software system does not grow linearly.
+    * The complexity of software is essential, not accidental.
+    * This complexity leads to difficulty communicating between team members. This then leads to bugs, cost overruns, and schedule delays.
+    * The complexity of functions is invoking those functions.
+    * With the complexity of structure comes extending programs to use new functions without creating side effects.
+    * With the complexity of structure comes unvisualized states that become trapdoors.
+    * The complexity creates management burdens as well as learning, and understanding burdens.
 * Conformity
-    * Unlike in other fields the complexity that software engineers must face is arbitrary.
+    * Unlike in other fields, the complexity that software engineers must face is arbitrary.
     * A lot of complexity comes from conformation to other interfaces which cannot be simplified out.
 * Changeability
-    * Modifications in most manufactured goods is hard but modifications in software is rather easy.
+    * Modifications in most manufactured goods are hard but software modifications are rather easy.
     * Software can be changed more easily because it is "pure thought-stuff" and therefore infinitely malleable.
     * All successful software gets changed.
         * As software becomes more popular more people use it and those people will continue to press the edge cases.
         * All software survives beyond the normal life of the vehicle for which it was written.
 * Invisibility
     * Software is invisible and unvisualizable.
-    * Geometrics abstractions are a powerful tool other fields get to use but it does not quite work the same way for software. For instance an architect can use a floor plan.
-    * Software does not really exist in physical space.
+    * Geometrics abstractions are a powerful tool other fields get to use but it does not quite work the same way for software. For instance, an architect can use a floor plan.
+    * Software does not exist in physical space.
 * Past Breakthroughs solved accidental difficulties.
     * High-level languages
         * Is believed to have created a productivity increase of at least 5 times.
-        * Also has gains in reliability, simplicity and comprehensibility.
+        * Also has gains in reliability, simplicity, and comprehensibility.
         * Eliminates a whole level of complexity that was never inherent in programming.
-        * At some point the elaboration of high-level languages becomes a burden and increases, not reduces, complexity.
+        * At some point, the elaboration of high-level languages becomes a burden and increases, not reduces, complexity.
         * No additional gains can be found here.
     * Time-sharing
         * Had a large increase in productivity just not as much as high-level languages.
         * This tackled a problem of immediacy.
         * Slow turn-around is accidental instead of essential.
-        * Turn arounds are getting fast enough that they do not cause a congantive disconnect.
+        * Turn arounds are getting fast enough that they do not cause a cognitive disconnect.
     * Unified programming environments
         * Unix and Interlisp changed this space by having integrated libraries, unified file formats, and pipes and filters.
 * Hopes for silver
     * Ada and other high-level languages
         * Ada is a high-level language of the 1980s
         * The philosophy might be more of an advance than the actual language.
-        * The pholosophy is modularization of abstract data types of hierarchical structuring.
+        * The philosophy is the modularization of abstract data types of hierarchical structuring.
         * Ada will not be a silver bullet because it is just another high-level language.
     * Object-oriented programming.
         * Must be careful to distinguish between two separate ideas under the same name.
             * abstract data types.
                 * object's type should be defined by a name, set of values, and a set of proper operations. This does not include its storage structure which should be hidden.
-            * hierarchical types, also called classes.
+            * hierarchical types also called classes.
                 * Allow for the definition of interfaces.
         * This removes more accidental difficulties from the process by allowing the designer to express the essence of design.
         * This does not solve any problems with essential complexity.
     * Artificial Intelligence
-        * Many people believe this will be revolutionary and will produce orders of magnituted improvement the author does not agree.
-        * Common definitions for Artifical intelligence
+        * Many people believe this will be revolutionary and will produce orders of magnitude improvement the author does not agree.
+        * Common definitions for Artificial intelligence
             * The use of computers to solve problems that previously could only be solved by human intelligence.
-            * The use of a specific set of programming techiniques known as heuristic or rule based programming.
+            * The use of a specific set of programming techniques known as heuristic or rule-based programming.
         * There is not enough in common amongst problem domains. Problems solved with artificial intelligence in speech recognition have little to no overlap with image recognition.
     * Expert Systems
         * An expert system is a program containing a generalized inference engine and a rule base.
         * These systems are designed to take input data and assumptions to explore logical consequences through the inferences derivable from the rule base.
         * The ultimate outcome is conclusions and advice.
-        * Inference engines can deal with fuzzy probablistic data and purely deterministic logic.
-        * Inference engine technology is developed in an application agnostic way. This allow it to be applied to many uses.
+        * Inference engines can deal with fuzzy probabilistic data and purely deterministic logic.
+        * Inference engine technology is developed in an application-agnostic way. This allows it to be applied to many uses.
         * The changeable parts of the inference engine are encoded in the rule base.
-        * Most important advance is the separation of application complexity from the program.
+        * The most important advance is the separation of application complexity from the program.
         * How can this be applied?
             * Interface rule suggestions
             * Suggestions for testing strategies
             * Remembering bug-type frequencies.
             * Providing optimization hints
         * May be able to reduce the total effort involved in bringing up test cases.
-        * May help life long maintenance and modification testing.
+        * May help lifelong maintenance and modification testing.
         * Problems with this approach
             * It's hard to generate rules.
-            * It's hard to find self-analytical experts that know why they do things. It's even harder to get these people to distil that into a rule base.
-        * This pays of most for the inexperienced programmer.
+            * It's hard to find self-analytical experts that know why they do things. It's even harder to get these people to distill that into a rule base.
+        * This pays off most for the inexperienced programmer.
     * Automatic Programming
         * A program for solving a problem from a statement of the problem specifications.
-        * This has been talked about for a long time but never realised.
+        * This has been talked about for a long time but never realized.
         * In essence, it is the solution method that needs specification not the problem.
         * There are some exceptions where this does work, but these are already being put to good use.
         * These exceptions seem to have the following in common
             * Problems are characterized by few parameters.
             * There are known methods of solution to provide a library of alternatives.
             * Extensive analysis has lead to explicit rules for selecting solution techniques.
-    * Graphical Programing
+    * Graphical Programming
         * Nothing convincing has come out of this field and the author is convinced nothing ever will.
         * The flow chart is a poor representation so why would this be any different?
-        * Screen resolution has not progressed far enough to really display everything that is needed.
+        * Screen resolution has not progressed far enough to display everything that is needed.
         * Software is difficult to visualize.
     * Program Verification
         * There is no silver bullet for proving designs are correct.
         * This is an important effort but it will not save labor.
-        * This does not mean error proof. Even mathmatical proofs can be faulty.
+        * This does not mean error-proof. Even mathematical proofs can be faulty.
         * Can only establish that the program meets its specification.
-        * In general a lot of the problem with software is debugging the specification.
+        * In general, a lot of the problem with software is debugging the specification.
     * Environments and tools
         * Many problems have already been solved here
             * uniform file formats
             * uniform program interfaces
             * generalized tools
         * IDEs look promising
-        * Biggest gain yet to be realized is the use of integrated database systems to keep track of details that must be recalled accurately by individual programmers.
+        * The biggest gain yet to be realized is the use of integrated database systems to keep track of details that must be recalled accurately by individual programmers.
         * This will help but the gain will only be marginal.
     * Workstations
-        * Enhacements are welcome but faster machines does not solve the fact that a lot of the problem is thinking time not compiling time. Often when you are compiliing even if it is for a long time you are still thinking.
+        * Enhancements are welcome but faster machines do not solve the fact that a lot of the problem is thinking time not compiling time. Often when you are compiling even if it is for a long time you are still thinking.
 * Promising Attacks on Conceptual Essence
     * Some of these look promising
     * Buy versus build
         * There are more and more vendors so the option to buy is becoming more common.
-        * It is always cheaper to buy then build.
+        * It is always cheaper to buy than to  build.
         * A $100,000 purchased piece of software costs about as much as one programmer-year and its delivery is immediate.
         * These products tend to be better documented.
-        * Hard part is applicability
-            * Often times the abstraction is not right or is too specialized. However, this is getting better due to standardized hardware.
+        * The hard part is applicability
+            * Often the abstraction is not right or is too specialized. However, this is getting better due to standardized hardware.
     * Refinement and rapid prototyping.
-        * Hardest part building a software system is deciding what to build.
-        * Most important function of software builders is the iterative extraction and refinement of product requirements.
-        * Generally customers have not thought of their problem in enough detail to form a valid specification.
-        * In planning any software activity it is necessary to allow for extensive iteration between client and designer.
+        * The hardest part in building a software system is deciding what to build.
+        * The most important function of software builders is the iterative extraction and refinement of product requirements.
+        * Generally, customers have not thought of their problem in enough detail to form a valid specification.
+        * In planning any software activity it is necessary to allow for an extensive iteration between client and designer.
         * Tools for rapid prototyping of systems as part of the iterative specification of requirements is a very promising effort.
-        * These prototypes simulate the important interfaces and performs main functions while not being bound to any speed, size or cost constraints.
+        * These prototypes simulate the important interfaces and performs main functions while not being bound to any speed, size, or cost constraints.
         * Prototypes do not handle exceptions
     * Incremental development (grow software)
-        * Buidling metaphor for software has outlived its usefulness instead it should be grown.
+        * Building metaphor for software has outlived its usefulness instead it should be grown.
             * software overtime behaves more organically than a construct would. This is due to how it changes over time.
         * This calls for a top-down design.
-            * Its very powerful to see something run and then see more features get added over time.
+            * It's very powerful to see something run and then see more features get added over time.
     * Great designers
         * Good design practices can be taught.
         * New curricula, new literature, and new organizations need to come into being to help raise the bar.
@@ -797,11 +797,11 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
         * Great designers produce structures that are faster, smaller simpler, cleaner, and are produced with less effort.
         * We need to grow great designers
         * Great designers and great managers are both rare.
-        * Every software organization should proclaim that great designers are as important to it's success as great managers.
+        * Every software organization should proclaim that great designers are as important to its success as great managers.
         * How to grow great designers
             * Identify top designers as early as possible, best are often not the most experienced.
             * Assign a career mentor.
-            * Provide opportunites for growing designers to interfact with one another.
+            * Provide opportunities for growing designers to interact with one another.
 
 ### "No Silver Bullet" Refined
 * Notes needed
