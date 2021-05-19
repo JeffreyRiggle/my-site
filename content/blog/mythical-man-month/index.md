@@ -748,9 +748,63 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
             * There are known methods of solution to provide a library of alternatives.
             * Extensive analysis has lead to explicit rules for selecting solution techniques.
     * Graphical Programing
-* Notes needed
+        * Nothing convincing has come out of this field and the author is convinced nothing ever will.
+        * The flow chart is a poor representation so why would this be any different?
+        * Screen resolution has not progressed far enough to really display everything that is needed.
+        * Software is difficult to visualize.
+    * Program Verification
+        * There is no silver bullet for proving designs are correct.
+        * This is an important effort but it will not save labor.
+        * This does not mean error proof. Even mathmatical proofs can be faulty.
+        * Can only establish that the program meets its specification.
+        * In general a lot of the problem with software is debugging the specification.
+    * Environments and tools
+        * Many problems have already been solved here
+            * uniform file formats
+            * uniform program interfaces
+            * generalized tools
+        * IDEs look promising
+        * Biggest gain yet to be realized is the use of integrated database systems to keep track of details that must be recalled accurately by individual programmers.
+        * This will help but the gain will only be marginal.
+    * Workstations
+        * Enhacements are welcome but faster machines does not solve the fact that a lot of the problem is thinking time not compiling time. Often when you are compiliing even if it is for a long time you are still thinking.
+* Promising Attacks on Conceptual Essence
+    * Some of these look promising
+    * Buy versus build
+        * There are more and more vendors so the option to buy is becoming more common.
+        * It is always cheaper to buy then build.
+        * A $100,000 purchased piece of software costs about as much as one programmer-year and its delivery is immediate.
+        * These products tend to be better documented.
+        * Hard part is applicability
+            * Often times the abstraction is not right or is too specialized. However, this is getting better due to standardized hardware.
+    * Refinement and rapid prototyping.
+        * Hardest part building a software system is deciding what to build.
+        * Most important function of software builders is the iterative extraction and refinement of product requirements.
+        * Generally customers have not thought of their problem in enough detail to form a valid specification.
+        * In planning any software activity it is necessary to allow for extensive iteration between client and designer.
+        * Tools for rapid prototyping of systems as part of the iterative specification of requirements is a very promising effort.
+        * These prototypes simulate the important interfaces and performs main functions while not being bound to any speed, size or cost constraints.
+        * Prototypes do not handle exceptions
+    * Incremental development (grow software)
+        * Buidling metaphor for software has outlived its usefulness instead it should be grown.
+            * software overtime behaves more organically than a construct would. This is due to how it changes over time.
+        * This calls for a top-down design.
+            * Its very powerful to see something run and then see more features get added over time.
+    * Great designers
+        * Good design practices can be taught.
+        * New curricula, new literature, and new organizations need to come into being to help raise the bar.
+        * Software construction is a creative process.
+        * Great designers produce structures that are faster, smaller simpler, cleaner, and are produced with less effort.
+        * We need to grow great designers
+        * Great designers and great managers are both rare.
+        * Every software organization should proclaim that great designers are as important to it's success as great managers.
+        * How to grow great designers
+            * Identify top designers as early as possible, best are often not the most experienced.
+            * Assign a career mentor.
+            * Provide opportunites for growing designers to interfact with one another.
 
 ### "No Silver Bullet" Refined
+* Notes needed
 
 ### Propositions of the Mythical Man-Month: True or False?
 
