@@ -804,10 +804,7 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
             * Provide opportunities for growing designers to interact with one another.
 
 ### "No Silver Bullet" Refined
-* Notes needed
-
-### Propositions of the Mythical Man-Month: True or False?
-
-### The Mythical Man-Month after 20 years
+* For the most part, this is just minor clarifications on the previous chapter and defenses against papers that try to counter prove the author.
 
 ## Insights
+* summarize
