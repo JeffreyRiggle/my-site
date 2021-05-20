@@ -12,6 +12,11 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
 ## Notes
 
 ### The Tar Pit
+This is a good introduction essay. In this chapter, Frederick does a great job distinguishing between software that works and production-grade software. The fact that you can get something that works together quickly often gives false hope for moving that to production. In this move, there is a lot of work to make the application stable for many users on many machines with few bugs in new features.
+
+Another aspect of this chapter I found quite interesting was the description of why so many people enjoy building software and how that can become a trap. The comparison of programming and programming projects to a tar pit is a very interesting metaphor that I think often fits.
+
+#### Original notes
 | | |
 |-|-|
 | A <br> Program | A <br> Programming <br> System |
@@ -59,6 +64,15 @@ This book is a series of essays from Frederick Brooks. In these essays the probl
     * In many cases, the product you have been laboring over is obsolete by the time you are ready to release it. This can lead to massive frustration.
 
 ### The Mythical Man-Month
+In this essay, Fredrick explores the complexity of getting a software project done on time and correctly. One major theme is it is very hard to estimate a software task. Currently, any estimation techniques we have are somewhat poor and these poor estimations make it hard for managers to give good timelines. One interesting concept that is brought up is that developer estimates are often optimistic. It is argued that software engineers are eternal optimists and this can lead to estimates being very off. Another issue with estimations is they are often ignored or pressured to meet a customer's demand. There is a call for managers with stronger backbones to avoid this sort of temptation.
+
+Another topic that is talked about a lot is the trade-off between men and months. In many other industries if you add more people to a project it will get done faster. Software is a bit of an exception. In the case of software often adding more people will have no effect or a negative impact on timelines. Bringing more people onboard requires more communication from already productive developers.
+
+As far as getting the product out the door there is a surprising amount of time spent doing things other than writing the code. It is argued that really coding is only one-sixth of the total effort. The rest of the effort is spent planning and testing.
+
+In the last section of this chapter, there is some guidance provided on what you can try to do if a project is falling behind. Some advice includes push the task out, drop scope on the task, and if all else fails you can try to add heads but smartly. Adding more developers is a serious risk and should be done early in the process.
+
+#### Original notes
 * Techniques of estimating are poorly developed
 * estimating techniques confuse effort with progress. (This hides the assumption that people and months are interchangeable)
 * since we are unsure of our estimates it makes software managers lives difficult
