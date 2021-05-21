@@ -119,6 +119,29 @@ In the last section of this chapter, there is some guidance provided on what you
     * Brooks Law simplified "Adding manpower to a late software project makes it later"
 
 ### The Surgical Team
+In this essay, an examination of how to structure software teams is done. In general, it seems that small teams work better. However, small teams cannot produce the large systems that are often required. To deal with this a collection of surgical teams can be created to have small effective teams while still producing large systems.
+
+These surgical teams are made of surgeons, copilots, administrators, editors, secretaries, program clerks toolsmiths, testers, and language lawyers.
+
+A surgeon in this context is your lead developer. The surgeon is responsible for designing code, writing documentation, and testing code. Generally, this person should have 10 years of experience. In a lot of ways, this role is similar to the master described in the clean coder book.
+
+A copilot can do everything a surgeon can but does not quite have the same experience as the surgeon. The biggest part of this role is to work with the surgeon. In this role, the copilot can question the surgeon's choices but the surgeon always gets the final say in the end design. In many ways, this is like clean coders journeyman.
+
+The administrator is the surgeon's boss and tends to handle non-technical aspects of work. These might include things like raises.
+
+The editor primarily works on documentation. The editor will review and edit documentation as needed.
+
+Secretaries in this context handle correspondence for the editor and the administrator.
+
+The program clerk manages all records. This includes both human and machine-generated records. This role would have to aggregate things like developer documentation and build output information.
+
+The toolsmith creates and maintains any specialized tools the surgeon may need.
+
+The tester creates system tests and plans testing sequences.
+
+Lastly, the language lawyer is a programming language expert. In this role, the language expert can help surgeons find ways to do things that might be difficult to accomplish in the language of choice.
+
+#### Original notes
 * People favor small teams but small teams cannot produce large systems.
 * There are wide productivity differences between good and bad programmers. (I assume this is about the controversial 10x programmer)
 * There is no correlation between years of experience and productivity.
