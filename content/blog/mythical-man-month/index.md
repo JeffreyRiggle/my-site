@@ -190,6 +190,15 @@ Lastly, the language lawyer is a programming language expert. In this role, the 
         * Can aid many surgeons
 
 ### Aristocracy, Democracy, and System Design
+This chapter focused a lot on architecture implementation and consistent design. It is important to have consistency in design. To make design consistent sometimes it is important to know what features to omit to keep the design consistent. A large portion of this chapter focuses on the difference between architecture and implementation.
+
+It is important to have architecture and implementation be separate concerns. Only by doing this can you make your system consistent. It is important to note that neither responsibility is any more creative than the other. Creativity is just on different dimensions.
+
+An architect's primary responsibility is to define what happens. Architects are focused on the end-user and know how to make the system feel the same. To help keep the system consistent there should be few architects.
+
+On the other hand, an implementor defines how it happens. While this might not sound like a creative process the creativity here lies in cost and performance optimizations. Sometimes implementors have good ideas, sadly if it is not consistent with the system it really should not be done.
+
+#### Original notes
 * Conceptual integrity is the most important consideration in system design.
 * it's better to omit some features if it makes design ideas consistent.
 * Programming systems are intended to make a computer easy to use.
