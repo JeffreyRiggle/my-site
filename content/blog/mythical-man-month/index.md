@@ -225,6 +225,13 @@ On the other hand, an implementor defines how it happens. While this might not s
 * The Implementor has tons of work to do even before the specification exists.
 
 ### The Second-System Effect
+At some point in every software project comes a time in which a second system must be considered. In these cases, extreme caution must be made. Oftentimes additional function, extrapolation of function, and over-design are the issues the architect must battle. Another common issue is matching functionality correctly. It often happens that the second system omits some functionality that the first system had.
+
+On top of these factors friction between the architect and the implementors can come up. The architect needs to remember that it is the implementor's job to deal with implementation. While this is true for some cases the architect must be ready to suggest a way to implement his design.
+
+In general, the best practice is to have an architect who is experienced with second systems working on the second system. These architects should be able to spot the pitfalls before it is too late.
+
+#### Original notes
 * When a cost is too high the software architect has two options
     1. Cut the design
     2. challenge the estimate by suggesting cheaper impelementations.
