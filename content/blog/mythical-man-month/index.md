@@ -253,6 +253,13 @@ In general, the best practice is to have an architect who is experienced with se
 * If a second system is required consider having an architect who has already done two systems take on the job of the lead architect as they will have learned from their mistakes in their second system.
 
 ### Passing the Word
+Keeping a manual or good documentation is key to keeping everyone working on a software project in sync. Manuals should be consistent in style and they should have an appropriate level of precision.
+
+Using implementation as a formal definition can be a useful tool. When this is done questions are answered unambiguously, a debate is never needed and the precision is always appropriate.
+
+Another helpful tool for keeping everyone in sync is consistent meetings where changes get discussed and impacts to other components can be identified or known.
+
+#### Original notes
 * a manual is a necessary tool
 * a manual is an external specification of the product.
 * manuals should not only include what a user sees but it should also refrain from describing everything a user does not see.
