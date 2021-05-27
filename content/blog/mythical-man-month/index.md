@@ -344,6 +344,13 @@ One last issue that tends to get in the way with large projects is tree organiza
     * Just like the producer can be the boss the roles could be inverted. In some cases, the technical director is the boss and the producer is the right-hand man.
 
 ### Calling the Shot
+This essay is mostly the evaluation of a lot of studies around estimation and effort of different programming tasks.
+
+One of the key arguments here is that not all programming tasks are equal. Inevitably some programming is harder to do than other types of programming.
+
+The other key argument is there is more than coding that goes into software development. This means that estimates should not only account for coding time but should consider other tasks such as debugging time.
+
+#### Original notes
 * Estimations should not be based on coding alone since that is only 1/6th the effort
 * Charles Portman conducted a study on productivity.
     * Found that tasks had been taking twice as long as estimated.
