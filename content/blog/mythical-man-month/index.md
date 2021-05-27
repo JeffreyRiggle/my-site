@@ -287,6 +287,15 @@ Another helpful tool for keeping everyone in sync is consistent meetings where c
     * each week this log is concatenated amongst all architects and sent out to implementors.
 
 ### Why Did the Tower of Babel Fail?
+Most of the time project failures are the result of people not communicating. This is especially easy to end up happening in larger organizations. What tends to happen in these cases is teams build up assumptions about other teams. These assumptions are not always true and can lead to failures to integrate.
+
+There are some key tools to dealing with this. The first is identifying and informing teams of their intergroup dependencies. The second is using project meetings. Finally the third is to use a project workbook.
+
+A project workbook is an imposed standard on documents. In this workbook things like objectives, external specifications, interface specifications, technical standards, internal specifications, and administrative memoranda should be included.
+
+One last issue that tends to get in the way with large projects is tree organization structures. While these might be good for organizations they are terrible for communication. To work around this you can assign people roles to help with this cross tree issue.
+
+#### Original notes
 * Many project failures occur because two groups of people in a large organization are not talking
     * Each team often has assumptions that have not been verified about the other team.
 * How to communicate cross team
