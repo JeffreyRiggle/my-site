@@ -378,6 +378,9 @@ The other key argument is there is more than coding that goes into software deve
     * According to this data, productivity may increase as much as five times with a high-level programming language.
 
 ### Ten Pounds in a Five-Pound Sack
+Most of this chapter focuses on size constraints. This focuses a lot on the cost of resources on older machines. While most of the lessons seem a bit out of date there is likely some equivalent that can be made in modern web and mobile development. Some of the key lessons to take away are the following. If you give users fine-grain control over options more space will be required. Breaking functionality into smaller modules can have an impact on performance and space. This might have been true for native binaries but I am not fully convinced it applies to web development. That is assuming you are not shipping duplicated code in your bundles. The last piece of information we are left with is to think about your data structure. In many cases, space optimization can happen at the data structure level.
+
+#### Original notes
 * Much of this is based on the memory consumption of applications on hardware. At the time this was authored renting even 1KB of data a month was not cheap.
 * builder of software must set size targets, control size and devise size-reduction techniques.
 * hardware builder sets component-count targets, controls component count, and devises count-reduction techniques.
@@ -394,7 +397,7 @@ The other key argument is there is more than coding that goes into software deve
     * More function means more space.
     * The first area of craftmanship is trading function for size.
         * The more fine-grained the user's options are the more space the program will take up.
-        * Breaking functions into small modules costs performance and space?
+        * Breaking functions into small modules costs performance and space.
     * The second area of craftmanship is space-time trade-offs.
         * To do this make sure your team is trained in programming techniques and not just reliant on previous experience.
         * Each program should have access to two different library sets for the common functionality. The quick one and the squeezed one.
