@@ -405,6 +405,11 @@ Most of this chapter focuses on size constraints. This focuses a lot on the cost
 * Most breakthroughs will come from redoing the representation of data.
 
 ### The Documentary Hypothesis
+This chapter talks a lot about documentation requirements and how different jobs need different documents. Some recommended documentation for a manager would include documentation around objectives, goals, specifications, schedule, budget, and organization. Managers also need appropriate documentation to handle the forecasting and pricing of their products. Software projects require very similar documentation to that of managers.
+
+One of the bigger takeaways from this chapter is the need for formal documents. We need formal documents without these documents we cannot check our assumptions. Many times gaps in understanding and knowledge can only be found when documentation is created.
+
+#### Original notes
 * What are the critical documents for managers?
     * Objectives define the need to be met and the goals.
     * Specifications are the computer manual plus performance specifications.
