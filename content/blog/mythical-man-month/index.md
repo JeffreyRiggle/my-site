@@ -522,6 +522,15 @@ There is a long tail end of software. Even after the product is released there i
     * Things are always best at their beginning from a statistical model.
 
 ### Sharp Tools
+Most of this chapter feels a bit outdated. Much of the discussion in this chapter is centered around tooling and environments.
+
+In this chapter, there is an argument that tools are secrets held close by developers and not shared. Thankfully the proliferation of open source over the years has almost turned this around completely. At this point, it feels like there are too many tools to choose from. There are also big players in the game backing important tooling projects with real money. There is a lot more that could be said about open source and the pros and cons but that is not related to this chapter.
+
+Another topic that is discussed a ton is environments. This is another thing I think has changed over time. Anymore much of consumer software runs in virtual machines. Often higher-level languages like Java, C#, Javascript, Go, etc are running in virtual machines and do not have to worry much if at all about the target machine.
+
+The last thing is a call for better debugging and tooling. I think there is always room for improvement here but it seems we have come a long way from having to evaluate heaps. Anymore it is not uncommon to be able to have a fully debuggable environment with near real-time feedback to the developer.
+
+#### Original notes
 * Many programmers have their own personal set of tools that they acquire over time and do not share
     * I do not think this is true anymore, if anything we have too many shared tools.
 * Individualized tools hamper instead of aiding communication
