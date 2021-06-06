@@ -452,6 +452,23 @@ One of the bigger takeaways from this chapter is the need for formal documents. 
 * The task of a manager is to develop a plan and then to realize it. A written plan is precise and communicable.
 
 ### Plan to Throw One Away
+A common issue in software development is the first thing you build is what will be used. This is not common in other industries and appears to be an issue in the software industry in general. No matter how good your planning is it will never be good enough hence the need for a first throw-away system.
+
+Since you are planning to throw away you need to accept the fact that change is inevitable. Since change is inevitable there are things you can do to help your system change over time. Some things that help with change over time are the following.
+* Use careful modularization
+* Have a complete and precise definition of inter-module interfaces.
+* Have complete documentation for modules
+* Use a high-level language.
+* Use self-documenting techniques.
+* Use compile-time operations to enforce standard declarations.
+* Use module versioning
+* Have good version releasing practices.
+
+Another form of change you need to be ready for is organizational change. The best way to handle this is to make sure that your senior management and engineers are technically and emotionally stable. Another key aspect is to generate sound documentation.
+
+There is a long tail end of software. Even after the product is released there is a maintenance cycle that continues to change the software over time. This maintenance generally costs 40% more than the software had cost to produce. Also with every defect that is fixed in this phase, there is a 20-50% chance a new one will come up as a result of the change. Because of this, it is important to have appropriate regression testing.
+
+#### Original notes
 * Chemical engineers build a pilot plant before making a fully operational factory since what works in a lab does not necessarily work in a factory.
 * Programmers do not seem to have this process and this is a constantly repeated mistake.
 * In many projects, the first version is barely usable.
