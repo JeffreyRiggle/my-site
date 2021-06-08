@@ -594,6 +594,15 @@ The last thing is a call for better debugging and tooling. I think there is alwa
             * There is no evidence to prove these tools are useful.
 
 ### The Whole and the Parts
+In this chapter reducing bugs, testing applications, and debugging are discussed.
+
+For the most part, bugs are the result of mismatched expectations between component authors. To avoid this it is important to have detailed specifications on the component boundaries. The better the documentation is on the components the less likely there are the be bugs.
+
+When it comes to testing developers mustn't be the ones testing their code. It is too easy for developers to invent ways to fix the problem in testing instead of fixing their code.
+
+The top-down design methodology is proposed as a solution to avoid bugs. In this case system building is broken down into architecture, implementation, and realization. At each stage in this process, refinement can happen to make sure the scope is appropriate and those modules are defined well. This process avoids bugs by having a clear structure and representation. This process also produces smaller modules.
+
+#### Original notes
 * Designing the bugs out
     * Bug proof definitions
         * Most subtle bugs come from mismatched assumptions between component authors.
