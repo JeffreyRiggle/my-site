@@ -669,6 +669,15 @@ The top-down design methodology is proposed as a solution to avoid bugs. In this
         * Be careful about release time, changes can disrupt others who are expecting a stable testbed.
 
 ### Hatching a Catastrope
+In this chapter projects and deadlines are discussed in depth. A large focus of this chapter is how to detect when a project is falling behind. In many cases, a project does not fall behind over one major thing. Instead, over time a lot of little things add up and cause major deadline issues.
+
+To help mitigate this a schedule is needed with concrete, specific, measurable, and well-defined milestones. The more specific the milestone is the harder it is for anyone to deceive themselves into believing that an unfinished project could be counted as a complete milestone.
+
+In some cases, developers will need to try harder than necessary to cope with mishaps. This is a talent that should be used sparingly but is a talent that needs to be able to be utilized. Since this should be used sparingly a PERT chart should be used to identify when this is required.
+
+Sometimes slippages get hidden from managers. This is often not a deliberate act but instead a shield to not burden upper management with too much information. To avoid this becoming a real issue there are a couple of suggestions made in this chapter for appropriate information transfer in these cases. In many cases, it is an issue of providing the boss with the correct amount of actionable and status information. As a boss, it is your job not to act not status information. In some cases, a boss just needs more information in these cases a PERT chart acts as a perfect document to get them the scheduling information they need.
+
+#### Original notes
 * Disaster in projects is often a bunch of little things instead of one big thing
 * slippages are hard to recognize, harder to prevent, and even harder to make up.
 * You need a schedule
