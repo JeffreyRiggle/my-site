@@ -711,6 +711,27 @@ Sometimes slippages get hidden from managers. This is often not a deliberate act
     * Preparation of PERT chart is a function of the boss and managers reporting to them.
 
 ### The Other Face
+This is another chapter that talks about the importance of good documentation. This chapter focuses on a couple of different types of documentation.
+
+The first type of documentation that is mentioned is the documentation required to use a program. The common issue with this kind of documentation is it often lacks sufficient explanation. In many cases, the big picture is documented but the finer details are omitted from the documentation. Good usage documentation addresses the following.
+
+* Purpose. What is the main function and reason for the program?
+* Environment. What machines, hardware, and operating systems does it run on?
+* Domain and Range. What is the type of input? What kinds of output can you expect?
+* Algorithms used. What does the program do?
+* Input-Output formats. Complete and precise details on these formats.
+* Operating Instructions. What are the normal and abnormal end operations?
+* Options. What choices does the user have? How can the user specify those?
+* Running time. How long should the program take to run?
+* Accuracy. How precise are the answers intended to be?
+
+Another type of documentation is the documentation required to believe a program works. In general, this documentation comes in the form of small tests a user can perform against the program to verify it is working as documented.
+
+The last type of documentation covered in this chapter is documentation to modify a program. This documentation gives a clear overview of the internal structure of the product. In this documentation, you might expect to find flow charts, descriptions of algorithms used, explanations of file layouts, and discussions around modifications that had been considered but not implemented.
+
+The last section of this chapter discussed self-documenting programs. In this case, the idea is the source code acts as documentation. In the form proposed in this essay code comments are used but it does mention having descriptive variable names. This call to action is a little bit less strict than the self-documenting approach mentioned in clean code.
+
+#### Original notes
 * There are two faces to software
     * One is it is a message from man to machine.
     * The other is human to human. Memory fades ownership changes and we still need to understand what a program does
