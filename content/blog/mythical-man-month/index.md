@@ -963,4 +963,8 @@ In this chapter the argument is that no such technique can be found in software 
 * For the most part, this is just minor clarifications on the previous chapter and defenses against papers that try to counter prove the author.
 
 ## Insights
-* summarize
+This might be one of the most referenced books of software I can think of. While this book was written quite some time ago, many of its concepts are still applicable today. It is also clear that a lot of the issues talked about have already been addressed and are somewhat obsolete since the authoring of this book. Some examples include machine access and machine speeds. We now live in a time where for the most part stable machines are a given. There is also very rarely software that is built for a specific machine. With these hardware changes, some of the tales and concerns become less relevant.
+
+One thing that was interesting to read about in this was the talk of high-level languages. It was clear that the author had considered high-level languages to be the future and the direction the industry needed to head in. In general, it would appear the author was right and high-level languages do dominate the space now. What is interesting however is that the languages considered are not used today and if they are they would now be considered lower-level languages.
+
+While reading this book I often wondered if there was going to be anything new talked about. What I have come to realize is that this book likely seemed so familiar because all of its teachings are indoctrinated into the industry's teachings. It appears to me that this book has been read by many and its suggestions have made it into industry.
