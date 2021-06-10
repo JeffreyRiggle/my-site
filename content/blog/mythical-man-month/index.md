@@ -792,6 +792,13 @@ The last section of this chapter discussed self-documenting programs. In this ca
         * In general the benefits out-weight the negatives.
 
 ### No Silver Bullet - Essence and Accident
+This is the longest of the essays in the book and quite possibly the most quoted title in the industry. In this chapter, the silver bullet refers to some possible technique, technology, or management style that would radically improve the productivity of software projects.
+
+The argument posed is that it is very likely that developers would like to find some solution that could drastically improve productivity. This comes in part due to software's counterpart hardware. In the case of hardware, with the introduction of the transistor, we saw very large productivity gains. It is argued that no technology in the history of man has ever grown as fast or effectively as hardware. The issue here is software is built on hardware so there is the hope that we could find the transistor equivalent for software.
+
+In this chapter the argument is that no such technique can be found in software and instead we should strive for incremental improvement. This argument is made by evaluating essential and accidental complexity in software development. To give a loose definition accidental complexity is any complexity that does not need to exist to get the job of software development done. Some examples of accidental complexity would be compile times, machine access, and language. On the other hand, essential complexity is the complexity that must be handled and is the main purpose of software. Essential complexity is defining what it is we want the program to do. It is argued that the only real drastic gains that can be had in software ever is for the accidental complexity. It is also argued that most of the challenges with accidental complexity are mostly solved and there are only minor incremental gains that can be had at this point. Since all that is left is essential complexity there are no more major improvements to be had since all that is left is the main part of the job which is essentially difficult.
+
+#### Original notes
 * Software construction is made up of essential tasks and accidental tasks.
     * Essential tasks are the fashioning of complex conceptual structures.
     * Accidental tasks are the representations of abstract entities in programming languages. This includes the management of space and speed constraints.
