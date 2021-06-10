@@ -1,6 +1,6 @@
 ---
 title: 'Book Note - The Mythical Man-Month'
-date: '2021-04-14'
+date: '2021-06-09'
 ---
 
 # The Mythical Man-Month
