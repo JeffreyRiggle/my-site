@@ -44,9 +44,6 @@ const Layout = ({ children, title }) => {
             <Link to="/blogs" className="header-link">
               Blogs
             </Link>
-            <Link to="/feedback" className="header-link">
-              Feedback
-            </Link>
           </h1>
         </div>
       </header>

@@ -285,23 +285,6 @@ body {
     background-color: lightgray;
 }
 
-.feedback-form {
-    display: grid;
-    grid-template-columns: 15% 50%;
-    grid-column-gap: 32px;
-    grid-template-rows: auto;
-    grid-row-gap: 16px;
-}
-
-.feedback-form textarea {
-    height: 200px;
-    resize: none;
-}
-
-.feedback-form .result {
-    font-weight: bold;
-}
-
 .error {
     color: red;
 }
