@@ -4,37 +4,37 @@ date: '2023-11-04'
 ---
 
 # LLMs and TDD
-With all the undeniable hype around LLMs and more specifically ChatGPT I decided it was time to give it a fair shot. For the last year or so most everyone has been talking about how it is going to revolutionize how many of us do our jobs and completely change how software engineers write software. It has also been suggested that those of us who choose not to use the technology will be left in the dust by those who choose to use it.
+With all the undeniable hype around LLMs and more specifically ChatGPT I decided it was time to give it a fair shot. For the last year or so almost everyone has been talking about how it is going to revolutionize how many of us do our jobs and completely change how software engineers write software. It has also been suggested that those of us who choose not to use the technology will be left in the dust by those who choose to use it.
 
-This sort of hype is so common in our industry that I decided to give it a while before even attempting to use it. When I finally got around to using it at first I was impressed. Visually its presentation style is quite stunning and it provides very promising looking results to the questions you give it. However on further inspection my initial take was it constantly makes mistakes and presents them in a way that sounds factual. Most of my common use cases for a tool like this would be to replace searching documentation on a third party library I depend on, but alas it would often make up interfaces and function calls for the tool that didn't exist. After this first exposure I decided to put the tool down and move on.
+This sort of hype is so common in our industry that I decided to give it a while before even attempting to use it. When I finally got around to using it at first I was impressed. Visually its presentation style is quite stunning and it provides very promising-looking results to the questions you give it. However, on further inspection, my initial take was it constantly makes mistakes and presents them in a way that sounds factual. Most of my common use cases for a tool like this would be to replace searching documentation on a third-party library I depend on, but alas it would often make up interfaces and function calls for the tool that didn't exist. After this first exposure, I decided to put the tool down and move on.
 
-Over the past several months people in the industry kept singing it's praises. This got me thinking maybe I wasn't using the tool the right way and if I could just find the right way to work with it I would become even more productive and might be able to accomplish things I would otherwise pass on due to difficulty.
+Over the past several months people in the industry kept singing its praises. This got me thinking maybe I wasn't using the tool the right way and if I could just find the right way to work with it I would become even more productive and might be able to accomplish things I would otherwise pass on due to difficulty.
 
 ## Understanding how others use it
-The first step I figured was to see how other people had been using it and where they seem to find value with the tool. Through this I found that the most common use cases had been the following themes
+The first step I figured was to see how other people had been using it and where they seemed to find value with the tool. Through this, I found that the most common use cases had been the following themes
 
-* Document this code for me because its hard to understand.
+* Document this code for me because it's hard to understand.
 * Write tests for the code I have already authored.
 * Write my code for me as I describe what it should do.
 * Refactor some existing code to make it more readable.
 
-Of these cases the one case I found facinating was the `Write my code for me as I describe what it should do`. This seems like an interesting replacement for peer programing in an industry where that sort of activity is becoming a bit more rare. However most of the other cases just didn't work for me. I suspect it might just be me being stubborn or maybe I have suscribed too much to the dogma of people like [Robert C. Martin](https://en.wikipedia.org/wiki/Robert_C._Martin) and [Kent Beck](https://en.wikipedia.org/wiki/Kent_Beck) but some of these cases seemed a bit irresponsible. I understand documentation is hard to write and tests can be tedious but these seem like part of the rigour that comes along with any Job containing the title "Engineer".
+Of these cases, the one case I found fascinating was the `Write my code for me as I describe what it should do`. This seems like an interesting replacement for pair programming in an industry where that sort of activity is becoming a bit rarer. However, most of the other cases just didn't work for me. I suspect it might just be me being stubborn or maybe I have subscribed too much to the dogma of people like [Robert C. Martin](https://en.wikipedia.org/wiki/Robert_C._Martin) and [Kent Beck](https://en.wikipedia.org/wiki/Kent_Beck) but some of these cases seemed a bit irresponsible. I understand documentation is hard to write and tests can be tedious but these seem like part of the rigor that comes along with any Job containing the title "Engineer".
 
 ## Thinking about how I would want to apply it
-At this point I decided to take some time and reflect. If I was going to use a tool like this how would I want to use it? Upon a fair amount of thinking I landed on the best way to use the tool and get the desired outcomes I would be some sort of TDD loop. In this loop I decided that the human would be in control of the inputs and outputs by writing the tests. This would in tern leave the implementation up to the AI.
+At this point, I decided to take some time and reflect. If I was going to use a tool like this how would I want to use it? Upon a fair amount of thinking I landed on the best way to use the tool and get the desired outcomes would be some sort of TDD loop. In this loop, I decided that the human would be in control of the inputs and outputs by writing the tests. This would in turn leave the implementation up to the AI.
 
-At this point I was starting to get excited and even thought a bit more about how transformative this could be of a workflow. I even started to consider how it might start to draw parallels between other industries. For example its intersting that we design and build code as programers but other industries like housing have architects that design the house but never have to do the construction.
+At this point, I was starting to get excited and even thought a bit more about how transformative this kind of workflow could be. I even started to consider how it might start to draw parallels between other industries. For example, it's interesting that we design and build code as programmers but other industries like housing have architects that design the house but never have to do the construction.
 
 
 ## Starting off simple
-At first I decided to start of simple. In this case I was going to use a language I use a lot and try something rather trivial. In this case I decided something trival would be a simple partitioned log that is backed by localStorage. Going into this I had already built up a couple assumptions
+At first, I decided to start off simple. In this case, I was going to use a language I use a lot and try something rather trivial. In this case, I decided something trivial would be a simple partitioned log that is backed by localStorage. Going into this I had already built up a few assumptions
 
 * ChatGPT would not produce a working result faster
 * ChatGPT would not write documentation by default
 * ChatGPT would default to writing typescript when given a test with no types
-* ChatGPT would write more code that was required.
+* ChatGPT would write more code than was required.
 
-After this test was completed I found the following. Much to my suprize ChatGPT did not assume typescript by default. Also since I was in such a rush to set a time record to beat I made a mistake that assumed you would always append log before reading log. I also found that ChatGPT did produce a result faster but had I have not come with the tests written in the fist place I suspect it would have taken longer in ChatGPT.
+After this test was completed I found the following. Much to my surprise, ChatGPT did not assume typescript by default. Also since I was in such a rush to set a time record to beat I made a mistake that assumed you would always append a log before reading the log. I also found that ChatGPT did produce a result faster however I had already written the tests in advance so that might account for the time difference.
 
 ### Expectation breakdowns
 One thing I found rather quickly is that ChatGPT was not picking up on the expectations that my tests had been subtly impliying. For example in my test code I was mocking out `getItem` and `setItem` in local storage. However ChatGPT really wanted to index all items directly from local storage. For example instead of writing some code like this
