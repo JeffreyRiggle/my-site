@@ -208,4 +208,6 @@ The result of this test can be found [here](https://github.com/JeffreyRiggle/ai-
 In between these tests I decided to play around with ChatGPT a bit and decided to flip this problem on its head. Instead I would have ChatGPT write some tests and I would write the implementation for those tests. In the end I found this to be a lot more enjoyable and saw this as a good oppertunity to use the tool as more of a generalized hone your skills type tool similar to Robert C. Martin's idea of a code kata.
 
 ## Conclusions
-TODO
+I understand that this is not the most conculsive test and that there are other tools I could have explored. I am sure I would have seen slightly different results using something like GPT-4 from openai or copilot from GitHub. However after this experience I was not really willing to invest money to see if I would get a better result.
+
+In the end many of the assumptions I had about the tool had been wrong in ways I didn't expect. However instead of being completely disappointed I did find one workflow I quite enjoyed with this tool and it did not end up being a complete was of time. ChatGPT may be useful for many but for the way I like to work with my tools it doesn't quite cut it for me.
