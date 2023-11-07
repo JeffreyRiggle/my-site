@@ -4,7 +4,7 @@ date: '2023-11-04'
 ---
 
 # LLMs and TDD
-With all the undeniable hype around LLMs and more specifically ChatGPT I decided it was time to give it a fair shot. For the last year or so almost everyone has been talking about how it is going to revolutionize how many of us do our jobs and completely change how software engineers write software. It has also been suggested that those of us who choose not to use the technology will be left in the dust by those who choose to use it.
+With all the undeniable hype around LLMs and more specifically [ChatGPT](https://chat.openai.com/) I decided it was time to give it a fair shot. For the last year or so almost everyone has been talking about how it is going to revolutionize how many of us do our jobs and completely change how software engineers write software. It has also been suggested that those of us who choose not to use the technology will be left in the dust by those who choose to use it.
 
 This sort of hype is so common in our industry that I decided to give it a while before even attempting to use it. When I finally got around to using it at first I was impressed. Visually its presentation style is quite stunning and it provides very promising-looking results to the questions you give it. However, on further inspection, my initial take was it constantly makes mistakes and presents them in a way that sounds factual. Most of my common use cases for a tool like this would be to replace searching documentation on a third-party library I depend on, but alas it would often make up interfaces and function calls for the tool that didn't exist. After this first exposure, I decided to put the tool down and move on.
 
@@ -208,6 +208,6 @@ The result of this test can be found [here](https://github.com/JeffreyRiggle/ai-
 In between these tests, I decided to play around with ChatGPT a bit and decided to flip this problem on its head. Instead, I would have ChatGPT write some tests and I would write the implementation for those tests. In the end, I found this to be a lot more enjoyable and saw this as a good opportunity to use the tool as more of a generalized hone-your-skills type tool similar to Robert C. Martin's idea of a code kata.
 
 ## Conclusions
-I understand that this is not the most conclusive test and that there are other tools I could have explored. I am sure I would have seen slightly different results using something like GPT-4 from openai or copilot from GitHub. However, after this experience, I was not really willing to invest money to see if I would get a better result.
+I understand that this is not the most conclusive test and that there are other tools I could have explored. I am sure I would have seen slightly different results using something like GPT-4 from [openai](https://openai.com/) or [copilot](https://github.com/features/copilot) from GitHub. However, after this experience, I was not really willing to invest money to see if I would get a better result.
 
 In the end, many of the assumptions I had about the tool had been wrong in ways I didn't expect. However, instead of being completely disappointed I did find one workflow I quite enjoyed with this tool and it did not end up being a complete waste of time. ChatGPT may be useful for many but for the way I like to work with my tools, it doesn't quite cut it for me.
