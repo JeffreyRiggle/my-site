@@ -18,16 +18,13 @@ Armed with a "simple" idea for a program I set out to find the editor I was goin
 As I set out on my journey to use a new editor I did what I usually do in these situtations, laid out some expectations. In this I assumed that it was going to be slower at first to edit in neovim than just using the tools I had been. I also assumed that figuring out the keybindings would take a while. Another thing I assumed was that pretty early on I would have to add plugins and might even have to use tmux. In the end I assumed I would enjoy the end result and might even use it full time.
 
 ## Getting started
-TODO: Talk about the choice to use neovim over vi or vim
+Starting this process out I was running on a ubuntu based machine. The first task was installing neovim which was pretty easy to do with apt-get. Once in it was pretty clear to me that the default settings didn't quite work for me. I spent a bit of time figuring out the correct numbering scheme and color settings. Then it came time for the hard part, sifting through all too many resources to figure out what plugins I needed and how to set them up.
 
-TODO: Talk about the overwhelming amount of suggested plugins and setup options
+### Getting the config down
+The first thing I found was that I just wanted to set some editor properties and move on with my coding; However, it appeared there was two ways to setup configuration. You can either use a `vim.init` file in your config space or write some lua code to configure your editor. Most online tutorials had been all in on lua but I just wanted something quick, simple and easy for me to understand. For this I decided to proceed with the `vim.init` pattern.
 
-TODO: Talk about minimal setup
-* Neovim
-* Standard config (no lua)
-* First round of plugins
-    * airline
-    * nerdtree
+### First round of plugins
+Once I got my editor looking the way I wanted and persisted in my init config it was time to pick my first couple of plugins. In the end I landed on airline and nerdtree. I assumed that it would be nice to have a plugin that showed me very clearly what mode I was in (edit vs view). I also assumed what IDE doesn't have a project tree so of course I would need that right?
 
 ## Keybindings don't have to have a modifier?
 
