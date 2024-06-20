@@ -27,24 +27,27 @@ The first thing I found was that I just wanted to set some editor properties and
 Once I got my editor looking the way I wanted and persisted in my init config it was time to pick my first couple of plugins. In the end I landed on airline and nerdtree. I assumed that it would be nice to have a plugin that showed me very clearly what mode I was in (edit vs view). I also assumed what IDE doesn't have a project tree so of course I would need that right?
 
 ## Keybindings don't have to have a modifier?
+One thing that took me a long time to wrap my head around was that due to the different modes present in neovim/vi you don't have to do crazy keybindings to accomplish different tasks. Some examples include jumping to next word or jumping to end of line. In a edit only type editor these types of commands require some modifier key like control/command/alt but in neovim they can be an operation like change to view mode and press `w` key.
+
+This took me a while to get used to but once I did I really ended up enjoying having the different modes and less strange finger contortion to accomplish a simple task. During this time I found the [following resource](https://vim.rtorr.com) to be very helpful.
+
+The one thing that took me a very long time to get used to was cut. For some reason copy verses yank wasn't to hard to map mentally but `d` being cut/delete took me a long time to commit to memory.
 
 ## Spolied on sensible defaults
-Talk about how most IDEs paper over the defaults and when you have to think about them it can be a pain. Ex: indent size on javascript files
+Through this experience I think something I have taken for granted with all of the editors I typically use is sensible formatting etc defaults baked into the editor. In the past I had seen defaults break down a bit when doing something like javascript development in Visual Studio (at least circa 2015) or Eclipse. However, normally these standard IDEs handled the default formatting for the language they where defined for very well. Moving forward VSCode took that to the next level by having different default formats for different languages and even detecting different tools that you should install based on the language you are attempting to author.
 
-## Something clever about plugins
-TODO: Talk more about the plugins I initially installed
+The behavior of VSCode really reduces the congnitie load for developers that just want sensible defaults and don't want to spend a lot of time picking out there tools. At times this was something I missed as I do not always enjoy going down a rabbit hole to find a sutible option for the task I am working on.
 
-TODO: Talk about how as time went on I needed more and more plugins
+## The hunt for appropriate plugins
+Pretty early on it was clear to me that the original set of plugins I installed wasn't cutting it. Neovim is great but at its core it is a text editor that needs plugins to accomplish things we don't always think about. One of those things is autocomplete. By default neovim had limited or no autocomplete, but with many common IDEs it so more or less something you expect. Most commonly used languages have language servers that provide completion results, type information and hints. After looking around a bit I found CoC (Conquerer of Completion). This tool worked fine but it never fully set well with me. The first issue was it was a bit weird to have to deal with a plugin system in one of my plugins. The second issue while minor was that it was a bit strange that one of my plugins was built on nodejs requiring specific node versions to be present. In the end this ended up being the right tool to unblock me but I still cannot help but wonder if there is a better way to handle this problem.
 
-TODO: Talk about adding CoC and the issues I had with it
-
-TODO: Talk about adding fzf (probably the best thing I added)
+After I got that working the next issue I ran into was I found that I really like to be able to fuzzy search specifically for files. It turns out I rarely actually interact with my tree structure and almost exclusively naviage around by fuzzy finding the files I am interested in. While there might have been a way to get this with CoC I was not finding it. Doing some searching I ended up finding telescope but it didn't seem like it was able to be used on the stable version of neovim. After some fussing around with versions I ended up dropping that attempt and landed on fzf. This is hands down my favorite plugin I ended up installing. It did exactly what I wanted and really didn't involve any special setup on my end.
 
 ## Now do it again
-Talk about having to do it all over again for my laptop and the things I found doing that
+A while into this experiment I ended up getting a new laptop and I found myself in the position of having to recreate all of this configuration on a new machine with another operating system. What I found was the initial setup was pretty easy but getting all the plugins and `init.vim` setting setup correctly was a bit of a pain. Some of this was a difference in reserved keys between operating systems but a majority of it was recrating the config by hand. In this effort I can see the reason why many devs who run with this setup full time end up using putting all of there dot files or lua code in a github reponsitory that can just be pulled down locally. While this didn't take an insane amount of time I could see that repository saving a couple of hours of time every time you have to work on a new setup.
 
 ## Enter tmux
-Talk about finally breaking down and using tmux and how big of a deal that was
+As I predicted eventually the time came where I need to use tmux. For the longest time I was just working on a python process that had a slow feedback loop. In these cases opening neovim, putting it in the background, running the process, waiting for the result and switching back was not that big of a pain point. However once I started creating a web interface on top of the result of the process it became clear that rapid iteration in this fashion was just not fast enough. The ceremony of control/alt+z, run process, control/alt+c, fg repeat became too much. In this case I was just altering static assets so the run process really didn't need to keep being kicked off. Switching to tmux and having both the process run and editor visible at the same time was a big productivity win for me.
 
 ## What I learned
 * Talk more about the "Simple" program
