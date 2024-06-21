@@ -50,10 +50,8 @@ A while into this experiment I ended up getting a new laptop and I found myself 
 As I predicted eventually the time came where I need to use tmux. For the longest time I was just working on a python process that had a slow feedback loop. In these cases opening neovim, putting it in the background, running the process, waiting for the result and switching back was not that big of a pain point. However once I started creating a web interface on top of the result of the process it became clear that rapid iteration in this fashion was just not fast enough. The ceremony of control/alt+z, run process, control/alt+c, fg repeat became too much. In this case I was just altering static assets so the run process really didn't need to keep being kicked off. Switching to tmux and having both the process run and editor visible at the same time was a big productivity win for me.
 
 ## What I learned
-* Talk more about the "Simple" program
+While I really enjoyed working in this way I do not see me making this my full time setup. Having to keep on top of what plugins I want for commonly supported IDE workflows does not seem to be how I enjoy spending my time. Also during this process I found out which editor features are truely important to me. At the end of the day if my IDE has decent autocomplete based on signatures, inline signature help and fuzzy file finding I am pretty happy. I was a bit suprised to find that I really do not use the file tree view much if at all.
 
-* I like this setup sometimes but I would probably never use it full time
-* There are certain features I really expect to be able to use in my dev environment
-    * Signature information (help)
-    * Autocomplete
-* Really enjoyed the hotkeys and the power of visual vs edit mode
+What I did find was that when working on a laptop without access to a standard mouse was far more enjoyable in neovim. Often times when I am working on a laptop I am reminded just how much I use my mouse in a normal IDE and how much I struggle to use a touchpad effectively, working in neovim really gets rid of this classification of issue for me.
+
+I also found that my "Simple" program expanded into something far more complicated. In the end this program ended up being some project that loosely resembles a search engine. This also ended up using Python, Rust and standard web primiatives (javascript, css, html) which lead to more and more autocompletion flows I neded to consider. Since I ended up really enjoying the semi search engine project I will probably add some additional blog entries about that in the future.
