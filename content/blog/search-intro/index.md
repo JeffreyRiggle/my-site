@@ -3,7 +3,7 @@ title: 'Journey into search'
 date: '2025-08-14'
 ---
 
-# Falling down the rabbithole
+# Falling down the rabbit hole
 When I started all of this maddness I had two very simple goals in mind. First I was going to start using a terminal based editor. The second was I was going to crawl a couple of pages and measure the time it look. Now some two years later I have a small three service system that can be run locally or in AWS. It turns out once you start crawling the web you are reminded that the [Memex](https://en.wikipedia.org/wiki/Memex) is vast and there are links in every content type imaginable. Also you start to realize that you end up with a fair amount of semi-structured data that can be fun to play around with.
 
 # A warning to the reader
@@ -43,38 +43,42 @@ As is the theme with this whole adventure, I decide well that is good and fine b
 This of course lead to figuring out how to parse html, javascript, and css in rust. Which as you can imagine was another adventure.
 
 # What more could you possibly want to do?
-TODO Talk about deploying to AWS
+
+Now with three services and two different UI's it was time to make the finishing touch, deploying the thing. Once again this came with its own set of challenges, most of which came from my choice to use rust.
+
+After cutting my teeth for a while mucking with cdk and rewriting parts of my service to optionally use s3 as a storage layer I finally had something that could be deployed by anyone brave enough to take a strangers cdk project and deploy it into their own AWS account.
 
 # Still ideas persist
-TODO talk about all the ideas that still haven't been able to be implemented
-* vector search
-* robots.txt
-* shared library
-* 3d visulization
-* snow crash librarian
-* Sub indexes
+
+Admittedly I do not know what it was about this project that became so consuming. Many times while I was working on this I would think of something new I wanted to learn about but I wouldn't be able to pull myself to do that until I "finished" whatever this was becoming.
+
+What is maybe even more shocking for me is I still have a long list of things I didn't yet do that I would potentially like to one day do. These are some of the things I have still been fighting the urge to deal with.
+
+## Vector search
+
+Currently the search behavior of my site is pretty primitive and rather crappy. While apparently no one uses search anymore, those who have expect a certain amount of flexibility in their textual query. As I understand most deal with this by using a vector search approach. This being done by an embedding approach on the content and the user input follow that up with some sweet consine similarity magic and pop out better results.
+
+## Robot.txt
+
+While I suspect I should feel some shame my crawler does not respect robots.txt. I take solice in the fact that I am not running an entire datacenter of crawl compute and network IO. That being said it would be nice for my crawler to be a better actor in the crawling space.
+
+## Why not a shared library
+
+While I have no good reason to do it, I have considered making parts of my crawler a sharable python module. I don't really think the world needs yet another crawler but it would be a nice oppertunity to refactor some of my code.
+
+## Sub Indexes
+
+One concept I had considered was the idea of being able to have sub indexes of the main index. Since I have no interest in gathering user data to create more relevant queries more relevant queries could be created by having different indexes. These indexes would be a way for users of the system to define a different search more constrained to the things they care about. This would be done by having the user choose to either blacklist or whitelist domains of interest to them.
+
+## Snow Crash Librarian
+
+In the novel [Snow Crash](https://en.wikipedia.org/wiki/Snow_Crash) there was an interesting bit where the main protaganist started working with a piece of software called the librarian. This software would find information for the protagnaist and summarize the information he has gathered. While not a profound realization, I realize that now with modern LLMs you could create something quite similar. This would be done by first doing a search query to "gather pages". Then you could then present this in a UI and have an interface with an LLM summarize the search results in an interactive dialog.
 
 # Whats next?
-* Link to project
-* Link to hosted site
-* Talk about upcoming blog posts
-    * crawler
-    * htmx and actix
-    * page rank
-    * canvas
-    * Vector search (maybe)
-    * robots.txt (maybe)
-    * User indexes (maybe)
 
-# Notes
+While I am not sure if I will continue to let this project take up my free time I do plan on at least wrapping up part of what I set out to do. That being write a series of blog posts about the lessons I have learned along the way. This will start with a blog about crawling the web and building and index. After that I am considering writing about the following topics
+* htmx and actix
+* page rank
+* using a 2d canvas
 
-* This is an intro to a series of posts I plan on creating
-* Warning I am not an expert in search engines or index building
-* My intention was to do something while playing around with neovim but I went over the deepend
-* Original scope for this was just to crawl a couple domains and record stats
-* Expanded scope included a search engine and an interactive canvas
-* Provide overview of project in its current state
-* list things that could be better
-    * vector search
-    * robots.txt
-    * better crawler design
+If any of the additional ideas end up getting done I may very well write about those topics as well. If any of this work sounds interesting feel free to [check out the code on Github](https://github.com/JeffreyRiggle/caribou). Alternatively if you just want to see what I have built for the time being I am [hosting it here](TODO). I make no garuntees for how long I will keep it up. Also the index will mostly be based around random software engineering podcasts and other similar resources.
