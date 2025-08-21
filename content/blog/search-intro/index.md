@@ -12,7 +12,7 @@ At this point I find it relevant to warn the reader that I am not an expert in s
 
 # Original scope
 
-As I mentioned before my original scope for this "little" project was to create a web crawler. This crawler was going to take some entry point and restrict its crawling to a single domain. While doing that I would collect the time it took to load the assets from the network and parse those assests using beautiful soup.
+As I mentioned before my original scope for this "little" project was to create a web crawler. This crawler was going to take some entry point and restrict its crawling to a single domain. While doing that I would collect the time it took to load the assets from the network and parse those assets using beautiful soup.
 
 Also since I don't use Python a whole lot it was going to be a chance to dig a little deeper on something I touch every once in a while.
 
@@ -20,9 +20,9 @@ Since I knew what I was going to collect, I took a bit of time before writing an
 
 # And so the scope expands
 
-Once I had run a couple tests and built up a small index or two of the websites I was interested in I hit my first scope expansion. I decided it would be nice to save a couple of the queries I was running into a admin style web app that would show a handful of specific performance metrics I cared about.
+Once I had run a couple tests and built up a small index or two of the websites I was interested in, I hit my first scope expansion. I decided it would be nice to save a couple of the queries I was running into a admin style web app that would show a handful of specific performance metrics I cared about.
 
-Now I could have done something sensible and written this application in something I was familiar with, but instead I decided to do something completely different. There was this semi-new quasi-front-end framework that had recently hit the spotlight and I wanted to check it out. Also just picking up htmx wasn't enough, no, I had to go all out and write my backend in rust.
+Now I could have done something sensible and written this application in something I was familiar with, but instead I decided to do something completely different. There was this semi-new quasi-front-end framework that had recently hit the spotlight and I wanted to check it out. Apparently picking up htmx wasn't enough, no, I had to go all out and write my backend in rust.
 
 Now with this new found admin app in hand I started to find other things I wanted. I started to consider things like, "wouldn't it be nice if I controlled what kinds of assets get downloaded?", and "I really should be able to crawl and manage multiple domains". This lead to a slew of features to control the crawler.
 
@@ -30,13 +30,13 @@ Now with this new found admin app in hand I started to find other things I wante
 
 Armed with data and hours of playing around with crawlers, I decided it was time to do something else. Those more inclinded by profits might suggest figuring out how to train a nerual network, but apparently that is not for me. You see I prefer the simpler things in life. Things like visualizing data into a planetary map.
 
-I was about to set out to built a interactive canvas that would visualize a search as a collection of solar entities and make those different sizes based on the entities precieved importance. This lead me to realize that I needed to change my crawler again. I ended up taking another detour back into the crawler to build some edges between URLs and store those in an edge table. Then since the new goal was to rank the URLs I took another side quest to learn how to implement a crude version of page rank.
+I was about to set out to built a interactive canvas that would visualize a search as a collection of solar entities and make those different sizes based on the entities precieved importance. This lead me to realize that I needed to change my crawler again. I ended up taking another detour back into the crawler to build some edges between URLs and stored those in an edge table. Then since the new goal was to compare the importance the URLs I took another side quest to learn how to implement a crude version of page rank.
 
-Now that my crawler and database finally matched my asparations, I could finally set out on building this interactive canvas. In this process I was reminded that there are a lot of things you learn to take for granted when doing UI in a framework of any kind. All of this I hope to cover in yet another blog post.
+Now that my crawler and database finally matched my asparations, I could finally set out on building this interactive canvas. In this process I was reminded that there are a lot of things you learn to take for granted when doing UI in a framework of any kind, html and css included. All of this I hope to cover in yet another blog post.
 
-# Why not just try a typical search page
+# Why not just try a typical search page?
 
-Around this time I started to think, why not just build a typical search page. I have some data and there is no way it will be as hard as building an interactive canvas. So I pull back out my htmx and rust and get back to work.
+Around this time I started to think, why not just build a typical search page? I have some data and there is no way it will be as hard as building an interactive canvas. So I pulled back out my htmx and rust and got back to work.
 
 As is the theme with this whole adventure, I decide well that is good and fine but maybe I should add a twist. Since the facination I was finding was with how data was connected and general metadata, I decided it would be neat to interpret some of this data. In this search page, I would have additional options to see what the page linked and general information about the web primitives the page used without visting it.
 
@@ -52,27 +52,27 @@ After cutting my teeth for a while mucking with cdk and rewriting parts of my se
 
 Admittedly I do not know what it was about this project that became so consuming. Many times while I was working on this I would think of something new I wanted to learn about but I wouldn't be able to pull myself to do that until I "finished" whatever this was becoming.
 
-What is maybe even more shocking for me is I still have a long list of things I didn't yet do that I would potentially like to one day do. These are some of the things I have still been fighting the urge to deal with.
+What is maybe even more shocking for me is I still have a long list of things I didn't yet do that I would potentially like to one day do. These are some of the things I have still been fighting the urge to act on.
 
 ## Vector search
 
-Currently the search behavior of my site is pretty primitive and rather crappy. While apparently no one uses search anymore, those who have expect a certain amount of flexibility in their textual query. As I understand most deal with this by using a vector search approach. This being done by an embedding approach on the content and the user input follow that up with some sweet consine similarity magic and pop out better results.
+Currently the search behavior of my site is pretty primitive and rather crappy. While apparently no one uses search anymore, those who do expect a certain amount of flexibility in their textual query. As I understand most deal with this by using a vector search approach. This being done by generating embeddings on the content and the user input then you follow that up with some sweet consine similarity magic and use that to pop out better results.
 
-## Robot.txt
+## Robots.txt
 
-While I suspect I should feel some shame my crawler does not respect robots.txt. I take solice in the fact that I am not running an entire datacenter of crawl compute and network IO. That being said it would be nice for my crawler to be a better actor in the crawling space.
+I suspect I should feel some shame my crawler does not respect robots.txt. However, I take solice in the fact that I am not running an entire datacenter of crawl compute and network IO. That being said it would be nice for my crawler to be a better actor in the crawling space.
 
-## Why not a shared library
+## Why not a shared library?
 
 While I have no good reason to do it, I have considered making parts of my crawler a sharable python module. I don't really think the world needs yet another crawler but it would be a nice oppertunity to refactor some of my code.
 
 ## Sub Indexes
 
-One concept I had considered was the idea of being able to have sub indexes of the main index. Since I have no interest in gathering user data to create more relevant queries more relevant queries could be created by having different indexes. These indexes would be a way for users of the system to define a different search more constrained to the things they care about. This would be done by having the user choose to either blacklist or whitelist domains of interest to them.
+One concept I had considered was the idea of being able to have sub indexes of the main index. Since I have no interest in gathering user data to create more relevant queries the use of different indexes could fill that void. These indexes would be a way for users of the system to define a more constrained index so they would just be searching the things they care about. This would be done by having the user choose to either blacklist or whitelist domains of interest to them. These indexes could then be shared between users of the system.
 
 ## Snow Crash Librarian
 
-In the novel [Snow Crash](https://en.wikipedia.org/wiki/Snow_Crash) there was an interesting bit where the main protaganist started working with a piece of software called the librarian. This software would find information for the protagnaist and summarize the information he has gathered. While not a profound realization, I realize that now with modern LLMs you could create something quite similar. This would be done by first doing a search query to "gather pages". Then you could then present this in a UI and have an interface with an LLM summarize the search results in an interactive dialog.
+In the novel [Snow Crash](https://en.wikipedia.org/wiki/Snow_Crash) there was an interesting bit in which the main protaganist started working with a piece of software called the librarian. This software would find information for the protagnaist and summarize the information he has gathered. While not a profound realization, I realize that now with modern LLMs you could create something quite similar. This would be done by first doing a search query to "gather pages". Then you could then present this in a UI and have an interface with an LLM summarize the search results in an interactive dialog.
 
 # Whats next?
 
