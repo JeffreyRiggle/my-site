@@ -3,6 +3,10 @@ title: 'Indexing the web'
 date: '2025-08-22'
 ---
 
+# Taking stock
+
+If you are just jumping into this blog post, I would highly recommend reading the "Journey into search" blog I posted before this one. This helps set the tone for what I am talking about here. If you don't have time for that and want a quick recap, here it is. Basically, I ended up starting a "little" side project to get used to using a terminal-based editor and fell down the deep rabbit hole that is search. Moving forward, I am digging into the first topic, indexing the web.
+
 # Indexing the web
 
 The internet is full of interesting data; you just have to go out and find it. Now, Most of us don't think much about that because we let companies with lots of money find the interesting data for us. This turns into companies like Microsoft, Google, Meta, and at one point in time, Yahoo and AltaVista having a lot of indexed data. Now I am sure most are probably aware of that, but what does it actually take to build and maintain these indexes?
