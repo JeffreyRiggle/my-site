@@ -79,36 +79,46 @@ I knew this was a bad idea going into the first database design, I just didn't k
 
 ## Batch your writes dummy
 
-TODO Comment about making larger commits
+By this point I had made some notable improvements to the performance but things had still been way slower than I wanted them to be. One thing I was not paying attention to initially was just how often I was writing the database. Turns out that when you are constantly writing to the database as you process each page you have a lot of small writes. Doing some batching of these writes made the process much quicker.
 
 ## Absurd memory usage
 
-TODO write about how I was crashing with OOM
+By this point I had solved many of the obrious database issues, but now a new issue was starting to crop up. After running for a while the process would start to slow down a lot and the memory was growing. At one point I got the process up to 30GB of RAM in use before the program crashed. At first I noticed that I wasn't quite using the http client correctly, but even addressing that was still causing an absurd amount of memory to be used. After figuring out how to profile in Python I found that almost all of the memory was being used up by beautifulsoup4.
 
-# Notes
+The process I had been using for this up to this point was a very naive appoarch. First I would get a page and process it. Then I would find all of its links. Then I would repeat the process on the newly found pages that had not already been processed. These pages would be classes that had a property for the beautifulsoup4 content. As you may be able to imagine after a certain point you get very large lists of pages to process that all have to complete before getting reclaimed. What I ended up doing to address this was as simple as doing an interation by popping off a list instead of doing a foreach style enumeration.
 
-## Crawler execution notes
+## Python has threads
 
-* First run failed and took a very long time. End db size when program died was 750mb and average processing time was close to 3 seconds
-* Second run cached seen urls in application memory. This allowed me to get a db size of 2.5 GB before the application died. This got processing down to about 2 seconds.
-* Third run I moved html content into adjacent folder structure. Eventually I killed the app due to an obvious logic error (I was downloading too much). This ended up going way faster with app time being close to 1 second per page and the end db size was 4.9mb
-* Tested a couple times with a smaller dataset (oxide.computer) during this I found that a lot of time was on db commits. Moved to larger commits and cut time in half for smaller dataset
-* Retested with less commits and found that memory hit 30gb RAM. Clearly there is a memory leak. At first I found an issue with how I was using openurl but then I found that this problem leads to larger and larger memory growth as more pages are loaded in larger batches. Attempting to pop instead of foreach this passed but took 4 days to finish on changelog
-* Made a change to download js and css in parallel saw a massive improvement
-* Threading in python is kind of a pain makes me miss non-blocking IO
-* As time is going on I am realizing the depth of this area is increasing
-	* If you really want to download most/all things you need to consider more than just html,js and css. There are also data (json, xml, etc), audio, video, image and font files. Also almost all of these files could have more links embedded in them
-	* Favicons are something I do not think about much but apparently you can target different browsing experiences with different attributes (size, type, media)
-	* In order to handle all of this different data I ended up having to do a massive refactor
-		* This refactor ended up slowing things down quite a bit because it would basically load every asset all the time. I still need to find a way to make this faster.
-		* This appears to be in an endless cycle look at this tomorrow/another time
-* I am not sure if this is issues with the sites I am crawling or if this is increasing restrictions on the web because of things like chatgpt but I am getting a lot of 403s
+By this point I had finally had a successful run but processing one of the sites I wanted to ended up taking 4 days to complete. This was not optimal. Up until this point I was doing everything in a single thread on a single process. As you can imagine reading all of this data in this way could take a very long time. So in order to speed this process up I started using Python's thread pool feature. This made things much faster but I found Pythons memory management cross thread/process to be quite frustrating to deal with.
 
-## Changelog dataset notes
+# Evaluating the results
 
-* Final db size was 260.7mb
-* 7687 unique domains found (maybe this is wrong?)
-* 46780 pages/links had been found
-* perf db had 784790 entries due to many duplications?
-* In general network look longer than processing time
-* took 368993.8601837158 ms to finish
+At this point I had crawled a handful of sites and had enough data to do some evaluations based on my original consierations.
+
+## SQLite is fine
+
+Outside of mistakes of my own making with database activity I never really ran into a case where SQLite was an insufficient choice. Eventually I added support for Postgres as well but that was mostly for hosting reasons later on. By the end with the largest amount of data I had crawled the biggest my database size got to was 260mb.
+
+## This is a network bound problem
+
+Not so suprizingly the biggest bottleneck in the end was network time. The amount of time spent waiting on HTTP responses was overwhelmingly larger than any processing tiem or database time.
+
+## There might not have been enough variance in my testing
+
+Most if not all of my crawling was on podcast websites. Also almost all of these had been tech podcasts. As such I found that the data was pretty similar. In this time I didn't encounter a single SPA. I also did not find a single site that didn't support some form of compression.
+
+## I was way off on the domains
+
+During this time I encountered thousands of domains not just hundreds of domains. That being said Wikipedia was linked quite a few times so maybe I get partial credit.
+
+## Asset sizes
+
+I had assumed that most sites especially sites that are not SPAs would try to limit the amount of javascript html and css used. What I ended up finding was that there is a ton of javascript and css out there but smaller html documents. The average javascript used on the pages I crawled was nearly 1MB and the average css was 150Kb. Compare this with the average html size which was only 12Kb.
+
+# Additional considerations
+
+As I was going through this and expanding my crawls I started to run into quite a few sites that have made crawling much harder. I assume this is largely due to AI crawlers. Also much of the time I couldn't help but notice that people are constantly visiting websites and processing this same data on their local hardware. This made me realize that if I was a browser vendor like Google with Chrome I might be tempted to send "telemetry" data to help me build my index on someone elses hardware. Hopefully none of the browsers do that but I can understand the temptation.
+
+# Moving on
+
+If you made it this far maybe you are invested enough to read more about my silly little project. The next topic I plan on writing about would be the admin app that I created using actix and htmx.
