@@ -9,7 +9,7 @@ If you are just jumping into this blog post, I would highly recommend reading th
 
 # Indexing the web
 
-The internet is full of interesting data; you just have to go out and find it. Now, Most of us don't think much about that because we let companies with lots of money find the interesting data for us. This turns into companies like Microsoft, Google, Meta, and at one point in time, Yahoo and AltaVista having a lot of indexed data. Now I am sure most are probably aware of that, but what does it actually take to build and maintain these indexes?
+The internet is full of interesting data; you just have to go out and find it. Now, Most of us don't think much about that because we let companies with lots of money find the interesting data for us. This turns into companies like Microsoft, Google, Meta, and at one point in time, Yahoo and AltaVista having a lot of indexed data. Now, I am sure most are probably aware of that, but what does it actually take to build and maintain these indexes?
 
 This became a decent part of what I spent my time doing when working on my little search project.
 
