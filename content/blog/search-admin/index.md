@@ -77,27 +77,34 @@ I would argue that this comes with some benefits and some drawbacks. The benefit
 
 One of HTMX's greatest strenghts is also one of its weaknesses for developers that have been using modern frameworks for quite some time now. One thing modern frameworks do very well is paper over some of the rough edges of the browser spec. While the browser spec is getting better there are still some rough areas in there. In my case the one that really threw me for a loop was posting a form with a checkbox in it. As it turns out I am not the only person that encountered this issue and there is an issue that documents it well in HTMX [here](https://github.com/bigskysoftware/htmx/issues/894).
 
-# Picking a back-end framework
-Also on the back-end I could have done the same using something like Node.js, Java, or dotnet core, but instead I decided to pick up Rust again.
-TODO talk about Actix at a high level
+# Jumping over to the back-end
 
-# Lessons learned
+Now on the back-end I could have done the same using something like Node.js, Java, or dotnet core, Instead instead I decided to use Rust. Now I have used Rust in the past for a couple of things but I have never used it for a web server. While I know it is often considered the "systems programming language" I figured there had to be a few more people out there that wanted to use it for a web server. After doing a bit of research I stumbled on [Actix](https://actix.rs/) which appears to be a popular Rust framework for doing web development.
 
-TODO go over the things I learned
+## But why Rust?
 
+As will always be the theme with this project it was to learn more. While it is true I had used Rust in the past it was never for anything of substancial scale. Since all of the previous uses I had for it had been so small I hadn't got the opperturnity to learn as much about it as I wanted. Also strangely while it can be a rather infurriating language work work with I do quite enjoy using it.
 
-# Notes
-## Rust/Actix notes
-* parsing css took me longer than I thought it would
-* parsing javascript was pretty hard at first. Finding good examples was exceedingly hard and chatgpt failed to generate good examples
-* I really struggle to read rust docs
-* Once I got used to it I was really enjoying the match pattern
-* I think there is a secret art to reading rust documentation that I haven't quite figured out yet
-* Really think the proper use of error handling is evading me. I can tell using unwrap is a bad thing but I keep doing it, this is probably a common noob mistake.
-* Somewhat annoyingly to make simple html changes I need to restart the server because Tera seems to cache templates https://github.com/rwf2/Rocket/issues/163
-* Traits are really cool once you can figure them out
-* There are a ton of crates out there and relying on them too much might make you think rust can do less than it really can. In my case I needed to get actix to use either postgres or sqlite based on environment variables. This seemed impossible with r2d2 (connection pooling library) and postgres_r2d2. Instead I have to write my own r2d2 implementation which worked out great.
-* Tera has its own learning curve. For a while it felt like I was doing some basic templating with js possibilities until I encountered the length function. I wanted to see the length of an array and had to find that `| length` was the way to do it instead of `.length`
-* Still haven't found a good way to template in tera. In my case I ended up repeating a large portion of content for javascript and css details
-* Getting a docker container running for actix was a bit of a nightmare. I am not sure if I am just terrible at docker, if rust does not lead itself well to docker or if actix is the problem
-	* This was a mix of me not knowing and there not being great documentation for this online. In the end I didn't realize that you could have multiple FROM statements in a single docker file mixed with the fact that you cannot access sibling folders without changing the docker context. Example `COPY ../foo /usr/src/foo` will fail
+## Doubling up on front-end frameworks
+
+To say I was just using HTMX is a bit of a lie. On the back-end I was also using a rendering framework [tera](https://keats.github.io/tera/docs/) to do some basic html templating before sending the html off to the client. Tera is a Jinja2 and Django compliant templating framework. In hindsight I am not sure that I really needed this framework as my template substitutions had been so small.
+
+One issue I ran into pretty early on was that my [templates had been cached](https://github.com/rwf2/Rocket/issues/163). Turns out when using tera you have to restart your server everytime you make a change to any html template. Also since I had never really used Django I found myself struggling with some of the syntax and concepts. For example checking the length of an array being `| length` was something that took me some time to figure out.
+
+## Crates, crates everywhere
+
+Package managers are a blessing and a curse. What I found is that Rust in some ways has the same issue as node. Since there is a module system and its very easy to use, there are a ton of modules of varying degress of quality. Also because there are so many modules you can kind of cheat on learning the language by cobbling together a ton of modules that solve the hard problems together. I used quite a few modules on this project and I don't think I could have done it all without some of them. That being said I do think I would learn even more about the language if I would try to further limit my crate usage in the future.
+
+## Documentation is hard
+
+I am not sure if this is a personal issue or if this is a general issue in rust. In other languages I have been pretty easily able to understand a majority of the concepts a package provides just by reading the documentation. Yes, I would inevitably pull open the source to understand a few things but that was rare. However in Rust I constantly found myself looking at the documentation, getting confused, trying something out, reading the documentation again, just to ultimately end up looking at the source code to figure out what the heck is going on.
+
+I am not sure if others in Rust have found the same thing or if I just haven't figure out the art of reading the rust documentation sites. Another alternative possibility is that I do not have enough experience in the ecosystem to know that I am choosing some questionable crates. Regardless of the reason this was the one single thing that I found to be the hardest about working in rust.
+
+## Now what about docker?
+
+Towards the later stages of what I was working on I found it a bit annoying to have to start three apps and maintain them locally. Because of this I switched over to using docker-compose to run my applications. However in order to use docker compose you kind of have to put your applications in a docker container. Doing this took a bit more time that I was used to. In many cases I would just extend from some base language specific image like go, python, etc and layer on the stuff I needed. In the case of Rust I found this harder to do. In the end I had to use two FROM statements which I didn't even realize was an option. The first from would pull a rust builder and build the asset. In the second from it would actually create the final image with the runtime and the program.
+
+## Wrapup, better title needed
+
+TODO figure out how to close this one out.
