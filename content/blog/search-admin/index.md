@@ -33,8 +33,7 @@ So apparently web 1.0 and hypertext media are a good thing but what does it mean
 @Component({
    'selector': 'my-super-cool-search',
    'template': `
-       <input type="text" [(ngModel])="searchText" />
-       <button (click)="doSearch()">Search</button>
+       <input type="text" [(ngModel])="searchText" [keyup.enter]="doSearch()" />
        <div>
          Resulting data: {{randomData()}}
        </div>
@@ -57,8 +56,7 @@ Now that is a lot of code and a compile step to do a very simple task. In the re
 ```html
 <html>
   <body>
-    <!-- TODO this needs to be updated to use a button -->
-    <input type="text hx-get="search" name="q" hx-target="#result-area" hx-swap="innerHtml" />
+    <input type="text hx-get="search" name="q" hx-trigger="keyup[key=='Enter']" hx-target="#result-area" hx-swap="innerHtml" />
     <div id="result-area"></div>
     <script src="path/to/htmx.min.js"></script>
   </body>
@@ -105,6 +103,6 @@ I am not sure if others in Rust have found the same thing or if I just haven't f
 
 Towards the later stages of what I was working on I found it a bit annoying to have to start three apps and maintain them locally. Because of this I switched over to using docker-compose to run my applications. However in order to use docker compose you kind of have to put your applications in a docker container. Doing this took a bit more time that I was used to. In many cases I would just extend from some base language specific image like go, python, etc and layer on the stuff I needed. In the case of Rust I found this harder to do. In the end I had to use two FROM statements which I didn't even realize was an option. The first from would pull a rust builder and build the asset. In the second from it would actually create the final image with the runtime and the program.
 
-## Wrapup, better title needed
+# Looking forward
 
-TODO figure out how to close this one out.
+By this point we have created a functional crawler in python and an app to administer it using HTMX and Actix. This is a good start but at this point there is nothing to really play with. All of the data is in tables on a database and there are no searching or visualization methods for this data. While we could talk about that next we are going to take a breif detour to talk about page rank in the next post.
