@@ -25,7 +25,7 @@ So in this case the primary focus of the algorithm is on so called back links. O
 
 I will spare you the formal notation of the algorithm because if you are interested in that you should just read the paper. Walking through the algorithm we have to start off with some setup before we can actually do the calculation. The first step is to build an adjaceny matrix of all pages and their edges. In this paper they suggested building an N by N matrix where all values are either a 0 no edge or a 1 and the N value is all of the known pages on the internet. After this is done we need to normalize the matrix such that each page is sending an equal weight to all of its links. Once this is done we generate any random vector of size N as our starting point. We then repeatedly multiply the vector by the normalized adjaceny matrix until it converges.
 
-TODO VIDEO HERE
+![Page Rank Algorithm](./page_rank_algo.gif)
 
 ### Additional considerations
 
