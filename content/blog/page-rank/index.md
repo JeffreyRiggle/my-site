@@ -41,6 +41,12 @@ One problem with this alorithm is if you have a page with no outbound links it e
 
 Another issue with search is contextualization. The example given in this paper is someone searching for "wolverine". The additional context here is that wolverine is or maybe was the administrative tool used by students at Michigan University. When the typical person searches for wolverine they would expect to find more details about the animal. However, when a student at Michigan University does the same search they might be interested in the tool. The suggestion proposed in this paper is that we could create personalization vectors that get added to the equation to make one of the search contexts more likely for the given person.
 
+## Looking at an example
+
+Now that I have covered the algorithm a bit I find its best to see in applied on a smaller scale. Below is an animation that shows how a small internet with 4 pages an 5 links would propagate rank. This only shows one transformation and many more of the same operation would happen in practice.
+
+![Page Rank Example](./graph_example.gif)
+
 ## Examining some implemenations
 
 Sometimes it really helps to see how others have implemented the solution. I took the time to look at a couple of implemenations publically shared on Github to better understand how others have actually implemented this algorithm.
