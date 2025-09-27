@@ -5,11 +5,11 @@ date: '2025-09-21'
 
 # Figuring out what is important
 
-By now we have built a functioning web crawler and even generated some administrive tooling to make crawling easier. The problem now is we don't really know what data is important. This is not a particuarly new problem and research has been done on this. The most notable research in this field would be [Bringing Order to the Web](http://ilpubs.stanford.edu:8090/422/1/1999-66.pdf). In this paper the concept of a page ranking system was proposed. This is where my curiousity took me next, so I began to fumble through figuring it out.
+By now we have built a functioning web crawler and even generated some administrive tooling to make crawling easier. Now the problem is we don't really know what data is important. This is not a particuarly new problem and research has been done on this. The most notable research in this field would be [Bringing Order to the Web](http://ilpubs.stanford.edu:8090/422/1/1999-66.pdf). In this paper the concept of a page ranking system was proposed. This is where my curiousity took me next, so I began to fumble through figuring it out.
 
 ## A brief aside
 
-Now this is the part where I am glad I am writing a series of blog posts despite of the fact that I will likely be the only one to read them. Going into this blog entry I assumed I had taken notes on implemeting page rank. I also assumed I had implemented in correctly. Over the past few days I found that I was very wrong on this and I only found that out because I wanted to create this entry.
+This is the part where I am glad I am writing a series of blog posts despite the fact that I will likely be the only one to read them. Going into this blog entry I assumed I had taken notes on implemeting page rank. I also assumed I had implemented it correctly. Over the past few days I found that I was very wrong on this and I only found that out because I wanted to create this entry.
 
 ## Bringing Order to the Web
 
@@ -23,7 +23,7 @@ The primary focus of the algorithm is on so called back links. The problem with 
 
 ### The algorithm
 
-I will spare you the formal notation of the algorithm, if you are interested in that you should just read the paper. Now lets walk through the algorithm. The first step is to build an adjaceny matrix of all pages and their edges. In this paper they suggested building an N by N matrix where all values are either a 0 or a 1. This bit would correlate to the existence of an edge. In this matrix the N value is all of the known pages on the internet. After this is done we need to normalize the matrix such that each page is sending an equal weight to all of its links. Once this is done we generate any random vector of size N as our starting point. We then repeatedly multiply the vector by the normalized adjaceny matrix until it converges.
+I will spare you the formal notation of the algorithm, if you are interested in that you should just read the paper. Let's walk through the algorithm. The first step is to build an adjaceny matrix of all pages and their edges. In this paper they suggested building an N by N matrix where all values are either a 0 or a 1. This bit would correlate to the existence of an edge. Also in this matrix the N value is all of the known pages on the internet. After this is done we need to normalize the matrix such that each page is sending an equal weight to all of its links. Once this is done we generate any random vector of size N as our starting point. We then repeatedly multiply the vector by the normalized adjaceny matrix until it converges.
 
 ![Page Rank Algorithm](./page_rank_algo.gif)
 
@@ -35,7 +35,7 @@ This paper talks about a couple of additional considerations as it relates to th
 
 #### Dangling references
 
-One problem with this alorithm is if you have a page with no outbound links it ends up being a bit of a rank sink. Generally, when this happens it is not because the page doesn't link to anything, but rather that the page has not been processed yet. To deal with this the suggestion is to pull dangling references out of the original calculation and then add them back in later with some initial value.
+One problem with this alorithm is if you have a page with no outbound links it ends up being a bit of a rank sink. Generally, when this happens it's not because the page doesn't link to anything, but rather that the page has not been processed yet. To deal with this the suggestion is to pull dangling references out of the original calculation and then add them back in later with some initial value.
 
 #### Personalization Vector
 
@@ -49,7 +49,7 @@ Now that I have covered the algorithm a bit I find its best to see in applied on
 
 ## Examining some implemenations
 
-I find it helpful to see how others have implemented the solution. The following are a couple of implemenations publically shared on Github that I used to better understand how others have implemented this algorithm.
+I also find it helpful to see how others have implemented the solution. The following are a couple of implemenations publically shared on Github that I used to better understand how others have implemented this algorithm.
 
 ### Memgraph
 
