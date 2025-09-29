@@ -5,13 +5,13 @@ date: '2025-09-27'
 
 # Visualizing the web
 
-So now we come to the end of our planned journey. If you have been following along so far here is a quick recap. What started off as a journey to work on a small project to work in neovim ended with me doing all sorts of extra work. I have covered how I build a web crawler, an administrative application, and a PageRank implementation. With all of this work we can look at the final visualization work I did.
+So now we come to the end of our planned journey. If you have been following along so far here is a quick recap. What started off as a plan to work on a small project in neovim ended with me doing all sorts of extra work. I have covered how I build a web crawler, an administrative application, and a PageRank implementation. With all of this work we can look at the final visualization work I did.
 
-For this final stage I did one more standard search based UI and another one that was a bit more interactive with more fun visualizations.
+For this final stage I did a mostly standard search based UI and another one that was a bit more interactive with more fun visualizations.
 
 ## Basic search
 
-Just to do some basic testing I pulled back out Rust and HTMX to build out a basic search page. This is a very simplied version of what you might have seen from google, yahoo, or bing. The one thing I decided to do a bit differently was to add some extra level of detail.
+Just to do some basic testing I pulled back out Rust and HTMX to build out a basic search page. This is a very simplied version of what you might have seen from Google, Yahoo!, or Bing. The one thing I decided to do a bit differently was to add some extra level of detail.
 
 ### With an insepection twist
 
@@ -19,7 +19,7 @@ After working with a crawler I found that I was quite interested in how pages co
 
 Another feature that I decided to create was a basic inspection of the page. Since I was already downloading all of the HTML, Javascript and CSS I figured it would be neat to see what I could pull out of those assets. 
 
-For css, I started off by getting all links I could find in the documents. Then I decided to get a list of all of the classes, ids and selectors used. I also decided to find all css functions that had been used.
+For CSS, I started off by getting all links I could find in the documents. Then I decided to get a list of all of the classes, ids and selectors used. I also decided to find all css functions that had been used.
 
 In the case of Javascript, I decided to look for all properties and functions that had been used in the window and document global. I also decided to look at every string that was defined because usually those strings contain URLs.
 
