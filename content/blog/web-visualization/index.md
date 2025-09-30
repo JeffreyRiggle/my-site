@@ -63,6 +63,7 @@ That being said while I had a lot of fun doing it I don't know that I would ever
 
 If you have read this blog and all the blogs before it thank you. While I do not know if I have provided any additional insights for anyone who may have read this, I found that some of what I was doing was a touch out of the norm. I had a lot of fun doing this but there are other things I have been wanting to explore for some time now. I do not know how long this project will be hosted as such I will finish off with some images of this in case I take down the site due to cost, lack of interest, or something else.
 
-TODO search image
+**Basic Search**
+![Basic Search View](./standard-search.png)
 
 TODO visualization image
