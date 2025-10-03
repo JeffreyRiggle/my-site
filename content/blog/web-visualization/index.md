@@ -66,4 +66,5 @@ If you have read this blog and all the blogs before it thank you. While I do not
 **Basic Search**
 ![Basic Search View](./standard-search.png)
 
-TODO visualization image
+**Interactive Search**
+![Interactive Search View](./graph-view.gif)
