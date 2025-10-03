@@ -65,7 +65,7 @@ That being said, while I had a lot of fun doing it, I doubt I would ever use a c
 
 If you have read this blog and all the blogs before it, thank you. While I doubt I have provided any additional insights for anyone who may have read this, I found that some of what I was doing was a touch out of the norm. I had a lot of fun doing this, but there are other interests I have wanted to explore for some time now. 
 
-Forgive me for a moment while I get on my soapbox. I have not explicitly stated this up to now, but I would like to emphasize a choice I made during this project. During this project, I limited my use of AI to general research and as a springboard to more official documentation. I find that while using AI for your day job is a great idea to truly learn new things, it is beneficial to go back to the basics and avoid letting AI do everything for you. I would definitely encourage others who are writing code to learn new concepts and to be very pragmatic about the use of AI.
+Forgive me for a moment while I get on my soapbox. I have not explicitly stated this up to now, but I would like to emphasize a choice I made during this project. During this project, I limited my use of AI to general research and as a springboard to more official documentation. I find that while using AI for your day job is a great idea, to truly learn new things it is beneficial to go back to the basics and avoid letting AI do everything for you. I would definitely encourage others who are writing code to learn new concepts and to be very pragmatic about the use of AI.
 
 I do not know how long this project will be hosted; as such, I will finish by providing some images in case I take down the site due to cost, lack of interest, or something else.
 
