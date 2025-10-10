@@ -25,7 +25,7 @@ The primary focus of the algorithm is on so-called backlinks. The problem with b
 
 I will spare you the formal notation of the algorithm; if you are interested in that, I suggest you read the paper. Let's walk through the algorithm. The first step is to build an adjacency matrix of all pages and their edges. In this paper, they suggested building an N by N matrix where all values are either 0 or 1. This bit would correlate to the existence of an edge. Also, in this matrix, the N value is all of the known pages on the internet. After this is done, we need to normalize the matrix such that each page is sending an equal weight to all of its links. Once this is done, we generate a random vector of size N as our starting point. We then repeatedly multiply the vector by the normalized adjacency matrix until it converges.
 
-![Page Rank Algorithm](./page_rank_algo.gif)
+![Page Rank Algorithm](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/page-rank/page_rank_algo.gif)
 
 The property of convergence comes from the fact that this is an eigenvector problem. If you are more interested in the mathematics of this problem, I suggest reading more about [eigenvectors](https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors) and [Markov chains](https://en.wikipedia.org/wiki/Markov_chain).
 
@@ -45,7 +45,7 @@ Another issue with search is contextualization. The example given in this paper 
 
 Now that I have covered the algorithm, I find it's best to see it applied on a smaller scale. Below is an animation that shows how a small internet with 4 pages and 5 links would propagate rank. This only shows one transformation, and many more of the same operation would happen in practice.
 
-![Page Rank Example](./graph_example.gif)
+![Page Rank Example](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/page-rank/graph_example.gif)
 
 ## Examining some implementations
 

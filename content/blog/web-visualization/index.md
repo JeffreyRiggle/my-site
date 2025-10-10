@@ -70,7 +70,7 @@ Forgive me for a moment while I get on my soapbox. I have not explicitly stated 
 I do not know how long this project will be hosted; as such, I will finish by providing some images in case I take down the site due to cost, lack of interest, or something else.
 
 **Basic Search**
-![Basic Search View](./standard-search.png)
+![Basic Search View](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/web-visualization/standard-search.png)
 
 **Interactive Search**
-![Interactive Search View](./graph-view.gif)
+![Interactive Search View](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/web-visualization/graph-view.gif)
