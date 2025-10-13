@@ -81,4 +81,4 @@ While I am not sure if I will continue to let this project take up my free time,
 * page rank
 * using a 2d canvas
 
-If any of the additional ideas end up getting done, I may very well write about those topics as well. If any of this work sounds interesting, feel free to [check out the code on Github](https://github.com/JeffreyRiggle/caribou). Alternatively, if you just want to see what I have built for the time being, I am [hosting it here](TODO). I make no guarantees for how long I will keep it up. Also, the index will mostly be based on random software engineering podcasts and other similar resources.
+If any of the additional ideas end up getting done, I may very well write about those topics as well. If any of this work sounds interesting, feel free to [check out the code on Github](https://github.com/JeffreyRiggle/caribou). Alternatively, if you just want to see what I have built for the time being, I am [hosting it here](http://caribou.ilusr.com/). I make no guarantees for how long I will keep it up. Also, the index will mostly be based on random software engineering podcasts and other similar resources.
