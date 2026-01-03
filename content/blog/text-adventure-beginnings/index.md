@@ -65,6 +65,8 @@ While I never really completed it the last thing I decided to focus on and never
 
 Once the dust had all settled I had been working on and off on the project for at least a decade. In the end no one to my knowledge has ever used it and it remains mostly unheard of in GitHub.
 
+### Project setup
+
 The final makeup of the project was the following repositories. While I do not think lines of code is a great metric I do think in this case it highlights the amount of time spent on the project more so than anything.
 
 | Name | Language | Purpose | Lines of code |
@@ -86,7 +88,42 @@ The final makeup of the project was the following repositories. While I do not t
 
 This breaks out into a dependency graph that looks something like this.
 
-TODO graph
+![Dependency graph](./tav-deps.png)
+
+### Features
+I have written quite a bit of documentation on this in my personal site so I am not going to repeat all of it. Instead I will highlight some core features with some links. If you are interested the main documentation can be found [here](https://ilusr.com/textadventurecreator).
+
+| Feature | Category | high level details |
+|-|-|-|
+| Export as App | Export | The ability to export the game as a jar |
+| Export as Web | Export | The ability to export the game as an html document |
+| Export as Electron | Export | The ability to export as an electron app |
+| Entity creation | Core | The ability to define players and NPC's/enemies |
+| Macros | Core | The ability to replace text with some player details |
+| Game State creation | Core | The ability to define all actions and triggers in a game state |
+| Text Trigger | Core-Triggers | The ability to trigger some action on user text |
+| Timed Trigger | Core-Triggers | The ability to trigger some action on a timer |
+| Player Triger | Core-Triggers | The ability to trigger some action based on player state |
+| Scripted Trigger | Core-Triggers | The ability to trigger based on some executed javascript |
+| Multi-part trigger | Core-Triggers | The ability to union multiple triggers together |
+| Append Action | Core-Actions | Ability to add text to the game output |
+| Complete Action | Core-Actions | The ability to complete a game state |
+| Execute Action | Core-Actions | The unfortunate action that can trigger a process on the users machine. I have no idea why I thought this was a good idea. |
+| Modify Player Action | Core-Actions | The ability to change player state |
+| Save action | Core-Actions | The ability to save the game state |
+| Script action | Core-Actions | Any action that could be expressed in javascript |
+| Finish action | Core-Actions | The action that completed the game |
+| Text and Input View | Layout | The base look and feel |
+| Text and Button View | Layout | A look and feel that replaces a text input with buttons |
+| Content Only | Layout | A display only view for things like transition images or videos |
+| Custom layout | Layout | A customizable grid layout of whatever controls you want for the game state, including custom styling |
+| Libraries | Libraries | User defined exportable collections of players/actions/triggers or layouts |
+| Debugger | DevTools | A crude debugger to see how playing the game changed the state |
+| Language Packs | Localization | The ability for users to define their own localization to be used in the IDE |
+| Mods | DevTools | The ability for a developer to add a runtime loaded mod into the IDE |
+
+The main point I want to make here is there was a rather large feature set to this thing.
+
 
 ## Lessons learned at the highlest level
 
@@ -96,4 +133,4 @@ TODO graph
 
 ## Moving forward
 
-Before I really dig into all of the things I did right or wrong in the actual code I want to take some time to do a quick overview of all of the features that this project had. TODO make this better and close it off
+Close this off next one is going to be a deep dive into java-core and log runner.
