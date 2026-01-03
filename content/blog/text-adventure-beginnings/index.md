@@ -71,27 +71,29 @@ The final makeup of the project was the following repositories. While I do not t
 
 | Name | Language | Purpose | Lines of code |
 |-|-|-|
-| [java-core](https://github.com/JeffreyRiggle/java-core) | Java | Library containing anything I deemed a core utility |
-| [logrunner](https://github.com/JeffreyRiggle/logrunner) | Java | Abstraction to log output to csv or tsv file |
-| [java-persistencelib](https://github.com/JeffreyRiggle/java-persistencelib) | Java | Library to save xml files to disk |
-| [persist-lib](https://github.com/JeffreyRiggle/persist-lib) | Javascript | Javascript reimplementation of java-persistencelib |
-| [playerlib](https://github.com/JeffreyRiggle/playerlib) | Java | Library for entity models and abstractions |
-| [player-lib](https://github.com/JeffreyRiggle/player-lib) | Javascript | Javascript reimplementation of playerlib |
-| [playerlib-example](https://github.com/JeffreyRiggle/playerlib-example) | Java | Example application using playerlib |
-| [gsmlib](https://github.com/JeffreyRiggle/gsmlib) | Java | Library for game state models and abstractions |
-| [gamestate-manager](https://github.com/JeffreyRiggle/gamestate-manager) | Javascript reimplemenation of gsmlib |
-| [iroshell](https://github.com/JeffreyRiggle/iroshell) | Java | Multipurpose JavaFx application shell abstraction |
-| [iroshell-examples](https://github.com/JeffreyRiggle/iroshell-examples) | Java | Example applications build on iroshell |
-| [textadventurelib](https://github.com/JeffreyRiggle/textadventurelib) | Java | Core library required to play the text adventure games |
-| [text-adventure-lib](https://github.com/JeffreyRiggle/text-adventure-lib) | Javascript | Javascript reimplemenation of textadventurelib |
-| [textadventurecreator](https://github.com/JeffreyRiggle/textadventurecreator) | Java | The main application that created text adventure games |
+| [java-core](https://github.com/JeffreyRiggle/java-core) | Java | Library containing anything I deemed a core utility | 3562 |
+| [logrunner](https://github.com/JeffreyRiggle/logrunner) | Java | Abstraction to log output to csv or tsv file | 293 |
+| [java-persistencelib](https://github.com/JeffreyRiggle/java-persistencelib) | Java | Library to save xml files to disk | 1586 |
+| [persist-lib](https://github.com/JeffreyRiggle/persist-lib) | Javascript | Javascript reimplementation of java-persistencelib | 270 |
+| [playerlib](https://github.com/JeffreyRiggle/playerlib) | Java | Library for entity models and abstractions | 4100 |
+| [player-lib](https://github.com/JeffreyRiggle/player-lib) | Javascript | Javascript reimplementation of playerlib | 956 |
+| [playerlib-example](https://github.com/JeffreyRiggle/playerlib-example) | Java | Example application using playerlib | 1459 |
+| [gsmlib](https://github.com/JeffreyRiggle/gsmlib) | Java | Library for game state models and abstractions | 935 |
+| [gamestate-manager](https://github.com/JeffreyRiggle/gamestate-manager) | Javascript reimplemenation of gsmlib | 306 |
+| [iroshell](https://github.com/JeffreyRiggle/iroshell) | Java | Multipurpose JavaFx application shell abstraction | 10940 |
+| [iroshell-examples](https://github.com/JeffreyRiggle/iroshell-examples) | Java | Example applications build on iroshell | 1444 |
+| [textadventurelib](https://github.com/JeffreyRiggle/textadventurelib) | Java | Core library required to play the text adventure games | 25045 |
+| [text-adventure-lib](https://github.com/JeffreyRiggle/text-adventure-lib) | Javascript | Javascript reimplemenation of textadventurelib | 7437 |
+| [textadventurecreator](https://github.com/JeffreyRiggle/textadventurecreator) | Java | The main application that created text adventure games | 55066 |
+
+In total that is close to 115k lines of code split between java and javascript.
 
 This breaks out into a dependency graph that looks something like this.
 
 ![Dependency graph](./tav-deps.png)
 
 ### Features
-I have written quite a bit of documentation on this in my personal site so I am not going to repeat all of it. Instead I will highlight some core features with some links. If you are interested the main documentation can be found [here](https://ilusr.com/textadventurecreator).
+In the spirit of a fair analysis of all of this code I find that it is at least useful to document all of the features wrapped up in this project. I have written quite a bit of documentation on this in my personal site so I am not going to repeat all of it. Instead I will highlight some core features with some links. If you are interested the main documentation can be found [here](https://ilusr.com/textadventurecreator).
 
 | Feature | Category | high level details |
 |-|-|-|
@@ -108,9 +110,9 @@ I have written quite a bit of documentation on this in my personal site so I am 
 | Multi-part trigger | Core-Triggers | The ability to union multiple triggers together |
 | Append Action | Core-Actions | Ability to add text to the game output |
 | Complete Action | Core-Actions | The ability to complete a game state |
-| Execute Action | Core-Actions | The unfortunate action that can trigger a process on the users machine. I have no idea why I thought this was a good idea. |
+| Execute Action | Core-Actions | The ability to trigger a process on the users machine |
 | Modify Player Action | Core-Actions | The ability to change player state |
-| Save action | Core-Actions | The ability to save the game state |
+| Save action | Core-Actions | The ability to save the game |
 | Script action | Core-Actions | Any action that could be expressed in javascript |
 | Finish action | Core-Actions | The action that completed the game |
 | Text and Input View | Layout | The base look and feel |
@@ -118,18 +120,42 @@ I have written quite a bit of documentation on this in my personal site so I am 
 | Content Only | Layout | A display only view for things like transition images or videos |
 | Custom layout | Layout | A customizable grid layout of whatever controls you want for the game state, including custom styling |
 | Libraries | Libraries | User defined exportable collections of players/actions/triggers or layouts |
-| Debugger | DevTools | A crude debugger to see how playing the game changed the state |
+| Debugger | DevTools | A crude debugger to see how playing the game changes the state |
 | Language Packs | Localization | The ability for users to define their own localization to be used in the IDE |
 | Mods | DevTools | The ability for a developer to add a runtime loaded mod into the IDE |
-
-The main point I want to make here is there was a rather large feature set to this thing.
 
 
 ## Lessons learned at the highlest level
 
-* No one is watching and marketing is everything
-* You can spend a lot of time doing things that don't matter (just because its industry standard doesn't mean it is a good idea for every project)
-* Taking a look at the field can be nice. Turns out that there had been engines like twine that already existed and likely did a better job than me
+### Just because its on GitHub doesn't mean anyone will notice
+
+I think this is one leason that I wish I would have learned early on. There was a fair amount of time I spent scrambling to get the code "ready for the public to view". I was concerned that once you put something on GitHub everyone would see it. In reality I think a handful of people have glanced at the landing page, saw there was a sparce readme and moved on. The largest reader of my code may be some AI model trained on all public GitHub data.
+
+**The most important leason for me around this is that you can waste an immense amount of time expanding code coverage and documentation on a project.** If you are not working on a team and do not plan to market your work and market it hard, the returns for high test coverage and documentation are questionable. At the very least critical or regression prone code paths should be tested and documented. Now in modern times this is less important because you could offload some of this work to an AI agent or otherwise. However if you are going to do that you should really scrutize the output because it might not be documenting things correctly or testing things effectively. It is unclear to me if it is even worth the tokens or time to review to autogenerate these sorts of things for pet projects. What is clear to me is that incorrect documentation or tests are worse than having no documentation or tests.
+
+In time I have come to assume is that if people are going to look at your project they will have to be lead to it via some sort of marketing on social media. Also if you want to capture your audiance you will want a nice readme and most likely some flashy images to really draw the attention. I do really have a desire to strongly market my work so these assumptions may be incorrect.
+
+### Industry standards are highly contextual
+
+In this case I think I made a classic junior to mid-level engineering mistake. That is the mindset of treating the industry standard as the best practice for all use cases. In time I have grown to realize that industry standards are guidelines and are highly contextualized for engineering with many active engineers working on the same project.
+
+Take for instance with this project I intentionally broke apart a mono-repo into a series of small targetted repositories without considering what I had to gain or lose. In this case I lost a lot of time breaking apart a mono-repo and incurred the cost of managing dependencies without getting observable benefits. Here are some cases that may have made the investment worth it.
+
+#### Community involvement
+
+I could have built a community around something like iroshell and got the benefit of many engineers helping me on this framework. This did not happen because I did not take an active effort to create a community. In a single instance a developer reached out with an interest in a single part of the framework and I choose not to engage with that engineer. Had I have been truely interested in a community I missed a real oppertunity there.
+
+#### Code Reuse
+
+Another possible benefit I could have gotten out of all of this work would have been to do more Java projects that built on things like iroshell, java-core, or logrunner. Instead I have not picked up another Java project since the completion of this one. This means I missed out on all of the hard work I put in to make iroshell reusable for other possible applications.
+
+### Observing the problem space has its benefits
+
+At no point during all of this work did I ever stop to look around at what other people had been doing. Had I have done so I would have found that there was already a pretty big community around tools very similar to the one I created. For instance [Twine](https://twinery.org/) is from what I gather a rather powerful tool that can do something very similar to what I created. I do not know that this would have detered me from taking on this project. However, taking the time to read about the project could have given me a chance to see what features others like and some of the pain points. If I wanted to create a product that got traction that was a missed oppertunity to build for the community.
+
+### Not all features are worth the investment
+
+There are a handful of features that I either question why I made them in the first place or know that they had been premature. In particular the execute action in the game engine itself is a feature without a strong purpose. I am still not sure what the benefit would be and it is mostly a security risk. On the other side features like modding and libraries had been premature. Without a community using the tool there was no reason to create commuity tools like modding. 
 
 ## Moving forward
 
