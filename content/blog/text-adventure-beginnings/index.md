@@ -169,9 +169,9 @@ At the start of this project my experience with Java UI's had been very small co
 
 While I do not think I nailed the implemenation I did get to learn the basics of installers and the pain points of creating one. Up until this point, the software I wrote either had a team working on an installer or was just a jar/exe that someone else had to figure out how to run for themselves. In the modern era with web first and electron apps this may be an irrelevant skill but it helped remind me that different users have different machines which may or may not have some of your prerequisits for your software to run.
 
-### It still works (I hope)
+### It still works
 
-Basically mention that I just pulled the code down and got it running with little effort (fingers crossed)
+With fairly minimal effort I was able to come back to this years later and get the thing building again. The biggest pain points I had are the kinds that I expected. Those being things like setting up my machine to actually build Java again by installing OpenJDK and Maven, as well as configuring maven to install from GitHub.
 
 ### Project completion
 
