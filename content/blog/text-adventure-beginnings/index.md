@@ -19,7 +19,7 @@ At the time, I was mostly proficient with third-generation programming languages
 
 ### Only standard Library
 
-I had decided that if I wanted to learn something deeply, I should only use the standard library and import nothing else. In the end, I fell short of this one. While I tend to cover this more later, the notable exceptions are Java Spring, JavaFx, and IzPack.
+I had decided that if I wanted to learn something deeply, I should only use the standard library and import nothing else. In the end, I fell short of this one. While I intend to cover this more later, the notable exceptions are Java Spring, JavaFx, and IzPack.
 
 ## Evolution of the project
 
@@ -55,19 +55,19 @@ Not long after I created my website, I decided to create GitHub workflows for al
 
 At some point along the way, Java updated to Jigsaw, and I decided it would be nice to make some of my "internals" actually internal, so I updated to Java 9. I wrote about this in the following [blog](https://ilusr.com/revisit-java/).
 
-While I never really completed it, the last thing I decided to focus on was creating end-to-end tests for the main application. For this, I was playing around with test-fx. Ultimately, this never got completed because I was having a hard time getting the tests to pass on the runners. The tests had worked just fine on my local, but, for some reason I never really cared to debug, I couldn't get them to pass in the runner.
+While I never really completed it, the last thing I decided to focus on was creating end-to-end tests for the main application. For this, I was playing around with test-fx. Ultimately, this never got completed because I was having a hard time getting the tests to pass on the GitHub runners. The tests had worked just fine on my local, but, for some reason I never really cared to debug, I couldn't get them to pass in the runner.
 
 
 ## Current state of the project
 
-Once the dust had all settled, I had been working on and off on the project for around a decade. In the end, none to my knowledge has ever used it, and it remains unheard of.
+Once the dust had settled, I had been working on and off on the project for close to a decade. To my knowledge, it remains used and unheard of.
 
 ### Project setup
 
 The final makeup of the project was the following repositories. While I do not think lines of code is a great metric, I do think in a pre-AI world, it highlights the amount of time spent on the project more so than anything.
 
 | Name | Language | Purpose | Lines of code |
-|-|-|-|
+|-|-|-|-|
 | [java-core](https://github.com/JeffreyRiggle/java-core) | Java | Library containing anything I deemed a core utility | 3562 |
 | [logrunner](https://github.com/JeffreyRiggle/logrunner) | Java | Abstraction to log output to csv or tsv file | 293 |
 | [java-persistencelib](https://github.com/JeffreyRiggle/java-persistencelib) | Java | Library to save xml files to disk | 1586 |
@@ -158,7 +158,7 @@ There are a handful of features that were either premature or questionable. In p
 
 ## The highlights
 
-So far, I have been very critical of all the work I have done. However, I would be remiss if I didn't point out the benefits. On the off chance a junior to mid-level developer finds the blog and reads it, I wouldn't want to give the impression that this was a completely wasted effort. While I may have some regrets about the features I chose to work on or the way the project was received, it was a very valuable learning lesson, even from a techinical level.
+So far, I have been very critical of all the work I have done. However, I would be remiss if I didn't point out the benefits. On the off chance a junior to mid-level developer finds the blog and reads it, I wouldn't want to give the impression that this was a completely wasted effort. While I may have some regrets about the features I chose to work on or the way I assumed the project would be received, it was a very valuable learning lesson, even from a techinical level.
 
 ### Learning JavaFX
 
@@ -178,7 +178,7 @@ This was the first project I really got to play every possible role. I had the i
 
 In this, I learned how to stick with something even when it gets hard or boring. There were days when I would get stuck on a technical issue that I couldn't find any great documentation online. On other days, I mind-numbingly drudged through just one more Javadoc comment.
 
-I cannot overstate how valuable that was to me. I find that when working at a company with a clear goal in mind, there are  trade-offs that must be made. An engineer, those are not always to the benefit of your technical growth. You may want to spend time optimizing a routine or playing around with a new technology/framework/language. In many cases, doing this on the job is borderline negligent and not in the interest of the company you are working for. However, when you are working on a project that is yours without direct financial incentives, you are free to make whatever choices you want. The cost incurred, in money or in time, is on you, and you do not have to consider the cost to the company.
+I cannot overstate how valuable that was to me. I find that when working at a company with a clear goal in mind, there are  trade-offs that must be made. As an engineer, those are not always to the benefit of your technical growth. You may want to spend time optimizing a routine or playing around with a new technology/framework/language. In many cases, doing this on the job is borderline negligent and not in the interest of the company you are working for. However, when you are working on a project that is yours without direct financial incentives, you are free to make whatever choices you want. The cost incurred, in money or in time, is on you, and you do not have to consider the cost to some company.
 
 In the modern era of AI, I am not sure if you could recreate this experience. For example, a new developer who needed an icon in a specific way might not try to draw it themselves. Instead, they might just ask an AI to generate it for them. AI can provide some excellent rubber ducking, which was just not possible when I attempted this project.
 
