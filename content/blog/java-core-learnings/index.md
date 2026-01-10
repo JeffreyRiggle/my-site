@@ -71,22 +71,54 @@ and turn it into this mess.
 <T> T getValue();
 ```
 
-Now in hindsight there are probably a couple of ways I could have made this easier to reason about. The simplist would have been to introduce a correspending type enum that would help you unwrap the value.
+Now in hindsight there are probably a couple of ways I could have made this easier to reason about. One such way would have been to create a pseudo type union.
 
 ```java
-public enum ValueType {
+enum ValueType {
     String,
     Integer,
     Double,
     Boolean
 }
 
-// interface
-ValueType kind();
-<T> T getValue();
+abstract class BaseValue {
+    private ValueType valueType;
+
+    public BaseValue(ValueType valueType) {
+        this.valueType = valueType;
+    }
+}
+
+class StringValue extends BaseValue {
+    private String value;
+
+    public StringValue(String value) {
+        super(ValueType.String);
+        this.value = value;
+    }
+
+    public String value() {
+        return this.value;
+    }
+}
+
+class IntValue extends BaseValue {
+    private int value;
+
+    public StringValue(int value) {
+        super(ValueType.Integer);
+        this.value = value;
+    }
+
+    public int value() {
+        return this.value;
+    }
+}
+
+// etc
 ```
 
-That would have gotten rid of many type checks that had not been applied consistently. This abstraction would have come at the cost of some performance but the performance cost would have been negligable.
+This would have gotten rid of many type checks that had not been applied consistently. It also would have allowed for unboxing primartive value types.
 
 ## Building a state machine
 
