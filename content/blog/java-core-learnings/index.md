@@ -1,6 +1,6 @@
 ---
 title: 'Failure to read'
-date: '2026-01-03'
+date: '2026-01-10'
 ---
 
 # Failure to read
