@@ -37,7 +37,7 @@ None of this code is public, but at one point, I had a Swing-based application i
 
 If you don't know this pattern, this analysis is most likely foreign to you. However, if you want to know or want a refresher, this is a way to separate your view and interaction/data model logic. The often stated goal is that it is easier to have "just UI" and "just behavior" changes. The flow between components is relevant, so here is a visual aid.
 
-![MVVM Pattern](./mvvm.png)
+![MVVM Pattern](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/java-core-learnings/mvvm.png)
 
 To create a similar effect, I decided on using: a model with no view logic, a view that was the Swing control, and a presenter. The implementation was an absolute mess. I ended up having all views and models extend from some base classes. These base classes would then allow you to raise a change event. This event would then be picked up by the presenter, and the presenter would use reflection to invoke the appropriate method on the linked view or model. This produced completely absurd code and failed to meet the desired abstraction.
 
