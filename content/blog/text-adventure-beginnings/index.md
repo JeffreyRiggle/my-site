@@ -87,7 +87,7 @@ In total, that is close to 115k lines of code split between Java and JavaScript.
 
 This breaks out into the following dependency graph.
 
-![Dependency graph](./tav-deps.png)
+![Dependency graph](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/text-adventure-beginnings/tav-deps.png)
 
 ### Features
 In the spirit of a fair analysis, I find it is useful to document all of the features wrapped up in this project. Much of this is documented on my personal site. As such, I will avoid repeating all of it. Instead, I will highlight some core features. If you are interested, the main documentation can be found [here](https://ilusr.com/textadventurecreator).
