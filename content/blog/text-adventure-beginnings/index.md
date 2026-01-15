@@ -76,7 +76,7 @@ The final makeup of the project was the following repositories. While I do not t
 | [player-lib](https://github.com/JeffreyRiggle/player-lib) | Javascript | Javascript reimplementation of playerlib | 956 |
 | [playerlib-example](https://github.com/JeffreyRiggle/playerlib-example) | Java | Example application using playerlib | 1459 |
 | [gsmlib](https://github.com/JeffreyRiggle/gsmlib) | Java | Library for game state models and abstractions | 935 |
-| [gamestate-manager](https://github.com/JeffreyRiggle/gamestate-manager) | Javascript reimplemenation of gsmlib | 306 |
+| [gamestate-manager](https://github.com/JeffreyRiggle/gamestate-manager) | Javascript | javascript reimplemenation of gsmlib | 306 |
 | [iroshell](https://github.com/JeffreyRiggle/iroshell) | Java | Multipurpose JavaFx application shell abstraction | 10940 |
 | [iroshell-examples](https://github.com/JeffreyRiggle/iroshell-examples) | Java | Example applications build on iroshell | 1444 |
 | [textadventurelib](https://github.com/JeffreyRiggle/textadventurelib) | Java | Core library required to play the text adventure games | 25045 |
