@@ -3,8 +3,6 @@ title: 'Failure to read'
 date: '2026-01-10'
 ---
 
-# Failure to read
-
 In my last blog entry, I detailed how I came to build a text adventure creator application. Much of that focused on high-level learning. These learnings were more focused on project structure and reception of the work. However, to do a retrospective, I wanted to focus more on the specific code choices to see what I think of them years later.
 
 With the complicated web of dependencies created, breaking this analysis across core libraries and the application seemed appropriate. In this case, core libraries are anything other than iroshell, textadventurelib, and textadventurecreator.
