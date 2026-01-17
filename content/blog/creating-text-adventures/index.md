@@ -1,6 +1,6 @@
 ---
 title: 'IDE for Text Adenture Games?'
-date: '2026-01-13'
+date: '2026-01-17'
 ---
 
 ## Building an IDE for text adventure games
