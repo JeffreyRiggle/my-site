@@ -5,35 +5,35 @@ date: '2026-01-13'
 
 ## Building an IDE for text adventure games
 
-By this point I have covered most of the core libraries used, now it is time to get into the core game building. The end product for all of my work was an IDE for making text adventure games. This IDE was supposed to feel somewhat familar for developers used to using an IDE.
+By this point, I have covered most of the core libraries used; now it is time to get into the core game building. The end product of my work was an IDE for making text adventure games. This IDE was intended to feel somewhat familiar to developers used to using an IDE.
 
 ## Building a UI Framework
 
-The last core library I haven't covered to this point was IROShell. In general I don't have many grievences with this software. However, I will say its shortcoming came from overengineering. I had built a Java UI framework on top of JavaFX that I intended to use going forward. The problem was, after this project overwhelmingly the work I did was in the web ecosystem, so I didn't get to use this again.
+The last core library I haven't covered to this point was IROShell. Looking back, I don't have many grievances about this software. However, I will say its shortcoming came from overengineering. I had built a Java UI framework on top of JavaFX that I intended to use going forward. The problem was that, after this project, all of the work I did was in the web ecosystem. So, I didn't get to use this again.
 
-This framework required you to adopt a mindset of multiple tabs persisted for you and users having full control of tab placement. The UI was a lot of abstraction between you and the end layout. You would define views, menus and toolbars and the framework would put them in their correct place and allow the user to move them further.
+This framework required a mindset where users had complete control over the layout of multiple tabs. The result was layers of abstraction between you and the end layout. You would define views, menus, and toolbars. Then the framework would put them in their correct place and allow the user to move them further.
 
-This framework also had features including different layout strategies namely MDI (multiple document interface) vs SDI (single document interface). It also had the ability to have custom pre-load screens like a splash screen or a login screen.
+This framework also included features for different layout strategies, namely a multiple-document interface and a single-document interface. It also had the ability to define custom pre-load screens, such as a splash screen or a login screen.
 
-Looking back some of the biggest issues with this had been building on java-core and loggrunner. While it was very helpful for me to generate logs, having your framework generate logs for debugging your application shell on a users machine might have been a bad idea in hindsight.
+Looking back, some of the biggest issues with this had been building on Java-core and Logrunner. While it was very helpful for me to generate logs, having your framework generate logs for debugging your application shell on an end user's machine was a bad idea in hindsight.
 
-Also while the feature was incredibly helpful the execution of the dyanmic styling feature was problematic. I had built a feature that would allow you to dynamically change the styles of the application just by changing some CSS file. This would watch the file for changes and host up an internal Java protocol for reapplying the styles. The problem was this required a new protocol to be defined and tthe protocal I choose was called `interal://`. In hindsight that was a terrible and careless naming decision. It also required constantly creating new urls which likely lead to memory leaks.
+Also, while the feature was incredibly helpful, the execution of the dynamic styling feature was problematic. I had built a feature that allowed for dynamically changing the application's styles just by changing a CSS file. This would watch the file for changes and host an internal Java protocol for reapplying the styles. The problem was that this required a new protocol to be defined, and the protocol I chose was called `internal://`. In hindsight, that was a terrible and careless naming decision. It also required constantly creating new URLs, which likely led to memory leaks.
 
 ## Issues in the Core
 
-The textadventurelib was the core of the game engine. This is where all of the real game logic happened, which just so happened to be turning an XML representation of some game state into a functioning game.
+The textadventurelib was the core of the game engine. This is where all the real game logic occurred, which just so happened to be turning an XML representation of some game state into a functioning game.
 
 ### In pursuit of clean code
 
-In order to create the cleanest code I could think of, I ended up creating indirection that is hard to follow but also quite common in front-end development. One specific case that comes to mind is game state processing. 
+To create the cleanest code I could think of, I ended up creating multiple cases of indirection that were hard to follow but also quite common in front-end development. One specific case that comes to mind is game state processing.
 
-To set the stage the general operation model broke down into the following
+To set the stage, the general operation model broke down into the following
 
 1. A game has game states
 2. A game state has options
 3. Options have triggers and actions.
 
-In many cases you would want to send a message from an action to the game state. However since the game state was the holder of the action you wouldn't want that action to know about the game state, that isn't clean right? How I decided to do address this created a different problem. The actions would callback to an interface that the game state had. The problem was to wire all of this up the game state had to know about all possible actions to hook up any action that might call it back later. This created a problem where the game state had to infer the type of the action at startup time. 
+In many cases, you would want to send a message from an action to the game state. However, since the game state was the holder of the action, you wouldn't want that action to interact with the game state; that isn't clean, right? How I addressed this created a different problem. The actions would call back on an interface that the game state had. The problem was to wire all of this up; the game state had to understand all possible actions to hook up any action that might call it back later. This created a problem where the game state had to infer the type of the action at startup time.
 
 ```
 Startup
@@ -45,7 +45,7 @@ Send event
 action triggered --> find all listeners --> call specific interface callback
 ```
 
-To make matters worse the actions had been written in an overkill way to have multiple callback handlers, but in practice there would only ever be one.
+To make matters worse, the design of these actions was overkill. These actions allowed multiple callback handlers, but in practice, there would only ever be one.
 
 This created ugly code like the following.
 
@@ -66,44 +66,44 @@ for (IOption option : options) {
 }
 ```
 
-Instead of doing all of this mess I could have done a message broker pattern or just gave all actions access to the game state directly.
+Instead of creating this mess, I could have used a message broker pattern or provided all actions access to the game state.
 
 ### Just let people figure out images for themselves
 
-This one is quick an minor but early on I decided it was very important that images be stretched to fit the image area, aspect ratio be dammed. In hindsight this was clearly a silly choice.
+This one is quick and minor, but early on, I decided it was very important that images be stretched to fit the image area, aspect ratio be dammed. In hindsight, this was clearly a silly choice.
 
 
 ### Maybe the entity model wasn't that good
 
-So much of this code is a complicated mess. This mess is a direct result of act on the data an action or trigger needed to work with. This complication had come from the choice to be so explicit and building mental models of real world concepts in code. What I mean is had I have just simplified player down to be a player is an entity that can have many properties I could have saved a lot of complexity. The important distiction between that and what I build is the dimensionality. In this alternative I would have had a flat list of properties. The choice to map classes to the real world abstraction created friction in actions, triggers and macros. In all of these cases I had to build overly complex loosely typed models just to allow you to modify or read the specific data you needed to act on. This resulted in more cases of Object instead of type, as well as some unnessisary reflection.
+So much of this code is a complicated mess. This mess was most noticeable when you needed to act on the data in an action or trigger. This complication originated from building mental models of real-world concepts in code. What I mean is that if I had simplified the player down to: a player is an entity that can have many properties, I could have saved a lot of complexity. The important distinction between that and what I build is the dimensionality. In this alternative, I would have had a flat list of properties. Mapping classes to the real-world abstraction created friction in actions, triggers, and macros. I had to build overly complex, loosely typed models just to allow you to modify or read the specific data you needed to act on. This resulted in more cases of `Object` instead of type, as well as some unnecessary reflection.
 
 ### Macro's needlessly complicated
 
-Another feature that was important to me was macro subsitution. If you are going to store a bunch of attribution on a player you should show it in the game at some point. To do this I build a complex substitution pattern that basically recreated a worse language. Let's consider you have a player with an attribute age. To get that you would have to create this macro `{[player(PlayerName)@attribute(age)@value]}`. Just because that wasn't complex enough I decided to abstracted out the separators so that it could be written other ways. In actual execution this translated to dynamically building regular expressions and using reflection to find the properties on objects that you wanted to display.
+Another feature that was important to me was macro substitution. If you have attribution on a player, you should show it in the game at some point. For this, I created a complex substitution pattern that was somewhere between a substitution engine and a DSL. Let's consider a player with the attribute age. To get the value, you would have to create this macro `{[player(PlayerName)@attribute(age)@value]}`. Since that wasn't complex enough, I decided to abstract out the separators so that it could be written in other ways. At execution time, this translated to dynamically building regular expressions and using reflection to find the properties on objects that you wanted to display.
 
-Looking back I think there are a couple of ways I could have done this differently. The easiest one is the last observation, just make the entity model simpler. However, if I couldn't have done that there could have been options like creating a DSL or even maintaing a simple map of unique identifier to subsitution value. 
+Looking back, I think there are a couple of ways I could have done this differently. First, there is the recurring observation that the entity model was too complex. However, if I couldn't have done that, there are other options, such as creating a DSL or even maintaining a simple map of a unique identifier to a substitution value.
 
 ### Manual persistence code?
 
-An overwhelming amount of code and classes I am seeing here are duplicated entities just defined for the sake of peristing with persistlib. A noticable amount of the code written would simply not exist if just a little bit of metaprogramming was used to persist classes. There are ways to do this in Java but even if I wanted to do this with my own system making persistlib be metadata driven using java annotations would have saved so much effort.
+An overwhelming amount of code and classes were duplicated entities that had been defined for the sake of persisting with persistlib. A noticeable amount of the code written would simply not exist if metaprogramming were used to persist classes. There are ways to do this in Java, but even if I wanted to accomplish this with my own system, making persistlib metadata-driven using Java annotations would have saved a great deal of effort.
 
 ## Bringing it all together in an IDE
 
-All of this work built up to the text adventure creator. This repository created an IDE for generating text adventure games using all of the prior libraries plus some javascript ports I didn't mention. All of the mistakes of the existing libraries would resonate here but there had been a few new ones as well.
+All of this work had built up to the text adventure creator. This was an IDE for generating text adventure games. It built on all of the prior libraries, plus some JavaScript ports I didn't mention. The mistakes of the existing libraries would resonate here, but there had been a few new ones.s
 
 ### Code generation is brittle
 
-Originally the end result asset was going to be either an xml file that could be provided to another application, or a compiled jar. In the end I instead supported all of these
+Originally, the end result asset was going to be either an XML file that could be provided to another application or a compiled jar. In the end, I instead supported all of these
 
-* xml based file that could be provided to another application that did not exist
-* generated jar
-* generate maven project for developer to later generate a jar
-* generate game as an HTML file
-* generate game as an electron app.
+* An XML-based file that could be provided to another application that did not exist.
+* A generated jar.
+* A generated Maven project for a developer to later generate a jar.
+* A generated game in an HTML file format.
+* A generated game as an electron app.
 
-The choice to support all of these with no users was painful. To make matters worse the HTML asset gneration used a webpack build system and React. When you are not actively working on a web project every day you will get into a legacy state that is hard to get out of. In modern web development libraries, build systems, and node versions change at a nauseating pace. A failure to update every 6 months means you are going to feel incredibly behind if you wait 2+ years to update something.
+The choice to support all of these with no users was painful. To make matters worse, the HTML asset generation used a Webpack build system and React. When you are not actively working on a web project every day, you will find yourself in a legacy state that is hard to get out of. In modern web development libraries, build systems, and Node.js versions change at a nauseating pace. A failure to update every 6 months means you will feel incredibly behind if you wait two or more years to update something.
 
-Another thing that made this quite painful was I used very large format strings for all of this. Using a framework like handlebars or at least having a template file with more clear substitutions would have made this much easier when making changes to the generated assets. Here is one example of the crazy code I ended up writing instead of doing templating well.
+Another thing that made this quite painful was that I used very large format strings for all of this. Using a framework like Handlebars or having a template file with clear substitutions would have made this much easier when making changes to the generated assets. Here is one example of the crazy code I ended up writing instead of creating a sane template.
 
 ```java
 public final static String GAMESTATEINITIALIZER = "package org.%s.%s;\r\n\r\n"
@@ -141,21 +141,21 @@ public final static String GAMESTATEINITIALIZER = "package org.%s.%s;\r\n\r\n"
             + "}";
 ```
 
-Good luck trying to line those `%s` substitutions up.
+Good luck trying to line up those %s substitutions!
 
 ### Player model strikes again
 
-As we now know, a complex player model made things like player specific triggers, actions, and macros hard. Turns out that resurfaces when you are building a UI for those actions, triggers, and macros. For decent UX you certainly don't want to keep a user guessing. For example, if you want to create a trigger that fires every time a players health is below 10, you would want the UI to help you. The player model knows what attributes the player has, their types, and even their default value. To accomplish this I built a complex set of dynamic combo boxes, or selects for you web developers. These would be dynamically added or removed based on the combo box prior and their values would be tied to the entity model.
+As we now know, a complex player model made player-specific triggers, actions, and macros hard. As it turns out, this resurfaces when you are building a UI for those actions, triggers, and macros. For a decent user experience, you don't want to keep a user guessing. For example, if you want to create a trigger that fires every time a player's health is below 10, you would want the UI to help you. The player model knows what attributes the player has, their types, and even their default value. To accomplish this, I built a complex set of dynamic combo boxes, or selects if you prefer that terminology. These would be dynamically added or removed based on the combo box prior, and their values would be tied to the entity model.
 
 Despite getting this to work functionally, the UX was still clunky.
 
 ### I am not a designer
 
-As evidenced by such beautiful artwork as below I am not a designer and probably will never be great at it.
+As evidenced by the beautiful artwork below, I am not a designer and probably will never be great at it.
 
 ![crappy artwork](./newerror.png)
 
-As a result my style choices came of looking crude and childish. Because it was not my interest I didn't spend much time refining it. This often showed up as unstyled UI but in some cases it was just styled poorly. A prime example of this is the debugging experience I build into the IDE. While I found that this was useful to a degree, it looked terrible and didn't have all of the functionality you might expect from a debugger. The result was a poorly styled entity state tracker. Every time some action was triggered that changed a player state you would see removed entities in red, updated entities in blue and added entities in green. The problem was these had been styled so big and bulky it was hard to read the change.
+As a result, my style choices came off looking crude and childish. Since it was not my core focus, I didn't spend much time refining it. This often appeared as unstyled UI, but in other cases, it was just styled poorly. A prime example of this is the debugging experience I built into the IDE. While I found it useful to a degree, the debugger looked terrible. It also lacked the functionality you might expect from a debugger. The result was a poorly styled entity state tracker. Every time an action was triggered that changed a player's state, you would see removed entities in red, updated entities in blue, and added entities in green. The problem was that these had been styled so big and bulky that it was hard to read the change.
 
 Example of this visualization
 
@@ -164,22 +164,22 @@ Example of this visualization
 
 While this primative debugger was helpful for me, doubling down on making this better instead of focusing on other features would have been to my benefit.
 
-### Feature bloat got in the way of deep work
+### Feature bloat gets in the way of deep work
 
-Constantly going wide on this mean having to support tons of additional work without making the core experience better. This often lead to having to make a ton of UI changes just to support some new feature when I could have made the core product better. One place where this really shows up is in the initial game creation wizard. Over time something simple grew into a 3 page wizard that was constantly changing. To make matters worse most of the options didn't need to be there and every time I wanted to do another test it added a ton of time to just create a test game.
+Constantly going wide on this means having to support questionable value work without improving the core experience. This often leads to making UI changes just to support a new feature that provides little value. One example where this surfaced in this project was in the initial game creation wizard. Over time, something simple grew into a three-page wizard that was constantly changing. To make matters worse, most of the options provided little value. Every time I wanted to run another test, it added unnecessary time to just create a test game.
 
-Had I focused on the core problem I could have spent more of my time making the experience better and wasted less time just making more UIs that refelected the ever changing options.
+Had I focused on the core problem, I could have spent more time making the experience better and wasted less time on UIs that reflected the ever-changing options.
 
 ### Dynamic styling was very helpful
 
-The investment in being able to dynamically style IROShell came in very handy. While developers that have only worked on web 2.0 likely wont understand, having to wait for an entire compile of a java application just to test one css change was miserable. Investing the time into that saved me a ton of recomiple time.
+The investment in being able to dynamically style IROShell came in very handy. While developers who have only worked on Web 2.0 likely won't understand, having to wait for an entire compile of a Java application just to test one CSS change was miserable. Investing the time into that saved me a ton of recompile time.
 
-## High level lessons learned
+## High-level lessons learned
 
-**Prototypes are valuable!** Believe it or not you are allowed to write crappy or unclean code to learn what does and doesn't work in a system. Spending too much time making something clean can distract from understanding what the core problem is.
+**Prototypes are valuable!** Believe it or not, you are allowed to write crappy or unclean code to learn what does and doesn't work in a system. Spending too much time making something clean can distract from understanding the core problem.
 
-**Iteration time is everything!** I think this is part of why the web is doing so well. The time it takes to iterate on HTML, JS and CSS assets is just way faster than a typical compiled application is. If you disagree with this take a good hard look at your toolchain. You don't actually need a build system for the web and your iteration time is just a save and refresh away.
+**Iteration time is everything!** I think this is part of why the web is doing so well. The time it takes to iterate on HTML, JS, and CSS assets is faster than that of a typical compiled application. If you disagree with this, focus on your toolchain. You don't actually need a build system for the web, and your iteration time is just a save and refresh away.
 
-**If you are hand writing persistence code for each entity you are probably doing something wrong!**
+**If you are hand-writing persistence code for each entity, you are probably doing something wrong!**
 
-**Each feature comes at a maintenance cost!** Without careful selection of features you will end up with so much bloat you cannot move forward. In all likelihood most of those features don't matter anyway.
+**Each feature comes at a maintenance cost!** Without careful selection of features, you will end up with so much bloat that you cannot move forward. In all likelihood, most of those features don't matter anyway. Treat your features like cattle, not pets!
