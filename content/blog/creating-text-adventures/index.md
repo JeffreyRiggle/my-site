@@ -153,14 +153,14 @@ Despite getting this to work functionally, the UX was still clunky.
 
 As evidenced by the beautiful artwork below, I am not a designer and probably will never be great at it.
 
-![crappy artwork](./newerror.png)
+![crappy artwork](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/creating-text-adventures/newerror.png)
 
 As a result, my style choices came off looking crude and childish. Since it was not my core focus, I didn't spend much time refining it. This often appeared as unstyled UI, but in other cases, it was just styled poorly. A prime example of this is the debugging experience I built into the IDE. While I found it useful to a degree, the debugger looked terrible. It also lacked the functionality you might expect from a debugger. The result was a poorly styled entity state tracker. Every time an action was triggered that changed a player's state, you would see removed entities in red, updated entities in blue, and added entities in green. The problem was that these had been styled so big and bulky that it was hard to read the change.
 
 Example of this visualization
 
-![Add Characteristic](./add.png)
-![Change Attribute](./update.png)
+![Add Characteristic](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/creating-text-adventures/add.png)
+![Change Attribute](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/creating-text-adventures/update.png)
 
 While this primative debugger was helpful for me, doubling down on making this better instead of focusing on other features would have been to my benefit.
 
