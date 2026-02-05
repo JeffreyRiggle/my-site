@@ -188,12 +188,19 @@ public class MyBenchmark {
 
 After spending more time than I care to admit running all of these tests I ended up with a [dataset](./benchmarks.csv) I could play around with. If you filter out the V2 entires you will notice something shocking, the best case doesn't just to better than other cases it completely demolishes them. See there is one thing I didn't mention. In the best case I actually use a plain `Attribute[]` data type instead of an `ArrayList<Attribute>` which had a huge implication. I will come back to this but I did a minor change and generated some V2 benchmarks that made things line up better.
 
-TODO find some charts to put here
+### Impact of different approaches
+Considering all of the main approaches we can see that the difference between them is more or less in the margin of error.
+![Suggested Solutions](./impactofchoice.png)
+
+### Best case consideration
+Much like I assumed the best case outperformed the other cases and it did so by a pretty noticable amount.
+![Total Compare](./fullcompare.png)
 
 ## So wait was was the big difference between V1 and V2?
 
 Great question, I would want to know that too. In the first version all implementations except the base case used an unsized ArrayList. Now some of you may know where this is going. Turns out if you don't presize your ArrayList and grow it incrementally you pay a real performance cost. In this case I insert 1,000,000 values sequentially growing the ArrayList along the way. As it turns out the base size of an ArrayList in Java is 10 entires and when you exceed the boundary it grows by 1.4x. This means in the end my arrays resized close to 30 times and produced an excess 250k compacity. This adds up to a crazy amount of time as the resizing event requires array copying and is very heavy hitting.
 
+![Array Size impact](./arraysizeimpact.png)
 
 ## But why stop there?
 
