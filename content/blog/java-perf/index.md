@@ -234,7 +234,13 @@ With this new insight I decided to count up all of the memory access operations 
 
 Now I realize that just the number of memory access operations or number of lines of assembly code are a flawed metric for determining performance. This is due to the fact that you don't actually know how the branches will be used at runtime. However, I found it to be shockingly correlated to the timing dataset from JHM. Basically the more memory access operations you have defined in the routine the more operations you can do per second.
 
-TODO example graphs here.
+**Correlation between memory access an operations in iteration runs**
+
+![Correlation Memory Access and Ops Iteration](./asmimpactiteration.png)
+
+**Correlation between memory access an operations in population runs**
+
+![Correlation Memory Access and Ops Population](./asmimpactpopulation.png)
 
 ## Leasons learned
 
