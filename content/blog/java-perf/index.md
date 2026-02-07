@@ -7,7 +7,7 @@ date: '2026-02-03'
 
 As I was publishing the last series of blogs there was a constant nagging feeling that I left the biggest pain point underexplored. In the blog I often decry the choice I made about supporting multiple attributes with dynamic values. At some point I even suggested an approach to make the code more maintable. While I enjoy the developer ergonomics of the solution, the thing I couldn't let go of was, "what is the cost of this abstraction?"
 
-In general, I find this to be an undervalued consideration which can lead to designs that have questionable performance characteristics. The common argument is the developer velocity makes up for it. In many cases that is a reasonable tradeoff. However, doing a postmortem on a project that is unused. This gives me the flexibility to be as unreasonable as I want to be and streach the limits.
+In general, I find this to be an undervalued consideration which can lead to designs that have questionable performance characteristics. The common argument is the developer velocity makes up for it. In many cases that is a reasonable tradeoff. However, doing a postmortem on a project that is unused gives me the flexibility to be as unreasonable as I want and stretch the limits.
 
 ## Setting up the experiment
 
@@ -131,7 +131,7 @@ public static void main(String args[]) {
 }
 ```
 
-Upon some reflection, I knew this was insufficient. The problem with timing Java is that it is a JITT'd language and as such it requires multiple passes over code before its optimized. If I really wanted a good representation of the real impact I was going to have to do something better. Turns out people have spent a lot more time thinking about this than I have. There is an entire tool [JHM](https://github.com/openjdk/jmh) built for doing this type of test. Armed with new tool I decided to go with a pretty barebones setup in which I would test operations per second. Since I wanted to test different parts of this logic I had to create a couple of different benchmarks.
+Upon some reflection, I knew this was insufficient. The problem with timing Java is that it is a JIT-compiled language and as such it requires multiple passes over code before its optimized. If I really wanted a good representation of the real impact I was going to have to do something better. Turns out people have spent a lot more time thinking about this than I have. There is an entire tool [JMH](https://github.com/openjdk/jmh) built for doing this type of test. Armed with new tool I decided to go with a pretty barebones setup in which I would test operations per second. Since I wanted to test different parts of this logic I had to create a couple of different benchmarks.
 
 ### Full run benchmark
 As stated before this focuses on the time to populate and aggregate the results.
@@ -278,6 +278,8 @@ I realize that just the number of memory access operations or number of lines of
 
 ## Leasons learned
 
-Depending on where you are willing to set your limit Java performance evaluations can go much deeper than many people may realize. From intuition, to slow path, to JITT'd path there are a lot of oppertunities for performance to be hard to measure. This whole test didn't even consider the differences between hotspot optimizations for different CPU architectures which could have been explored.
+Depending on where you are willing to set your limit Java performance evaluations can go much deeper than many people may realize. From intuition, to slow path, to a JIT-compiled path there are a lot of oppertunities for performance to be hard to measure. This whole test didn't even consider the differences between hotspot optimizations for different CPU architectures which could have been explored.
 
 However if the numbers tell you one thing is is pay close attention to your collections and how you initailize them. A failure to do this could lead to an insane decrease in performance.
+
+In this case it turns out that the costs I cared about for legibility weren’t the ones the machine cared about.
