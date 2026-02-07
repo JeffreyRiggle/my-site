@@ -222,7 +222,48 @@ once I had the log files I could then load them into Jitwatch4j and look at the 
 
 ### Looking at the disassembly
 
-TODO find some interesting insights on the assmbly, maybe make mention of having to learn arm since I have only ever looked at x86 in the past.
+Now that I had the disassembly it was time to find anything interesting in there. The first challenge I had to overcome was learning arm. In the past the only assembly I had done was based on the x86 architecture and arm was a learning curve for me. After spending a while figuring out how to read the [manual](https://developer.arm.com/documentation/ddi0487/latest/) and using [this cheat sheet](https://www.scs.stanford.edu/~zyedidia/arm64/) I was able to piece together some basics.
+
+In the past I had understood that there was a cost in some languages when storing as Object and casting it back to a primitive. What I found interesting in the disassembly is that does not appear to be the case. Instead we just find the underlying data, put it in a register and add it.
+
+Considering the source Java
+```Java
+public double aggregateTotal() {
+        double retVal = 0;
+
+        for (GenericCaseAttribute attr : this.data) {
+            double value = 0;
+            switch (attr.getDataType()) {
+                case Double:
+                    value = (double)attr.getValue();
+                    break;
+                case Integer:
+                    value = (double)(int)attr.getValue();
+            }
+            retVal += value;
+        }
+
+        return retVal;
+    }
+```
+
+In the case we hit the double branch we do a very straight-forward addition. 
+```assembly
+0x0000000115a623e4: ldr d16, [x0,  #16] ; Get field containing double value and store in d16
+0x0000000115a623e8: b 0x0000000115a62400
+; intermediate steps truncated
+0x0000000115a62400: add w17, w10  #0x1 ; Increment ArrayList iterator
+0x0000000115a62404: fadd d0, d0, d16  ; Add double attribute value d16 to retVal d0 and store in d0  
+```
+
+However converting an integer double is not free and requires an extra operation.
+```assembly
+0x0000000115a62470: ldr w10, [x0,  #12] ; Get field containing int value and store in w10
+0x0000000115a62474: scvtf d16, w10  ; convert int value in w10 to double value in d16
+0x0000000115a62478: add w10, w17  #0x1 ; Increment ArrayList iterator
+0x0000000115a6247c: fadd d0, d0, d16  ; Add double value in d16 to retVal d0 and store in d0
+```
+
 
 ### Finding metrics to pull from the disassembly
 
