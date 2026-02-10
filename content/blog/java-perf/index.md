@@ -172,21 +172,21 @@ public class MyBenchmark {
 
 ## Looking at the results
 
-After spending more time than I care to admit running all of these tests, I ended up with a [dataset](./benchmarks.csv) I could play around with. If you filter out the V2 data points, you will notice something shocking. The best case doesn't just beat the other cases; it completely demolishes them. See, there is one thing I didn't mention. In the best case, I actually use a plain `Attribute[]` data type instead of an `ArrayList<Attribute>`, which has a huge implication. I will come back to this, but I made a minor change and generated some V2 benchmarks that lined the values up better.
+After spending more time than I care to admit running all of these tests, I ended up with a [dataset](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/java-perf/benchmarks.csv) I could play around with. If you filter out the V2 data points, you will notice something shocking. The best case doesn't just beat the other cases; it completely demolishes them. See, there is one thing I didn't mention. In the best case, I actually use a plain `Attribute[]` data type instead of an `ArrayList<Attribute>`, which has a huge implication. I will come back to this, but I made a minor change and generated some V2 benchmarks that lined the values up better.
 
 ### Impact of different approaches
 Considering all of the originally considered approaches, we can see that the difference between them is more or less within the margin of error.
-![Suggested Solutions](./impactofchoice.png)
+![Suggested Solutions](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/java-perf/impactofchoice.png)
 
 ### Best case consideration
 Much like I assumed, the best case outperformed the other cases, and it did so by a pretty noticeable amount.
-![Total Compare](./fullcompare.png)
+![Total Compare](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/java-perf/fullcompare.png)
 
 ## So wait, what was the big difference between V1 and V2?
 
 I am so glad you asked. In the first version, all implementations except the base case used an unsized ArrayList. Now, some of you may know where this is going. It turns out that if you don't pre-size your ArrayList and grow it on insert, you pay a real performance cost. In this case, I insert 1,000,000 values sequentially, growing the ArrayList in the most inefficient way. As it turns out, the base size of an ArrayList in Java is [10 entries](https://github.com/openjdk/jdk/blob/5152fdcd490412025ba5f608378982abc1eadc07/src/java.base/share/classes/java/util/ArrayList.java#L119), and when you exceed the boundary, it [grows by 1.4x](https://github.com/openjdk/jdk/blob/5152fdcd490412025ba5f608378982abc1eadc07/src/java.base/share/classes/java/util/ArrayList.java#L237). This means in the end my arrays were resized nearly 30 times and produced an excess of 250k entries. This adds up to an insane amount of time, as the resizing event requires array copying and is a costly operation.
 
-![Array Size impact](./arraysizeimpact.png)
+![Array Size impact](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/java-perf/arraysizeimpact.png)
 
 ## But why stop there?
 
@@ -256,19 +256,19 @@ What I noticed was that in both cases, there hadn't been special instructions to
 
 After spending time inspecting the disassembly, I realized it was hard to find significant findings. Looking at 800+ lines of assembly and comparing them to another 800+ lines where there is an illegible diff just wasn't cutting it. At that point, I remembered something: the slowest operations on the CPU should be memory access, especially. These are even more pronounced if memory access misses the L1 cache. In the disassembly of this program, most operations outside of memory access should have fairly low time complexity. All operations had been very simple arithmetic. Things like sin, cos, or even division didn't show up.
 
-With this new insight, I decided to count all of the memory access operations for each case and plot them in this [dataset](./asmmetrics.csv).
+With this new insight, I decided to count all of the memory access operations for each case and plot them in this [dataset](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/java-perf/asmmetrics.csv).
 
 ## Correlation between data sets
 
-I realize that just the number of memory access operations or the number of lines of assembly code is a flawed metric for determining performance. This is because you don't actually know how the branches will be used at runtime. However, I found it to be shockingly correlated to the timing dataset from JHM. Basically, the more memory access operations you have defined in the routine, the fewer operations you can do per second.
+I realize that just the number of memory access operations or the number of lines of assembly code is a flawed metric for determining performance. This is because you don't actually know how the branches will be used at runtime. However, I found it to be shockingly correlated to the timing dataset from JMH. Basically, the more memory access operations you have defined in the routine, the fewer operations you can do per second.
 
 **Correlation between memory access and operations in iteration runs**
 
-![Correlation Memory Access and Ops Iteration](./asmimpactiteration.png)
+![Correlation Memory Access and Ops Iteration](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/java-perf/asmimpactiteration.png)
 
 **Correlation between memory access and operations in population runs**
 
-![Correlation Memory Access and Ops Population](./asmimpactpopulation.png)
+![Correlation Memory Access and Ops Population](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/java-perf/asmimpactpopulation.png)
 
 ## Lessons learned
 
