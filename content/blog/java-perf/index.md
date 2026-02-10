@@ -176,6 +176,7 @@ After spending more time than I care to admit running all of these tests, I ende
 
 ### Impact of different approaches
 Considering all of the originally considered approaches, we can see that the difference between them is more or less within the margin of error.
+
 ![Suggested Solutions](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/java-perf/impactofchoice.png)
 
 ### Best case consideration
