@@ -53,6 +53,11 @@ body {
     position: sticky;
 }
 
+canvas {
+    background-color: #2f3131;
+    color: #00a14b;
+}
+
 .page-header a {
     color: #00a14b;
     position: relative;
