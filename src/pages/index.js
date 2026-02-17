@@ -19,7 +19,7 @@ const IndexPage = () => {
       <p>You have stumbled upon my site, welcome.</p>
       <p>This site is filled with random projects I have worked on in my free time. 
       Please look around and see what you can find.</p>
-      {!showCanvas && <button onClick={() => setShowCanvas(true)}>Press Me</button>}
+      {!showCanvas && <button className="animation-button" onClick={() => setShowCanvas(true)}>Press Me</button>}
       {showCanvas && <canvas id="home-animation"></canvas>}
     </Layout>
   )
