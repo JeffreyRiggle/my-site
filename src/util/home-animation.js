@@ -8,15 +8,6 @@ export function startAnimation() {
     console.log('Starting animation');
     opacity = 1;
     const canvas = document.getElementById('home-animation');
-
-    // TODO: Do something much better
-    setInterval(() => {
-        if (!characterGrid) return;
-
-        const coordinateIndex = Math.floor(Math.random() * characterGrid.coordinates.length);
-        let coordinate = characterGrid.coordinates[coordinateIndex];
-        coordinate.value = coordinate.value == '1' ? '0' : '1';
-    }, 300);
     runAnimationLoop(canvas);
 }
 
@@ -40,7 +31,7 @@ function runAnimationLoop(canvas) {
         }
 
         const lastUpdateDelta = timestamp - lastUpdateTime;
-        if (lastUpdateTime === 0 || lastUpdateDelta >= 100) {
+        if (lastUpdateTime === 0 || lastUpdateDelta >= 25) {
             lastUpdateTime = timestamp;
             updatePattern();
         }
@@ -68,65 +59,48 @@ function runAnimationLoop(canvas) {
 
 function updatePattern() {
     if (characterGrid.coordinates.length === 0) {
-        characterGrid.coordinates.push({ x: Math.floor(characterGrid.width / 2), y: Math.floor(characterGrid.height / 2), value: '0' });
+        characterGrid.coordinates.push({ x: Math.floor(characterGrid.width / 2), y: Math.floor(characterGrid.height / 2), value: getFillValue() });
         return;
     }
 
-    let fillMap = {};
+    let minX = characterGrid.width + 1;
+    let maxX = -1;
+    let minY = characterGrid.height;
+    let maxY = -1;
 
-    for (let i = 0; i < characterGrid.coordinates.length; i++) {
-        const coordinate = characterGrid.coordinates[i];
-        let xSpace = fillMap[coordinate.x];
-        if (!xSpace) {
-            xSpace = {};
-        }
-        xSpace[coordinate.y] = { ...coordinate, index: i };
-        fillMap[coordinate.x] = xSpace;
+    for (let coordinate of characterGrid.coordinates) {
+        minX = Math.min(coordinate.x, minX);
+        minY = Math.min(coordinate.y, minY);
+        maxX = Math.max(coordinate.x, maxX);
+        maxY = Math.max(coordinate.y, maxY);
+    }
+
+    if (minX < -2 && maxX > characterGrid.width + 2 && minY < -2 && maxY > characterGrid.height + 2) {
+        characterGrid.coordinates = [];
+        return;
     }
 
     let newCoordinates = [];
 
-    for (const coordinate of characterGrid.coordinates) {
-        let newCoordinateTop = { x: coordinate.x, y: coordinate.y + 1, value: '0' };
-        let newCoordinateBottom = { x: coordinate.x, y: coordinate.y - 1, value: '0' };
-        let newCoordinateLeft = { x: coordinate.x - 1, y: coordinate.y, value: '0' };
-        let newCoordinateRight = { x: coordinate.x + 1, y: coordinate.y, value: '0' };
+    const startRow = minY - 1;
+    const endRow = maxY + 2;
+    const startColumn = minX - 1;
+    const endColumn = maxX + 2;
+    for (let row = startRow; row < endRow; row++) {
+        const isYBorder = row - 2 < startRow || row + 1 > maxY;
+        for (let column = startColumn; column < endColumn; column++) {
+            const isXBorder = column - 2 < startColumn || column + 3 > endColumn;
+            if (!isXBorder && !isYBorder) continue;
 
-        if (shouldAddToMap(newCoordinateTop, fillMap)) {
-            newCoordinates.push(newCoordinateTop);
-            if (!fillMap[newCoordinateTop.x]) {
-                fillMap[newCoordinateTop.x] = {};
-            }
-            fillMap[newCoordinateTop.x][newCoordinateTop.y] = newCoordinateTop;
-        }
-        if (shouldAddToMap(newCoordinateBottom, fillMap)) {
-            if (!fillMap[newCoordinateBottom.x]) {
-                fillMap[newCoordinateBottom.x] = {};
-            }
-            newCoordinates.push(newCoordinateBottom);
-            fillMap[newCoordinateBottom.x][newCoordinateBottom.y] = newCoordinateBottom;
-        }
-        if (shouldAddToMap(newCoordinateLeft, fillMap)) {
-            if (!fillMap[newCoordinateLeft.x]) {
-                fillMap[newCoordinateLeft.x] = {};
-            }
-            newCoordinates.push(newCoordinateLeft);
-            fillMap[newCoordinateLeft.x][newCoordinateLeft.y] = newCoordinateLeft;
-        }
-        if (shouldAddToMap(newCoordinateRight, fillMap)) {
-            if (!fillMap[newCoordinateRight.x]) {
-                fillMap[newCoordinateRight.x] = {};
-            }
-            newCoordinates.push(newCoordinateRight);
-            fillMap[newCoordinateRight.x][newCoordinateRight.y] = newCoordinateRight;
+            newCoordinates.push({ x: column, y: row, value: getFillValue() });
         }
     }
 
     characterGrid.coordinates = newCoordinates;
 }
 
-function shouldAddToMap(newCoordinate, fillMap) {
-    return !(fillMap[newCoordinate.x] && fillMap[newCoordinate.x][newCoordinate.y]) && newCoordinate.x <= characterGrid.width && newCoordinate.x >= 0 && newCoordinate.y <= characterGrid.height && newCoordinate.y >= 0;
+function getFillValue() {
+    return Math.random() * 2 > 1 ? '0' : '1'; 
 }
 
 export function stopAnimation() {
