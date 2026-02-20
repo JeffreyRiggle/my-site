@@ -3,6 +3,8 @@ let opacity = 1;
 let characterGrid;
 let lastTime = 0;
 let lastUpdateTime = 0;
+let transitionStage = 0;
+let fallPattern;
 
 export function startAnimation() {
     console.log('Starting animation');
@@ -58,11 +60,26 @@ function runAnimationLoop(canvas) {
 }
 
 function updatePattern() {
-    if (characterGrid.coordinates.length === 0) {
-        characterGrid.coordinates.push({ x: Math.floor(characterGrid.width / 2), y: Math.floor(characterGrid.height / 2), value: getFillValue() });
+    if (transitionStage === 0) {
+        generateInitialPattern();
         return;
     }
 
+    if (transitionStage === 1) {
+        generateExpandPattern();
+    }
+
+    if (transitionStage === 2) {
+        generateFallPattern();
+    }
+}
+
+function generateInitialPattern() {
+    characterGrid.coordinates.push({ x: Math.floor(characterGrid.width / 2), y: Math.floor(characterGrid.height / 2), value: getFillValue() });
+    transitionStage = 1;
+}
+
+function generateExpandPattern() {
     let minX = characterGrid.width + 1;
     let maxX = -1;
     let minY = characterGrid.height;
@@ -77,6 +94,7 @@ function updatePattern() {
 
     if (minX < -2 && maxX > characterGrid.width + 2 && minY < -2 && maxY > characterGrid.height + 2) {
         characterGrid.coordinates = [];
+        transitionStage = 2;
         return;
     }
 
@@ -97,6 +115,48 @@ function updatePattern() {
     }
 
     characterGrid.coordinates = newCoordinates;
+}
+
+function generateFallPattern() {
+    if (!fallPattern) {
+        initializeFallPattern();
+    } else if (fallPattern.step >= fallPattern.maxStep) {
+        transitionStage = 3;
+        characterGrid.coordinates = [];
+        return;
+    }
+
+    let newCoordinates = [];
+    const nextStep = fallPattern.step + 1;
+    for (let x = 0; x < characterGrid.width; x++) {
+        const pattern = fallPattern.pattern[x];
+        const characterTail = fallPattern.step - pattern.offset;
+        const characterHead = Math.max(0, characterTail - pattern.size);
+
+        if (characterHead > characterGrid.height) continue;
+
+        for (let y = characterHead; y < characterTail; y++) {
+            newCoordinates.push({ x, y, value: getFillValue() });
+        }
+    }
+    characterGrid.coordinates = newCoordinates;
+
+    fallPattern.step = nextStep;
+}
+
+function initializeFallPattern() {
+    fallPattern = {
+        step: 0,
+        maxStep: 0,
+        pattern: []
+    };
+
+    for(let i = 0; i < characterGrid.width; i++) {
+        const size = Math.floor(Math.random() * (characterGrid.height * 2));
+        const offset = Math.floor(Math.random() * (characterGrid.height / 2));
+        fallPattern.maxStep = Math.max(fallPattern.maxStep, size + offset + characterGrid.height);
+        fallPattern.pattern.push({ size, offset });
+    }
 }
 
 function getFillValue() {
