@@ -2,15 +2,56 @@ let opacity = 1;
 
 let characterGrid;
 let lastTime = 0;
-let lastUpdateTime = 0;
 let transitionStage = 0;
 let fallPattern;
+let particles = [];
+let isMouseDown = false;
+const chars = '0123456789ABCDEF';
+
+function handleMouseMove(event) {
+    if (!isMouseDown) return;
+
+    spawnParticles(1, event);
+}
+
+function handleMouseDown(event) {
+    if (transitionStage < 3) return;
+
+    spawnParticles(25, event);
+    isMouseDown = true;
+}
+
+function handleMouseUp(event) {
+    isMouseDown = false;
+}
+
+function spawnParticles(count, event) {
+    for (let i = 0; i < count; i++) {
+        const xDirection = Math.random() * 2 > 1 ? 1 : -1;
+        const yDirection = Math.random() * 2 > 1 ? 1 : -1;
+        particles.push({ 
+            x: event.clientX,
+            y: event.clientY,
+            opacity: 1,
+            fade: Math.max(.0075, Math.random() * .05),
+            value: getFillValue(),
+            xDelta: Math.random() * xDirection,
+            yDelta: Math.random() * yDirection
+        });
+    }
+}
 
 export function startAnimation() {
-    console.log('Starting animation');
+    const canvas = document.createElement('canvas');
+    canvas.setAttribute('id', 'home-animation');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.append(canvas);
     opacity = 1;
-    const canvas = document.getElementById('home-animation');
     runAnimationLoop(canvas);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mouseup', handleMouseUp);
 }
 
 function runAnimationLoop(canvas) {
@@ -32,18 +73,11 @@ function runAnimationLoop(canvas) {
             characterGrid.coordinates = [];
         }
 
-        const lastUpdateDelta = timestamp - lastUpdateTime;
-        if (lastUpdateTime === 0 || lastUpdateDelta >= 25) {
-            lastUpdateTime = timestamp;
-            updatePattern();
-        }
-
         context.clearRect(0, 0, canvas.width, canvas.height);
-
-
-        context.fillStyle = '#00a14b';
-        for (let coordinate of characterGrid.coordinates) {
-            context.fillText(coordinate.value, characterGrid.characterWidth * coordinate.x, (characterGrid.characterHeight * coordinate.y) + characterGrid.characterHeight);
+        if (transitionStage < 3) {
+            runTransitionLoop(context);
+        } else {
+            runMainLoop(context);
         }
 
         let timeDelta = timestamp - lastTime;
@@ -57,6 +91,34 @@ function runAnimationLoop(canvas) {
         }
         lastTime = timestamp;
     });
+}
+
+function runTransitionLoop(context) {
+    updatePattern();
+
+    context.fillStyle = '#00a14b';
+    for (let coordinate of characterGrid.coordinates) {
+        context.fillText(coordinate.value, characterGrid.characterWidth * coordinate.x, (characterGrid.characterHeight * coordinate.y) + characterGrid.characterHeight);
+    }
+}
+
+function runMainLoop(context) {
+    let newParticles = [];
+    for (let particle of particles) {
+        particle.opacity -= particle.fade;
+        particle.x = particle.x - particle.xDelta;
+        particle.y = particle.y - particle.yDelta;
+
+        if (particle.opacity > 0) {
+            newParticles.push(particle);
+        }
+    }
+    particles = newParticles;
+
+    for (let particle of particles) {
+        context.fillStyle = `rgba(0, 161, 75, ${particle.opacity}`;
+        context.fillText(particle.value, particle.x, particle.y);
+    }
 }
 
 function updatePattern() {
@@ -152,18 +214,18 @@ function initializeFallPattern() {
     };
 
     for(let i = 0; i < characterGrid.width; i++) {
-        const size = Math.floor(Math.random() * (characterGrid.height * 2));
-        const offset = Math.floor(Math.random() * (characterGrid.height / 2));
+        const size = Math.floor(Math.random() * (characterGrid.height));
+        const offset = Math.floor(Math.random() * (characterGrid.height / 4));
         fallPattern.maxStep = Math.max(fallPattern.maxStep, size + offset + characterGrid.height);
         fallPattern.pattern.push({ size, offset });
     }
 }
 
 function getFillValue() {
-    return Math.random() * 2 > 1 ? '0' : '1'; 
+    const index = Math.random() * chars.length;
+    return chars.charAt(index);
 }
 
 export function stopAnimation() {
-    console.log('Starting animation')
     opacity = 1;
 }
