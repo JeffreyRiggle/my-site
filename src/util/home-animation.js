@@ -6,6 +6,8 @@ let transitionStage = 0;
 let fallPattern;
 let particles = [];
 let isMouseDown = false;
+let canvasWidth, canvasHeight;
+let options;
 const chars = '0123456789ABCDEF';
 
 function handleMouseMove(event) {
@@ -19,6 +21,21 @@ function handleMouseDown(event) {
 
     spawnParticles(25, event);
     isMouseDown = true;
+
+    if (options) {
+        const targetOption = options.find(option => {
+            return (
+                event.clientX > option.x && event.clientX < option.x + option.width &&
+                event.clientY > option.y && event.clientY < option.y + option.height
+            );
+        });
+
+        if (targetOption) {
+            setTimeout(() => {
+                window.location.href = targetOption.ref;
+            }, 250);
+        }
+    }
 }
 
 function handleMouseUp(event) {
@@ -44,8 +61,8 @@ function spawnParticles(count, event) {
 export function startAnimation() {
     const canvas = document.createElement('canvas');
     canvas.setAttribute('id', 'home-animation');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = canvasWidth = window.innerWidth;
+    canvas.height = canvasHeight = window.innerHeight;
     document.body.append(canvas);
     opacity = 1;
     runAnimationLoop(canvas);
@@ -64,6 +81,7 @@ function runAnimationLoop(canvas) {
         const context = canvas.getContext('2d');
 
         if (!characterGrid) {
+            context.font = "16px 'Courier New', Courier, monospace";
             const charSize = context.measureText('0');
             characterGrid = {};
             characterGrid.width = Math.floor(canvas.width / charSize.width);
@@ -97,6 +115,7 @@ function runTransitionLoop(context) {
     updatePattern();
 
     context.fillStyle = '#00a14b';
+    context.font = "16px 'Courier New', Courier, monospace";
     for (let coordinate of characterGrid.coordinates) {
         context.fillText(coordinate.value, characterGrid.characterWidth * coordinate.x, (characterGrid.characterHeight * coordinate.y) + characterGrid.characterHeight);
     }
@@ -115,7 +134,34 @@ function runMainLoop(context) {
     }
     particles = newParticles;
 
+    if (!options) {
+        const optionWidth = canvasWidth / 4;
+        const optionHeight = canvasWidth / 8;
+        const optionY = (canvasHeight / 2) - (optionHeight / 2);
+        options = [
+            { x: (canvasWidth * .25) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
+            { x: (canvasWidth * .75) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' }
+        ]
+    }
+    
+    for (let option of options) {
+        context.fillStyle = 'rgba(152, 252, 210, 1)';
+        context.beginPath();
+        context.rect(option.x, option.y, option.width, option.height);
+        context.fill();
+
+        context.fillStyle = '#2f3131';
+        context.font = "24px 'Courier New', Courier, monospace";
+        const textSize = context.measureText(option.text);
+        context.fillText(
+            option.text,
+            (option.x + (option.width / 2)) - (textSize.width / 2),
+            (option.y + (option.height / 2)) - ((textSize.actualBoundingBoxAscent + textSize.actualBoundingBoxDescent) / 2)
+        );
+    }
+
     for (let particle of particles) {
+        context.font = "16px 'Courier New', Courier, monospace";
         context.fillStyle = `rgba(0, 161, 75, ${particle.opacity}`;
         context.fillText(particle.value, particle.x, particle.y);
     }
@@ -214,8 +260,8 @@ function initializeFallPattern() {
     };
 
     for(let i = 0; i < characterGrid.width; i++) {
-        const size = Math.floor(Math.random() * (characterGrid.height));
-        const offset = Math.floor(Math.random() * (characterGrid.height / 4));
+        const size = Math.floor(Math.random() * (characterGrid.height / 2));
+        const offset = Math.floor(Math.random() * (characterGrid.height));
         fallPattern.maxStep = Math.max(fallPattern.maxStep, size + offset + characterGrid.height);
         fallPattern.pattern.push({ size, offset });
     }
