@@ -19,9 +19,8 @@ const IndexPage = () => {
   return (
     <Layout title="home">
       <h1>Home page</h1>
-      <p>You have stumbled upon my site, welcome.</p>
-      <p>This site is filled with random projects I have worked on in my free time. 
-      Please look around and see what you can find.</p>
+      <p>Welcome to my corner of the internet.</p>
+      <p>A public playground where I conduct small projects, technical experiments, and write-ups across a varied set of programming interests.</p>
       {
         !showCanvas && (
           <div className="animation-button">
