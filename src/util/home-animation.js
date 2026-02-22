@@ -11,9 +11,19 @@ let options;
 const chars = '0123456789ABCDEF';
 
 function handleMouseMove(event) {
+    if (options) {
+        for(let option of options) {
+            const isHover = (
+                event.clientX > option.x && event.clientX < option.x + option.width &&
+                event.clientY > option.y && event.clientY < option.y + option.height
+            );
+            option.hover = isHover;
+        }
+    }
+
     if (!isMouseDown) return;
 
-    spawnParticles(1, event);
+    spawnParticles(5, event);
 }
 
 function handleMouseDown(event) {
@@ -144,13 +154,19 @@ function runMainLoop(context) {
         ]
     }
     
+    const originalShadowColor = context.shadowColor;
+    const originalShadowBlur = context.shadowBlur;
     for (let option of options) {
-        context.fillStyle = 'rgba(152, 252, 210, 1)';
+        context.fillStyle = '#00b3b3';
+        if (option.hover) {
+            context.shadowColor = '#007f7f';
+            context.shadowBlur = 25;
+        }
         context.beginPath();
         context.rect(option.x, option.y, option.width, option.height);
         context.fill();
 
-        context.fillStyle = '#2f3131';
+        context.fillStyle = '#021212';
         context.font = "24px 'Courier New', Courier, monospace";
         const textSize = context.measureText(option.text);
         context.fillText(
@@ -158,6 +174,9 @@ function runMainLoop(context) {
             (option.x + (option.width / 2)) - (textSize.width / 2),
             (option.y + (option.height / 2)) - ((textSize.actualBoundingBoxAscent + textSize.actualBoundingBoxDescent) / 2)
         );
+
+        context.shadowColor = originalShadowColor;
+        context.shadowBlur = originalShadowBlur;
     }
 
     for (let particle of particles) {
