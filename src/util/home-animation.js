@@ -84,9 +84,9 @@ export function startAnimation() {
 }
 
 function runAnimationLoop(canvas) {
-    requestAnimationFrame((timestamp) => {
+    requestAnimationFrame(() => {
         if (opacity > 0) {
-            opacity -= .0075;
+            opacity -= .05;
             document.body.style.setProperty('--home-opacity', opacity);
             document.body.style.setProperty('--animation-opacity', Math.min(1, 1 - opacity));
         }
@@ -114,10 +114,9 @@ function runAnimationLoop(canvas) {
         if (lastTime == 0 || timeDelta >= 33.333) {
             runAnimationLoop(canvas);
         } else {
-            console.log('Resting');
             setTimeout(() => {
                 runAnimationLoop(canvas);
-            }, 3.333 - timeDelta);
+            }, 33.333 - timeDelta);
         }
         lastTime = performance.now();
     });
@@ -133,7 +132,7 @@ function runTransitionLoop(context) {
     }
 }
 
-function runMainLoop(context, timestamp) {
+function runMainLoop(context) {
     let newParticles = [];
     for (let particle of particles) {
         particle.opacity -= particle.fade;
@@ -147,13 +146,7 @@ function runMainLoop(context, timestamp) {
     particles = newParticles;
 
     if (!options) {
-        const optionWidth = canvasWidth / 4;
-        const optionHeight = canvasWidth / 8;
-        const optionY = (canvasHeight / 2) - (optionHeight / 2);
-        options = [
-            { x: (canvasWidth * .25) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
-            { x: (canvasWidth * .75) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' }
-        ]
+        initOptions();
     }
 
     if (!lastWave || (performance.now() - lastWave > 2000)) {
@@ -165,7 +158,7 @@ function runMainLoop(context, timestamp) {
             amplitude: Math.floor(Math.random() * (canvasWidth / 4)),
             delta: Math.random() * (Math.random() > .5 ? .1 : -.1),
             opacity: 0,
-            ttl: 240
+            ttl: 135
         });
     }
 
@@ -230,6 +223,34 @@ function runMainLoop(context, timestamp) {
         context.fillStyle = `rgba(0, 161, 75, ${particle.opacity}`;
         context.fillText(particle.value, particle.x, particle.y);
     }
+}
+
+function initOptions() {
+    if (canvasWidth < 600) {
+        initMobileOptions();
+        return;
+    }
+    initDesktopOptions();
+}
+
+function initMobileOptions() {
+    const optionWidth = canvasWidth / 2;
+    const optionHeight = canvasWidth / 4;
+    const optionX = (canvasWidth / 2) - (optionWidth / 2);
+    options = [
+        { x: optionX, y: (canvasHeight * .25) - (optionHeight / 2), width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
+        { x: optionX, y: (canvasHeight * .75) - (optionHeight / 2), width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' }
+    ]
+}
+
+function initDesktopOptions() {
+    const optionWidth = canvasWidth / 4;
+    const optionHeight = canvasWidth / 8;
+    const optionY = (canvasHeight / 2) - (optionHeight / 2);
+    options = [
+        { x: (canvasWidth * .25) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
+        { x: (canvasWidth * .75) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' }
+    ];
 }
 
 function updatePattern() {
