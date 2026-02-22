@@ -50,7 +50,7 @@ const Layout = ({ children, title }) => {
       <div className="content-area">
         <main className="main-content">{children}</main>
         <footer className="content-footer">
-          <a href="https://github.com/JeffreyRiggle"><Img fixed={githubImage} alt="github"></Img></a><a href="mailto:jeffreyriggle@gmail.com"><Img fixed={emailImage} alt="email"></Img></a><span>Jeffrey Riggle</span>
+          <a href="https://github.com/JeffreyRiggle"><Img fixed={githubImage} alt="github"></Img></a><a href="mailto:jeffreyriggle@gmail.com"><Img fixed={emailImage} alt="email"></Img></a><span>Jeff Riggle</span>
         </footer>
       </div>
     </>
