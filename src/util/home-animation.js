@@ -8,6 +8,8 @@ let particles = [];
 let isMouseDown = false;
 let canvasWidth, canvasHeight;
 let options;
+let waves = [];
+let lastWave;
 const chars = '0123456789ABCDEF';
 
 function handleMouseMove(event) {
@@ -48,7 +50,7 @@ function handleMouseDown(event) {
     }
 }
 
-function handleMouseUp(event) {
+function handleMouseUp() {
     isMouseDown = false;
 }
 
@@ -108,8 +110,8 @@ function runAnimationLoop(canvas) {
             runMainLoop(context);
         }
 
-        let timeDelta = timestamp - lastTime;
-        if (lastTime == 0 || timeDelta >= 3.333) {
+        let timeDelta = performance.now() - lastTime;
+        if (lastTime == 0 || timeDelta >= 33.333) {
             runAnimationLoop(canvas);
         } else {
             console.log('Resting');
@@ -117,7 +119,7 @@ function runAnimationLoop(canvas) {
                 runAnimationLoop(canvas);
             }, 3.333 - timeDelta);
         }
-        lastTime = timestamp;
+        lastTime = performance.now();
     });
 }
 
@@ -131,7 +133,7 @@ function runTransitionLoop(context) {
     }
 }
 
-function runMainLoop(context) {
+function runMainLoop(context, timestamp) {
     let newParticles = [];
     for (let particle of particles) {
         particle.opacity -= particle.fade;
@@ -153,9 +155,53 @@ function runMainLoop(context) {
             { x: (canvasWidth * .75) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' }
         ]
     }
-    
+
+    if (!lastWave || (performance.now() - lastWave > 2000)) {
+        lastWave = performance.now();
+        waves.push({
+            x: Math.floor(Math.random() * canvasWidth),
+            size: Math.floor(Math.random() * 5) + 1,
+            frequency: .02,
+            amplitude: Math.floor(Math.random() * (canvasWidth / 4)),
+            delta: Math.random() * (Math.random() > .5 ? .1 : -.1),
+            opacity: 0,
+            ttl: 240
+        });
+    }
+
     const originalShadowColor = context.shadowColor;
     const originalShadowBlur = context.shadowBlur;
+    context.shadowColor = '#004D2A';
+    let newWaves = [];
+    for (let wave of waves) {
+        wave.ttl -= 1;
+        wave.amplitude += wave.delta;
+        if (wave.opacity < 1) {
+            wave.opacity += .02;
+        }
+        
+        if (wave.ttl > 0) {
+            newWaves.push(wave);
+        }
+        context.beginPath();
+        context.strokeStyle = `rgba(0, 161, 75, ${wave.opacity})`;
+        context.lineWidth = wave.size;
+        context.shadowBlur = wave.size * 2;
+        for (let y = 0; y < canvasHeight; y++) {
+            const x = wave.x + Math.cos(y * wave.frequency) * wave.amplitude;
+  
+            if (x === 0) {
+              context.moveTo(x, y);
+            } else {
+              context.lineTo(x, y);
+            }
+        }
+        context.stroke();
+    }
+    waves = newWaves;
+    context.shadowColor = originalShadowColor;
+    context.shadowBlur = originalShadowBlur;
+    
     for (let option of options) {
         context.fillStyle = '#00b3b3';
         if (option.hover) {
