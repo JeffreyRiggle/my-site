@@ -4,6 +4,7 @@ import { startAnimation, stopAnimation } from "../util/home-animation"
 
 const IndexPage = () => {
   let [showCanvas, setShowCanvas] = React.useState(false)
+  let [isHover, setIsHover] = React.useState(false);
 
   React.useEffect(() => {
     if (showCanvas) {
@@ -12,6 +13,8 @@ const IndexPage = () => {
       stopAnimation();
     }
   }, [showCanvas]);
+
+  const buttonText = isHover ? 'Or not?' : 'Press Me';
   
   return (
     <Layout title="home">
@@ -19,7 +22,18 @@ const IndexPage = () => {
       <p>You have stumbled upon my site, welcome.</p>
       <p>This site is filled with random projects I have worked on in my free time. 
       Please look around and see what you can find.</p>
-      {!showCanvas && <button className="animation-button" onClick={() => setShowCanvas(true)}>Press Me</button>}
+      {
+        !showCanvas && (
+          <div className="animation-button">
+            <button data-text={ buttonText }
+              onClick={() => setShowCanvas(true)}
+              onMouseEnter={() => setIsHover(true)}
+              onMouseLeave={() => setIsHover(false)}>
+              { buttonText }
+            </button>
+          </div>
+        )
+      }
     </Layout>
   )
 }

@@ -45,7 +45,7 @@ function handleMouseDown(event) {
         if (targetOption) {
             setTimeout(() => {
                 window.location.href = targetOption.ref;
-            }, 250);
+            }, 500);
         }
     }
 }
