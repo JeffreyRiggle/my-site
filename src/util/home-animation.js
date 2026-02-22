@@ -180,7 +180,8 @@ function runMainLoop(context) {
         context.strokeStyle = `rgba(0, 161, 75, ${wave.opacity})`;
         context.lineWidth = wave.size;
         context.shadowBlur = wave.size * 2;
-        for (let y = 0; y < canvasHeight; y++) {
+        const targetHeight = Math.min((135 - wave.ttl) * .05, 1) * canvasHeight;
+        for (let y = 0; y < targetHeight; y++) {
             const x = wave.x + Math.cos(y * wave.frequency) * wave.amplitude;
   
             if (x === 0) {
@@ -196,7 +197,7 @@ function runMainLoop(context) {
     context.shadowBlur = originalShadowBlur;
     
     for (let option of options) {
-        context.fillStyle = '#00b3b3';
+        context.fillStyle = 'rgba(0, 179, 179, .8)';
         if (option.hover) {
             context.shadowColor = '#007f7f';
             context.shadowBlur = 25;
