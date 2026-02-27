@@ -1,6 +1,6 @@
 ---
 title: 'Creating an issue tracker'
-date: '2026-02-25'
+date: '2026-02-26'
 ---
 
 # Who needs an issue tracker anyway?
@@ -11,9 +11,9 @@ In the last series of blogs I wrote about the first public project I ever create
 
 While working on the text adventure creator application I had the thought, "What if someone actually used this?" Certainly they should be able to flag issues with it. Then the even more absured thought occurred to me, "What if that user doesn't even know what GitHub is?" Clearly if the end user didn't know what Github was they wouldn't be able to create a GitHub issue. Those two thoughts alone caused me to create my own issue tracker.
 
-### Whats in a name
+### Whats in a name?
 
-It was time to level up textadventurecreator was not a catchy name and I wanted a project with a cool name. Turns out this is just not a skill I have, you won't find me creating a BRB-DLL or Bingo in your company. The first idea I had was IONS short for incident oriented notification system. However doing a quick google search I found quite a few refences to other companies in software called IONS. So, to avoid a very unlikely cease and desit I named the project to SONA. I now realize that name has been hyper indexed to be synonomous with the game league of legends which was not a connection I made at the time.
+It was time to level up, "textadventurecreator" is about as good of a name as "issuetracker". Cool service names is not a skill I posses. I don't have what it takes to make a BRB-DLL. I landed on IONS, Incident Oriented Notification System, until a quick search revealed several existing companies with the same idea. So I landed on SONA, which as it turns out, was already globally indexed by a video game instead.
 
 ## Getting the requirements sorted
 
@@ -69,4 +69,4 @@ This might seem obsure and it kind of was. The reason I did this was to display 
 
 ## Looking to the future
 
-Much like my other posts I wanted to give some high level context on this application before I started tearing it apart. Next I will be focusing on my view of the backend code and how it turned out.
+Much like my other posts, I wanted to establish the context before revisiting the code with a more critical lens. That’s where the next entry begins.
