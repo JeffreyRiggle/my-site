@@ -6,6 +6,7 @@ const fs = require('fs');
 const https = require('https');
 const apiToken = fs.readFileSync('token', 'utf8');
 const { getMarkedContent } = require('./src/getMarkedContent');
+const { graphql: githubGraphql } = require("@octokit/graphql");
 
 function createPageFromMd(createPage, projectPageTemplate, node, currentPage, pages, parent, apiDoc) {
   const p = parent !== currentPage ? `${node.name}/${currentPage}` : node.name;
@@ -41,12 +42,11 @@ function generateDocumentationPages(pages, createPage, projectPageTemplate, node
   }
 }
 
-async function createGitPages(graphql, boundActionCreators) {
-  const { createPage } = boundActionCreators;
+async function createGitPages(actions) {
+  const { createPage } = actions;
   const projectPageTemplate = path.resolve('src/templates/project-page.jsx');
 
-  const result = await graphql(`query {
-    github {
+  const result = await githubGraphql(`query {
       viewer {
         name
         repositories(last: 100) {
@@ -57,28 +57,27 @@ async function createGitPages(graphql, boundActionCreators) {
             url
             first: object(expression: "master:README.md") {
               id
-              ... on Github_Blob {
+              ... on Blob {
                 text
               }
             }
             second: object(expression: "master:doc/doc.json") {
               id
-              ... on Github_Blob {
+              ... on Blob {
                 text
               }
             }
           }
-        }
       }
     }
   }
-`);
+`, { headers: { authorization: `token ${process.env.GITHUB_TOKEN}` } });
 
   if (result.errors) {
     throw result.errors;
   }
 
-  const nodes = result.data.github.viewer.repositories.nodes;
+  const nodes = result.viewer.repositories.nodes;
   for (const node of nodes) {
     console.log(`Processing ${node.name}`);
     let content = '';
@@ -96,12 +95,12 @@ async function createGitPages(graphql, boundActionCreators) {
     if (node.second && node.second.text) {
       console.log(`found doc file ${node.name} with ${node.second.text}`);
       let nodeData = JSON.parse(node.second.text);
-      await processDocumentation(pages, node.name, nodeData, graphql);
+      await processDocumentation(pages, node.name, nodeData);
       pages['Github'] = content;
       generateDocumentationPages(pages, createPage, projectPageTemplate, node, nodeData);
 
       if (nodeData.api) {
-        await createAPIDoc(graphql, node.name);
+        await createAPIDoc(node.name);
       }
     } else {
       console.log(`No doc file for ${node.name}`);
@@ -111,8 +110,8 @@ async function createGitPages(graphql, boundActionCreators) {
   }
 }
 
-async function createBlogPosts(graphql, boundActionCreators) {
-  const { createPage } = boundActionCreators;
+async function createBlogPosts(graphql, actions) {
+  const { createPage } = actions;
   const blogPost = path.resolve('./src/templates/blog-post.jsx');
   const result = await graphql(
     `
@@ -158,9 +157,9 @@ async function createBlogPosts(graphql, boundActionCreators) {
   })
 }
 
-exports.createPages = async ({ graphql, boundActionCreators }) => {
-  await createGitPages(graphql, boundActionCreators);
-  await createBlogPosts(graphql, boundActionCreators);
+exports.createPages = async ({ graphql, actions }) => {
+  await createGitPages(actions);
+  await createBlogPosts(graphql, actions);
 }
 
 exports.onCreateNode = ({ node, actions, getNode }) => {
@@ -192,14 +191,13 @@ const downloadGitFile = (response, fileName, repo) => {
   });
 }
 
-const createAPIDoc = (graphql, repo) => {
+const createAPIDoc = (repo) => {
   // This is a bit annoying but the only way I can think to do this would be
   // to release the documentation as a release
   console.log(`Creating api doc for ${repo}`);
   return new Promise((resolve, reject) => {
-    graphql(`
+    githubGraphql(`
     query {
-      github {
         viewer {
           repository(name: "${repo}") {
             releases(last: 1) {
@@ -218,15 +216,14 @@ const createAPIDoc = (graphql, repo) => {
             }
           }
         }
-      }
     }
-    `).then(result => {
+    `, { headers: { authorization: `token ${process.env.GITHUB_TOKEN}` } }).then(result => {
       if (result.errors) {
         reject(result.errors);
         return;
       }
   
-      const url = result.data.github.viewer.repository.releases.nodes[0].releaseAssets.nodes[0].downloadUrl;
+      const url = result.viewer.repository.releases.nodes[0].releaseAssets.nodes[0].downloadUrl;
       const fileName = `${repo}.zip`
       console.log(`Downloading api doc from ${url}`);
 

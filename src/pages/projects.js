@@ -4,28 +4,26 @@ import { Link, useStaticQuery, graphql } from 'gatsby';
 import { sortProjects } from '../util/util';
 
 const ProjectsPage = () => {
-    const result = useStaticQuery(graphql`query {
-        github {
+    const result = useStaticQuery(graphql`{
+      githubData {
+        data {
           viewer {
-            name
-            repositories(last: 100) {
+            repositories {
               nodes {
                 name
                 description
-                first: object(expression: "master:README.md") {
-                  id
-                  ... on Github_Blob {
-                    text
-                  }
+                first {
+                  text
                 }
               }
             }
           }
         }
-      }          
+      }
+    }        
     `);
 
-    let projects = result.github.viewer.repositories.nodes.filter(node => {
+    let projects = result.githubData.data.viewer.repositories.nodes.filter(node => {
       return node.first && node.first.text;
     });
 
