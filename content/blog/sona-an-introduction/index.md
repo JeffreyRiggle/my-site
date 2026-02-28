@@ -1,6 +1,6 @@
 ---
 title: 'Creating an issue tracker'
-date: '2026-02-26'
+date: '2026-02-27'
 ---
 
 # Who needs an issue tracker anyway?
