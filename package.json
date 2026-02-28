@@ -25,6 +25,9 @@
     "react-helmet": "^5.2.1",
     "unzipper": "^0.10.11"
   },
+  "overrides": {
+    "graphql": "15.8.0"
+  },
   "devDependencies": {
     "prettier": "^1.19.1"
   },
