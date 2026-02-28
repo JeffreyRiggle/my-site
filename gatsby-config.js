@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 module.exports = {
   siteMetadata: {
     title: `ilusr`,
@@ -21,6 +19,7 @@ module.exports = {
         path: `${__dirname}/src/images`,
       },
     },
+    `gatsby-plugin-image`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     {
@@ -31,19 +30,34 @@ module.exports = {
         start_url: `/`,
         background_color: `#FFF`,
         theme_color: `#FFF`,
-        display: `minimal-ui`
+        display: `minimal-ui`,
+        icon: 'src/images/site-favicon.png'
       },
     },
     {
-      resolve: "gatsby-source-graphql",
+      resolve: "gatsby-source-github-api",
       options: {
-        typeName: "Github",
-        fieldName: "github",
         url: 'https://api.github.com/graphql',
-        headers: {
-          Authorization: `Bearer ${fs.readFileSync('token', 'utf8')}`
-        },
-        fetchOptions: {}
+        token: process.env.GITHUB_TOKEN,
+        graphQLQuery: `
+          query {
+            viewer {
+              name
+              repositories(last: 100) {
+                nodes {
+                  name
+                  description
+                  first: object(expression: "master:README.md") {
+                    id
+                    ... on Blob {
+                      text
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
       }
     },
     {

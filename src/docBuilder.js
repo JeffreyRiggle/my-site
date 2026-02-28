@@ -1,26 +1,27 @@
 const { getMarkedContent } = require('./getMarkedContent');
+const { graphql: githubGraphql } = require("@octokit/graphql");
+
 const linkRegex = /\[(.*)\]\(([^#].*)\)/g;
 const linkLocationRegex = /\((.*)\)/;
 const webRequest = /http:|https:/i;
 
-function getContent(page, repo, graphql) {
-    return graphql(`query {
-        github {
+
+function getContent(page, repo) {
+    return githubGraphql(`query {
           viewer {
             name
             repository(name: "${repo}") {
               url
               first: object(expression: "master:doc/${page}") {
                 id
-                ... on Github_Blob {
-                  text
+                ... on Blob {
+                    text
                 }
               }
             }
           }
-        }
       }      
-    `)
+    `, { headers: { authorization: `token ${process.env.GITHUB_TOKEN}` } })
 }
 
 function processMarkdownImages(content, url) {
@@ -51,7 +52,7 @@ function processMarkdownImages(content, url) {
     return content;
 }
 
-async function processDocumentation(pages, repo, data, graphql) {
+async function processDocumentation(pages, repo, data) {
     let pageKeys = Object.keys(data.pages);
     let allPages = [];
 
@@ -81,8 +82,8 @@ async function processDocumentation(pages, repo, data, graphql) {
     }
 
     for (const page of allPages) {
-        const result = await getContent(page.file, repo, graphql);
-        const content = getMarkedContent(processMarkdownImages(result.data.github.viewer.repository.first.text, `${result.data.github.viewer.repository.url}/raw/master/doc`));    
+        const result = await getContent(page.file, repo);
+        const content = getMarkedContent(processMarkdownImages(result.viewer.repository.first.text, `${result.viewer.repository.url}/raw/master/doc`));    
         
         if (page.parent && pages[page.parent]) {
             pages[page.parent].children.push({
