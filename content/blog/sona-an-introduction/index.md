@@ -56,6 +56,12 @@ I cannot overstate my joy in how simple this was compared to what I am used to f
 
 I began to interrogate the source code for a postmortem code review. Then I noticed something strange in my nginx config.
 
+```nginx
+location /repos {
+    proxy_pass https://api.github.com/;
+}
+```
+
 What was I doing here? I searched the [front-end](https://ilusr.com/sona-client) and [back-end](https://ilusr.com/sona-server) documentation I created to no avail. Finally, I found a component in the front-end, and it started to click. I had a `GitIssueViewer` component, and I remembered. The original pain point was, "What if a user couldn't file a GitHub issue?" I had created a hook in my use of the application to create GitHub issues when SONA created a ticket. Then I would link them back to the SONA issue via a `gitissue` attribute. If a ticket had that attribute present, the front-end would call GitHub's public API to load the issue and its comments, which would be displayed in the application.
 
 This might seem obscure, and it was. However, there was a justification for my madness. I wanted to display this in my application without a link. Originally, I wanted to iframe the issue, but if you know anything about security, you know where this is going. [Clickjacking](https://owasp.org/www-community/attacks/Clickjacking) is a problem, and GitHub does protect against it. As a result, I rebuilt a minimal set of GitHub issues in my application just for this flow.
