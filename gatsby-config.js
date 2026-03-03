@@ -25,8 +25,8 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `gatsby-starter-default`,
-        short_name: `starter`,
+        name: `ilsur`,
+        short_name: `ilusr`,
         start_url: `/`,
         background_color: `#FFF`,
         theme_color: `#FFF`,
