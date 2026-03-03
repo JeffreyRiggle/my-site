@@ -110,7 +110,32 @@ So how I permissioned this was once a user did a successful login they would be 
 
 At this point you might start asking some valid questions like why was this base64 encoded. This appears to me to be classic security through obsurity. What I effecitvely wanted was the user to not know how to change the token. However a halfway decent security researcher would immediately realize this and attempt to abuse the fact. The token contains the following attributes: the users id, the expiration time of the token and the permissions associted with the token. At this point in my read through of the code I was quite concerned. One could imagine any of the following cases that could cause unexpected token outcomes: extending expiration date, masqurading as another user by changing the id, or even priviledge escalation by changing the permissions in the token. 
 
-In reality the risk was [CSRF](https://owasp.org/www-community/attacks/csrf). Now getting back to why the other cases didn't end up applying as I feared they might. I did something a bit clever, not to be confused with good, that reduced the surface area of the attack. When you logged in the token would be generated. This token would then actually be stored in the database in its initially created state. When a user used the `X-Sona-Token` it would look to see if that specific token string was issued in the past. If it wasn't it would reject the request. It would also prune the requests overtime. So while it is not good in practice what this would mean is that you escalate your priviledges you would have to use a formerly issued valid and non expired token in your request, classic CSRF.
+In reality the risk was [CSRF](https://owasp.org/www-community/attacks/csrf). Now getting back to why the other cases didn't end up applying as I feared they might. I did something a bit clever, not to be confused with good, that reduced the surface area of the attack. When you logged in the token would be generated. This token would then actually be stored in the database in its initially created state. When a user used the `X-Sona-Token` it would look to see if that specific token string was issued in the past. If it wasn't it would reject the request. It would also prune the requests overtime. So while it is not good in practice what this would mean is that you escalate your priviledges you would have to use a formerly issued valid and non expired token in your request, classic CSRF. I think this code best summarizes this almost seemingly accidental handling of these escalation concerns
+
+```go
+func (manager MySQLUserManager) ValidateUser(token string) bool {
+	userId := GetTokenUser(token)
+	tokens, _ := manager.getTokens(userId)
+	found := -1
+
+	for i, v := range tokens {
+		if v == token {
+			found = i
+		}
+	}
+
+	if found == -1 {
+		logManager.LogPrintf("Token not found for user %v", userId)
+		return false
+	}
+
+	expired := TokenExpired(token)
+	logManager.LogPrintf("Token expired %v", expired)
+	go manager.pruneTokens(userId, tokens)
+
+	return !expired
+}
+```
 
 Some things that would have made this better are the following. Dealing with the CSRF problem by using a cookie instead of a header. Preventing attempts at priveldge escalation by encrypting the token with a private key. Just doing these two things would have gone a long way.
 
