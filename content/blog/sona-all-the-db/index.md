@@ -17,9 +17,9 @@ Another very positive aspect was avoiding creating a premature abstraction in an
 
 In this project I noticed a pattern. There was a deliberate effort to make this work in a way that allowed the end user to pick their desired technology. The way I see this now is a failed attempt to remove vendor lock in.
 
-To get a bit more concrete about this I supported 3 major databases Datastore, MySQL, and DynamoDB. This is a terrible straddle between relational and non-relational databases that I will come back to. If the stated goal was to avoid vendor lockin the usual culprit is the cloud vendor not the database vendor. Making the system work well on a single database like MySQL, Postgres or MongoDB would have achived the same goal without the consequences.
+To get a bit more concrete about this I supported three major databases Datastore, MySQL, and DynamoDB. This is a terrible straddle between relational and non-relational databases. If the stated goal was to avoid vendor lockin the usual culprit is the cloud vendor not the database vendor. Making the system work well on a single database like MySQL, Postgres or MongoDB would have achived the same goal without the consequences.
 
-### Relational vs Non-Relational
+### The pitfall of abstraction
 
 There is no shortage of documentation and blogs talking about the differences between relational and non-relational databases. However my experience in this project taught me something a bit different. While you can make either model work behind a single interface, one or both implementations will be inefficient. I don't think I respected that enough going into this. Abstraction is powerful tool, but it can also make you blind to mandatory inefficiencies inherited from it. These may be acceptable, but there is no such thing as a free abstraction. In my abstraction I wanted to support any type of query on any column. The net result was implementation misses in both implementations.
 
@@ -29,7 +29,7 @@ To limit scope I will focus only on the failings of my DynamoDB implementation. 
 
 ### But you did better on MySQL right?
 
-While I do see this abstraction working out much better, I do see some implemenation misses. To support dynamic queries I created the following data structure.
+The relational implementation fared better, but the abstraction still leaked in some interesting ways. Additionally, I do see some implemenation misses. To support dynamic queries I created the following data structure.
 
 ```go
 type Filter struct {
@@ -50,7 +50,7 @@ type FilterRequest struct {
 }
 ```
 
-As you might be able to see this _should_ allow you to chain together a bunch of filter conditions with a junction (AND/OR). This has two issues, the first is similar to the NoSQL problem. While relational databases can do these queries in a query they tend to do better when you generate indexes. In this case there is no good index to create. The secondary issue is somewhat hard to look at. It appears that the implemenation missed the requirement. Do you see the issue with this code? I will give you a hint it has to do with the junction.
+As you might be able to see this _should_ allow you to chain together a bunch of filter conditions with a junction (AND/OR). This has two issues, the first is similar to the NoSQL problem. While relational databases can do these queries in a query they tend to do better when you generate indexes. In this case there is no good index to create. The secondary issue is somewhat hard to look at. It appears that the implemenation missed the requirement. Do you see the issue with this code?
 
 ```go
 for i, filter := range filter.Filters {
@@ -100,11 +100,11 @@ CREATE TABLE Incidents (
 )
 ```
 
-The insight being that all queries had to JOIN these two tables. Combinine these may have had some benefit. The downsides being the insert cost in time and required runtime management of substructure.
+Because every attribute query required joining these tables, the flexibility came at a cost. A JSON column might have simplified reads at the expense of more complicated inserts and updates.
 
 ## Identity as an afterthought
 
-A feature I bolted on later was authentication and authorization. This project highlights the danger in roll your own authentication and authorization. Now before I completely rip apart the solution, I would like to point out one thing I handled passibly. I did have the awareness not to store user passwords as plaintext in the database. Instead I salted the password with the users email and ran that on a sha256 hash before putting it in the database which is better than nothing.
+A feature I bolted on later was authentication and authorization. This project highlights the danger in roll your own authentication and authorization. Now before I completely rip apart the solution, I would like to point out one thing I handled passibly. I did have the awareness not to store user passwords as plaintext in the database. Instead I peppered the password with the users email and ran that on a sha256 hash before putting it in the database which is better than nothing.
 
 ### Tokens matter.
 
@@ -139,7 +139,7 @@ func (manager MySQLUserManager) ValidateUser(token string) bool {
 }
 ```
 
-Some things that would have made this better are the following. The first group would be around reducing the risk of token inteception. Had this been stored in a http only cookie instead of a standard header, then the impact of XSS would have been diminished. There would have still been a risk for man in the middle attacks but since the server deployment used a ssl certifiate even that would be limited. Another thing that would have helped would be encrypting the token with a private key. This encryption would have prevented malicious actors from getting user id and permission sets from tokens.
+Some things that would have made this better are the following. The first group would be around reducing the risk of token inteception. Storing the token in an HttpOnly cookie would have prevented JavaScript from reading it, reducing the risk of token theft via XSS. There would have still been a risk for man in the middle attacks but since the server deployment used a ssl certifiate even that would be limited. Another thing that would have helped would be encrypting or signing the token with a server-side key. This would have prevented users from inspecting or modifying the tokens contents including user ids and permissions.
 
 ## Looking forward
 
