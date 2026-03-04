@@ -1,9 +1,9 @@
 ---
-title: 'Something about dbs'
+title: 'Lessons from the SONA Backend'
 date: '2025-03-02'
 ---
 
-## Sona server BE (better subtitle)
+## The engine behind SONA
 
 Building off the last blog, I want to focus on the specific decisions of my backend for the SONA project. Looking back on this project I see growth in some areas, but I also see new areas of weakness emerge. Now there are enough weaknesses in this that I cannot cover them all. Since I approached this like a code review things like commenting style etc had made my notes. To avoid making this a painful droll of a code review I will focus on the most agrejous issues.
 
