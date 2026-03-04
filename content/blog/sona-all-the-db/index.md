@@ -1,6 +1,6 @@
 ---
 title: 'Lessons from the SONA Backend'
-date: '2025-03-02'
+date: '2026-03-03'
 ---
 
 ## The engine behind SONA
