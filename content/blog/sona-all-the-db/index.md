@@ -5,19 +5,19 @@ date: '2025-03-02'
 
 ## The engine behind SONA
 
-Building on the last blog, I want to focus on the specific decisions on the backend for the SONA project. Looking back on this project, I see growth in some areas, but I also see new areas of weakness emerge. Now there are enough weaknesses in this that I cannot cover them all. Since I approached this like a code review, things like commenting style made it to my notes. To avoid making this a painful, drawn-out code review, I will focus on the most egregious issues.
+Building on the last blog, I want to focus on the backend decisions behind the SONA project.. Looking back on this project, I see growth in some areas, but I also see new areas of weakness emerge. Now there are enough weaknesses in this that I cannot cover them all. Since I approached this like a code review, things like commenting style made it to my notes. To avoid making this a painful, drawn-out code review, I will focus on the most egregious issues.
 
 ## Starting off on a good note
 
-While I didn't realize it at the time, I showed some maturity in my process. Because my goal had a target beyond learning or a sense of misplaced pride in building everything myself, I used third-party libraries. Had I followed the path of my last project, I might have been tempted to build my own abstraction to create a RESTful API; instead, I used [gorilla/mux](https://github.com/gorilla/mux). This saved me hours, if not days, of dealing with the HTTP library directly. It also allowed me to focus on the core problem. In addition to this library, I used many others, like database drivers and AWS clients.
+While I didn't realize it at the time, I showed some maturity in my process. Because my goal went beyond simply learning or a sense of misplaced pride in building everything myself, I used third-party libraries. Had I followed the path of my last project, I might have been tempted to build my own abstraction to create a RESTful API; instead, I used [gorilla/mux](https://github.com/gorilla/mux). This saved me hours, if not days, of dealing with the HTTP library directly. It also allowed me to focus on the core problem. In addition to this library, I used many others, like database drivers and AWS clients.
 
-Another very positive aspect was avoiding the creation of a premature abstraction in an attempt to solve all problems. In the past, I might have been tempted to create a webhook library that aimed to solve everyone's problems with webhooks. This would have inevitably failed. The net result would have been an abstraction that failed to meet even my needs for webhooks.
+Another very positive aspect was avoiding the creation of a premature abstraction in an attempt to solve all problems. In the past, I might have been tempted to create a webhook library that aimed to solve everyone's problems with webhooks. This would have inevitably failed. The result would have been an abstraction that failed to meet even my own needs.
 
 ## Database hell
 
 In this project, I noticed a pattern. There was a deliberate effort to allow the end user to pick their desired technology. Now I see this as a failed attempt to remove vendor lock-in.
 
-I supported three major databases: Datastore, MySQL, and DynamoDB. This is a terrible straddle between relational and non-relational databases. If the stated goal was to avoid vendor lock-in, the usual culprit is the cloud vendor, not the database vendor. Making the system work well on a single database, such as MySQL, Postgres, or MongoDB, would have accomplished the same goal without the consequences.
+I supported three major databases: Datastore, MySQL, and DynamoDB. This created a terrible straddle between relational and non-relational databases. If the goal was to avoid vendor lock-in, the usual culprit is the cloud vendor, not the database vendor. Making the system work well on a single database, such as MySQL, Postgres, or MongoDB, would have accomplished the same goal without the consequences.
 
 ### The pitfall of abstraction
 
@@ -108,7 +108,7 @@ A feature I bolted on later was authentication and authorization. This project h
 
 ### Tokens matter.
 
-The way I permissioned the application was the following. Once a user completed a login, they would be handed a token. No, not a sensible JWT. This was a special token of my own creation. This token contained some key data and was base64 encoded. The encoded value was then sent back to the client. The client would then have to provide this token in subsequent API requests via an `X-Sona-Token` header.
+The way I permissioned the application was the following. Once a user completed a login, they would be handed a token. No, not a sensible JWT. This was a special token of my own creation. This token contained some key data that was base64 encoded. The encoded value was then sent back to the client. The client would then have to provide this token in subsequent API requests via an `X-Sona-Token` header.
 
 At this point, you might start asking some valid questions, including "Why was this base64 encoded?" This appears to be a classic case of security through obscurity. What I effectively wanted was to prevent the user from knowing what was in the token. However, a halfway decent security researcher would immediately realize this and attempt to abuse the fact. The token contains the following attributes: the user's ID, the expiration time for the token, and the permissions associated with the token. At this point in my read-through of the code, I was quite concerned. One could imagine the following cases that could cause unexpected token outcomes: extending the expiration date, masquerading as another user by changing the user ID, or even privilege escalation by changing the permissions in the token.
 
@@ -143,4 +143,4 @@ Some things that would have made this better are the following. The first group 
 
 ## Looking forward
 
-In many ways, I saw improvements from my last project, but in other ways, I saw a failure to properly build a web application. I had some obvious failings in deployment strategy, database management, and authorization. I found that many of these helped form my opinions on later projects. The risk was isolated to a project that was never commercialized, talk about a win. As this evaluation of the back-end comes to a close, we look to the future with an analysis of the front-end in the next blog.
+In many ways, I saw improvements from my last project, but in other ways, I saw a failure to properly build a web application. I had some obvious failings in deployment strategy, database management, and authorization. I found that many of these helped form my opinions on later projects. The risk was isolated to a project that was never commercialized, talk about a win. As this evaluation of the backend comes to a close, we look to the future with an analysis of the front-end in the next blog.
