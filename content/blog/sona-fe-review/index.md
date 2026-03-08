@@ -5,11 +5,11 @@ date: '2026-03-05'
 
 ## The face of SONA
 
-To round out the SONA blog series I will be focusing on the front-end. As a look back on this project I am reminded that the front-end landscape is ever evolving. A while back I wrote a [short piece on Aurelia](https://ilusr.com/aurelia/). This piece lamented the state of Aurelia. In this blog I will instead focus on general issues with my front-end. Much of what I noticed during my post mortem review was patterns that have fallen out of favor and mistakes that exist regardless of framework choice.
+To round out the SONA blog series I will be focusing on the front-end. Looking back on this project I’m reminded how quickly the front-end ecosystem evolves. A while back I wrote a [short piece on Aurelia](https://ilusr.com/aurelia/). This piece lamented the state of Aurelia. In this blog I will instead focus on general issues with my front-end. Much of what I noticed during my post mortem review was patterns that have fallen out of favor and mistakes that exist regardless of framework choice.
 
 ## Event passing
 
-In modern frameworks passing state between components is decided for us. This passing of state is so well abstracted in the framework, you might not realize there is a way to pass state without a framework. For example, in Angular you are can use either an event emitter or an output signal to pass state between components.
+In modern frameworks the way state is passed between components is largely decided for us. This passing of state is so well abstracted in the framework, you might not realize there is a way to pass state without a framework. For example, in Angular you are can use either an event emitter or an output signal to pass state between components.
 
 ```ts
 @Component({
@@ -26,7 +26,7 @@ export class ComponentA {
   selector: 'component-b',
   template: `<button (click)="actioned()">Click Me</button>`
 })
-export class ComponentA {
+export class ComponentB {
   action = output<string>();
   actioned() {
     action.emit('Yo!');
