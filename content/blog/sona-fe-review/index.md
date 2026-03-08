@@ -5,16 +5,15 @@ date: '2026-03-05'
 
 ## The face of SONA
 
-To round out the SONA blog series I find it fitting to end with the front-end. As a look back on this project I am reminded that the web front-end landscape is ever evolving. A while back I wrote a very [short piece on Aurelia](https://ilusr.com/aurelia/) so I won't go over all of that again. What strikes me most is the rate of change on the front-end.
+To round out the SONA blog series I will be focusing on the front-end. As a look back on this project I am reminded that the front-end landscape is ever evolving. A while back I wrote a [short piece on Aurelia](https://ilusr.com/aurelia/). This piece lamented the state of Aurelia. In this blog I will instead focus on general issues with my front-end. Much of what I noticed during my post mortem review was patterns that have fallen out of favor and mistakes that exist regardless of framework choice.
 
 ## Event passing
 
-In modern frameworks we don't have to think too deeply about passing state between components. For example in Angular you are likely using an event emitter or an output signal to pass state between components.
+In modern frameworks passing state between components is decided for us. This passing of state is so well abstracted in the framework, you might not realize there is a way to pass state without a framework. For example, in Angular you are can use either an event emitter or an output signal to pass state between components.
 
 ```ts
 @Component({
   selector: 'component-a',
-  standalone: true,
   template: `<component-b (action)="handle($event)" />`
 })
 export class ComponentA {
@@ -25,7 +24,6 @@ export class ComponentA {
 
 @Component({
   selector: 'component-b',
-  standalone: true,
   template: `<button (click)="actioned()">Click Me</button>`
 })
 export class ComponentA {
@@ -36,14 +34,14 @@ export class ComponentA {
 }
 ```
 
-Even in react this is a pretty straight forward pattern, assuming you don't want to use the redux pattern.
+Even in react this is a pretty straight forward pattern, assuming you don't want to use a redux style pattern.
 
 ```tsx
 function ComponentB({ action }) {
     const act = useCallBack(() => {
         action('Yo!');
     }, [action]);
-    return <button onClick={act}>Yo</button>
+    return <button onClick={act}>Click me</button>
 }
 
 function ComponentA() {
@@ -51,32 +49,49 @@ function ComponentA() {
 }
 ```
 
-However before these frameworks you could pass state by emitting a [CustomEvent](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) from DOM elements directly. I did find it quite interesting that this is how state passing was done in Aurelia, or at least my usage of it. Causing this sort of pattern to emerge.
+However there is another way indepentant of these frameworks you could pass state. You can emit a [CustomEvent](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) from DOM elements directly. This is the pattern that is done in Aurelia. This pattern might look like the following.
 
+```html
+<!--component-b template-->
+<button click.delegate="actioned">Click me</button>
+```
 ```js
 @customElement('component-b')
 @inject(Element)
-export class AttachmentItem {
+export class ComponentB {
     actioned() {
         let evt = new window.CustomEvent('action', { detail: 'Yo!' });
         this.element.dispatchEvent(evt);
     }
 }
 ```
+```html
+<!--Component A template-->
+<component-b actioned.tigger="handle($event)">
+```
+```js
+@customElement('component-a')
+@inject(Element)
+export class ComponentA {
+    handle(evt) {
+        console.log('Got event ', evt.detail)
+    }
+}
+```
 
 ## Style preprocessors
 
-Another thing I noticed in this project was that it used [less](https://lesscss.org/). From what I can tell less has lost a lot of popularity and frameworks like Angular tend to more fully embrace a very similar concept in [sass](https://sass-lang.com/). I have no idea what React is doing anymore. The last I knew JSS style frameworks like [emotion](https://emotion.sh/docs/introduction) were the way to go but it is highly likely that has changed. I am also sure there are a large group of people that do not use a preprocessor but use [tailwindcss](https://tailwindcss.com/) instead.
+In this project I used [less](https://lesscss.org/). From what I can tell less has lost a lot of popularity. Angular has embraced a similar framework [sass](https://sass-lang.com/). What React is doing seems to be constantly shifting. The last I knew JSS style frameworks like [emotion](https://emotion.sh/docs/introduction) were the popular choice. I wouldn't be suprized to find there yet another community that doesn't use a preprocessor but instead use [tailwindcss](https://tailwindcss.com/).
 
-Looking at this particular projects usage of less I could have gotten everything I needed with the introduction of [css custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables/Using_custom_properties). Anymore I find it hard to find a compelling case to use a css preprocessor since the base css feature set has gotten so much better over the years. In a lot of ways it seems like many of these abstraction should be getting phased out for native browser functionality just like how when [querySelector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector) was introduced and incorporated a large portion of what [jQuery](https://jquery.com/) had to offer.
+Looking at this particular projects usage of less, I could have dropped the preprocessor completely. Everything I needed is now handled with the introduction of [css custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables/Using_custom_properties). Increasingly I find it hard to find a compelling case to use a css preprocessor. The base css feature set has gotten so much better over the years. Many of these abstractions should be getting phased out for native browser functionality, similar to what happened with [jQuery](https://jquery.com/) and [querySelector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector).
 
 ## Accessiblity issues
 
-One major issue I see in this project is just how much it is not accessible.
+One major issue I see in this project revolves around accessiblity. I found countless accessibility violations but decided to cover two.
 
 ### Button contents affect screen readers
 
-A major violation I see a lot in this project is the continued use of `x` as the text for a button. While this reads fine for many users, the screen reader experience is terrible. Here is one such example.
+A major violation I see a lot in this project is the continued use of `x` as the text for a button. While this looks find for many users, the screen reader experience is terrible. Here is one such example.
 
 ```html
 <button class="attachment-remove" click.delegate="remove()">x</button>
@@ -87,11 +102,14 @@ Using the not so handy [rule guide](https://www.w3.org/TR/WCAG20-TECHS/ARIA14.ht
 <button class="attachment-remove" click.delegate="remove()" aria-label="remove">x</button>
 ```
 
+Appling this treatment would cause the screen reader to read something closer to "button remove" instead of "button x".
+
 ### Live text
 
-Another mistake I am seeing is around the notification system. While I am not sure all the notifications I created had been valuable the main way of knowing if a request failed was via a failure notification. The problem with this is it didn't use a [live region](https://www.w3.org/TR/WCAG20-TECHS/ARIA19.html) so it is unlikely that a screen reader would have given the user the information they needed.
+The notification system is another place where I had issues. In this application the main way of knowing if a request failed was via a failure notification. This notification was a toast that would appear on the screen after error occurred. Then it would slowly fade out. The problem with this is it didn't use a [live region](https://www.w3.org/TR/WCAG20-TECHS/ARIA19.html). Because of this it is unlikely that a screen reader would have given the user the information they needed.
 
-Here is an example from the application.
+Here is the example from the notification area component.
+
 ```html
 <!-- Notification Area -->
 <template>
@@ -102,7 +120,7 @@ Here is an example from the application.
 </template>
 ```
 
-A better version of this would have been
+A version of this that would have been compliant would be the following.
 
 ```html
 <!-- Notification Area -->
@@ -116,61 +134,63 @@ A better version of this would have been
 
 ## Promises vs async
 
-Something else I found interesting in my read through of this is that I started on this when [promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) had been introduced but [async/await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) had not. Because of this most of this code used promises.
+This project is that it was written during an interesting period in JavaScript history. [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) had recently been introduced, but [async/await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) had not landed yet. Because of this all the asynchronous code in the project uses the promises API. This caaused some callback chaining that was very hard to follow.
 
-What is even more interesting to me is how quickly promises had been adopted to only be more or less superceeded by async/await 2 years later. In an effort to better understand this quick evolution I did some research on this. The best I can tell the actual implementation of promises in Javascript came from the Node.js ecosystem. Digging a bit more the [originally popularized API](https://dl.acm.org/doi/10.1145/960116.54016) for promises actually came out of the distributed systems with Barbara Liskov. What is interesting is that there wasn't really a great way to leverage the same API with the promises in Javascript. Adding async/await seemed like a way to attempt to bridge that gap but still didn't quite nail it.
+```js
+httpManager.get(`/sona/v1/incidents/${value.id}`).then((incident) => {
+     // Process incident
 
-As best as I can understand a more historically appropriate promises API in Javascript might have looked more like this.
-
-```javascript
-function asyncWork() { /* some work to do async */ }
-function doOtherWork() { /* some sync work to do */ }
-
-function run() {
-    const p = new Promise(asyncWork);
-    doOtherWork();
-    // suspension happens here.
-    p.get();
-}
+     httpManager.get(`/sona/v1/incidents/${incident.id}/attachments`).then(data => {
+         // process attachements
+     }).catch(err => {
+         // handle attachment failure
+     });
+ }).catch(err => {
+     // handle incident failure
+ });
 ```
+The async version is a bit easier to follow and would be easier yet if the error handling in both cases was the same.
 
-Now I think with async/await and the promises API you can get closer to this but it still doesn't quite seem the same.
-
-```javascript
-async function asyncWork() { /* some work to do async */ }
-function doOtherWork() { /* some sync work to do */ }
-
-async function run() {
-    const p = asyncWork();
-    doOtherWork();
-    // suspension happens here.
-    await Promise.all([p]);
+```js
+try {
+    const incident = await httpManager.get(`/sona/v1/incidents/${value.id}`);
+    // process incident
+    try {
+        const data = await httpManager.get(`/sona/v1/incidents/${incident.id}/attachments`);
+    }
+    catch {
+        // handle attachemenbt failure
+    }
+}
+catch {
+    // handle incident failure
 }
 ```
 
 ## Tools I don't miss
 
-One thing I noticed looking back on this was that I had used [webpack](https://webpack.js.org/) and [gulp](https://gulpjs.com/). Over time I have realized that as powerful as these tools they create something that is inheritly hard to maintain. If you are using webpack you are probably using lots of different plugings. Some of these features may have moved into the core over time. That being said my memory is having to all sorts of plugins. You need to ship in multiple browsers will you need the babel plugin for that. Oh you wanted to use less as your preprocessor, there is another. Did you say you actually wanted to use some css as well, another plugin for you. Having to install all of these plugins just to build a simple web app makes coming back later very hard as plugins stop being maintained. This is often my biggest source of nightmare when coming back to side projects years later. Hopefully up and coming build tools like vite will do a bit better on this front but there are still plugins there.
+Another thing I used was [webpack](https://webpack.js.org/) and [gulp](https://gulpjs.com/). Webpack in particular is powerful but it creates something that is inheritly hard to maintain. Effective use of webpack requires lots of plugins. For example if you need to ship in multiple browsers, you will need the babel plugin. The same holds true for css preprocessors like less as well as minification of javascript. Installing all of these plugins to build a web app makes coming back later hard. As time goes on plugins stop being maintained or fall out of favor. This is the inevitable nightmare I face when coming back to side project years later. Hopefully up and coming build tools like [vite](https://vite.dev/) will do a bit better but there are still plugins involved.
 
-## But what about the acutal client
+## Getting more specific on SONA
 
-For the most part I have been rambling on about how the javascript ecosystem has changed. However I do think it would be beneficial if I at least called out some specific learnings from this project.
+For the most part I have been rambling on about how the javascript ecosystem has changed. However I do think it would be beneficial to call out some specific learnings from this project.
 
-### Design isn't getting better
-While in some ways I can see I was exploring with the UI when I look back on this it just looks like a watered down and worse JIRA. The design flair that I tried to add was some animations specifically around remove attributes from a ticket. This project continues to show that I could use improvement on my design skills.
+### My Design isn't getting better
+
+I can see I was exploring with the UI, but when I see this project it looks like a watered down version JIRA. The few bits of design flair that I tried to add where some gradients and a few animations. This project continues to show that I could use improvement on my design skills.
 
 ### Auth pain
 
-As I mentioned before the authorization pattern was the following. First you need to login, then you will get a "token", finally you need to send that token in a `X-Sona-Token` header. The problem with this is this ment if you wanted to keep the token between pages refreshes you would have to find a way to store that token. What I ended up doing was managing the token manually in javascript but putting the token in localStorage. This would have been all much more simple if the token was just set in a cookie. In that case the client side javascript wouldn't have had to do anything with local storage or have some custom logic in its fetch calls to make sure the header was set.
+As I mentioned before the authorization pattern was the following. First you need to login, then you will get a "token", finally you need to send that token in a `X-Sona-Token` header. This however created a  problem. If you wanted to keep the token between page refreshes you would have to find a way to store that token. What I ended up doing was managing the token manually in javascript by putting the token in localStorage. This would have been much simplier if the token was set in a cookie instead. Rhe client side javascript wouldn't have had to interact with local storage nor would it have needed custom logic in its fetch calls to make sure the header was set.
 
-### More routing
+### A lack of routes
 
-One thing I see in this application is that it's an SPA but it barely uses other routes. There was basically three different routes: login, incidents list, and incident. Some routes that could have been helpful would have been: a 404 page, a 401 page, and a user profile page. Not having the 404 and 401 page seems very strange to me anymore.
+This is SPA but it barely makes use of routes. There was basically three different routes: login, incidents list, and incident. Some routes that could have been helpful would have been: a 404 page, a 401 page, and a user profile page. Not having the 404 and 401 page seems strange to me anymore.
 
 ## Closing it out
 
-I do have many other small critiques of my code here around specific css choices and some other miscellaneous issues. However, I didn't want to spend a lot of time talking about these very specific complaints.
+I do have many other small critiques of my code around specific css choices and some other miscellaneous issues. However, I didn't want to spend a lot of time talking about these very specific opinions.
 
-One thing that has stuck with me a lot when considering Aurelia again was part of why I was drawn to it in the first place. At the time it seemed very reasonable that some subset of what Aurelia was doing would just become standardized in the browsers. This creates an interesting link for me. I also really enjoyed using HTMX and I know it [has similar asparations](https://htmx.org/essays/future/). I am hoping they get trackion but maybe this is a cautionary tale that HTMX may never make it into the standards. 
+What has stuck with me when considering Aurelia again was why I was drawn to it in the first place. It seemed reasonable that some subset of what Aurelia would become standardized in the browsers. This creates an interesting observation to me. I also enjoyed using HTMX. I know it alos [has similar asparations](https://htmx.org/essays/future/). While I hope they get trackion, this is a cautionary tale that HTMX may never make it into the standards. 
 
-The overwhelming theme I was noticing over this review was even in the last 10 years the front-end ecosystem has changed massively. If you extend that period by another 10 years the changes are even more shocking. Layers of abstraction are added then removed and configuration vs convention is a constant battle. In the meantime the browser primatives have been getting much better which may be getting missed by the framework battles. Maybe on your next project try Javascript without a framework, you just might be suprized what you can do.
+In the last 10 years the front-end ecosystem has changed massively. If you extend that period by another 10 years the changes are even more shocking. Layers of abstraction are added then removed. Configuration vs convention is a constantly evloving battle. In the meantime the browser primatives have been getting much better. A fixation on frameworks can hide this fact. On your next project try Javascript without a framework, you just might be suprized what you can do.
