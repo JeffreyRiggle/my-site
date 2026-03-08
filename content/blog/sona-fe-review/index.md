@@ -38,7 +38,7 @@ Even in React, this is a straightforward pattern, assuming you don't want to use
 
 ```tsx
 function ComponentB({ action }) {
-    const act = useCallBack(() => {
+    const act = useCallback(() => {
         action('Yo!');
     }, [action]);
     return <button onClick={act}>Click me</button>
@@ -66,7 +66,7 @@ export class ComponentB {
 ```
 ```html
 <!--Component A template-->
-<component-b actioned.tigger="handle($event)">
+<component-b actioned.trigger="handle($event)">
 ```
 ```js
 @customElement('component-a')
@@ -80,7 +80,7 @@ export class ComponentA {
 
 ## Style preprocessors
 
-In this project, I used [Less](https://lesscss.org/). From what I can tell, Less has lost a lot of popularity. Angular has embraced a similar framework, [Sass]((https://sass-lang.com/)). What React is doing seems to be constantly shifting. The last I knew, JSS-style frameworks like [emotion](https://emotion.sh/docs/introduction) were the popular choice. I wouldn't be surprised to find another community that doesn't use a preprocessor but instead uses [TailwindCSS]((https://tailwindcss.com/)).
+In this project, I used [Less](https://lesscss.org/). From what I can tell, Less has lost a lot of popularity. Angular has embraced a similar framework, [Sass](https://sass-lang.com/). What React is doing seems to be constantly shifting. The last I knew, JSS-style frameworks like [emotion](https://emotion.sh/docs/introduction) were the popular choice. I wouldn't be surprised to find another community that doesn't use a preprocessor but instead uses [TailwindCSS](https://tailwindcss.com/).
 
 With how this project used Less, I could have dropped the preprocessor completely. Everything I needed is now handled with the introduction of CSS [custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables/Using_custom_properties). Increasingly, I find it hard to find a compelling case for a CSS preprocessor. The base CSS feature set has gotten better over the years. Many of these abstractions should be phased out by native browser functionality, similar to what happened with [jQuery](https://jquery.com/) and the [querySelector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector) API.
 
@@ -176,22 +176,22 @@ I also used [Webpack](https://webpack.js.org/) and [gulp](https://gulpjs.com/). 
 
 For the most part, I have been rambling on about how the JavaScript ecosystem has changed. However, it would be beneficial to elaborate on some specific learnings from this project.
 
-### My Design isn't getting better
+### My design isn't getting better
 
 I can see I was exploring with this UI, but when I use this project, it looks like a watered-down version of JIRA. The design flair I added was some gradients and a few animations. This project continues to showcase that I could use improvement in my design skills.
 
 ### Auth pain
 
-As I mentioned previously, the authorization pattern involved the following. First, you need to log in. Then you will get a "token". Finally, you need to send that token in an `X-Sona-Token` header. This, however, created a problem. To keep the token between page refreshes, you had to store this token. What I ended up doing was managing the token manually in JavaScript by putting the token in localStorage. This would have been much simpler if the token had been set in a cookie instead. The client-side JavaScript wouldn't have had to interact with local storage, nor would it have needed custom logic in its fetch calls to make sure the header was set.
+As I mentioned previously, the authorization pattern involved the following. First, you need to log in. Then you will get a "token". Finally, you need to send that token in an `X-Sona-Token` header. This, however, created a problem. To keep the token between page refreshes, it had to be stored somewhere. What I ended up doing was managing the token manually in JavaScript by putting the token in localStorage. This would have been much simpler if the token had been set in a cookie instead. The client-side JavaScript wouldn't have had to interact with local storage, nor would it have needed custom logic in its fetch calls to make sure the header was set.
 
 ### A lack of routes
 
 This is SPA, but it barely uses routes. There were three different routes: login, incidents list, and incident. Some routes that could have been helpful would have been: a 404 page, a 401 page, and a user profile page. Not having the 404 and 401 pages seems strange to me anymore.
 
-## Closing it out
+## What I learned from SONA
 
 I have other critiques of my code, like specific CSS choices and some other miscellaneous issues. However, I didn't want to spend a lot of time talking about these very specific opinions.
 
-What has stuck with me when considering Aurelia again was why I was drawn to it in the first place. It seemed reasonable that some subset of what Aurelia would become standardized in the browsers. This creates an interesting observation for me. I also enjoyed using HTMX. I know it also [has similar aspirations]((https://htmx.org/essays/future/)). While I hope they get traction, this is a cautionary tale that HTMX may never find its way into the standards.
+What has stuck with me when considering Aurelia again was why I was drawn to it in the first place. It seemed reasonable that some subset of what Aurelia would become standardized in the browsers. This creates an interesting observation for me. I also enjoyed using HTMX. I know it also [has similar aspirations](https://htmx.org/essays/future/). While I hope they get traction, this is a cautionary tale that HTMX may never find its way into the standards.
 
 Over the last decade, the front-end ecosystem has undergone massive change. If you extend that period by another decade, the changes are even more shocking. Layers of abstraction are added, then removed. Configuration vs convention is a constantly evolving battle. In the meantime, the browser primitives have been improving. A fixation on frameworks can hide this fact. On your next project, try JavaScript without a framework; you might be surprised at what you can do.
