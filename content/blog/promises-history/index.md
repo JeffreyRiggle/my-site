@@ -144,7 +144,7 @@ function(error){
 
 From this work, many other libraries arose, such as [Q](https://github.com/kriskowal/q) with its wizard creator [Kris Kowal](https://kriskowal.com), [Bluebird](http://bluebirdjs.com/docs/getting-started.html) with its creator [Petka Antonov](https://github.com/petkaantonov), and [When](https://github.com/cujojs/when) with its creator [Brian Cavalier](http://www.briancavalier.com/).
 
-## Standarization
+## Standardization
 
 Due to the popularity of these languages, [ES2015](https://262.ecma-international.org/6.0/#sec-promise-constructor) added support for promises. The API was defined by the libraries from the CommonJS community. This was shortly followed by [Node.js v4](https://nodejs.org/en/blog/release/v4.0.0), which added Promises directly into the Node.js ecosystem. This marks the entry point for most modern web developers.
 
