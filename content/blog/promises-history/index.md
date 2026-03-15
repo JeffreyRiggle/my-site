@@ -49,7 +49,7 @@ begin
 
 	%print
 	for i: int in averages$indexes(a) do
-		stream print(make_string(grades[i].stu, pt$clai(a[i])))
+		stream print(make_string(grades[i].stu, pt$claim(a[i])))
 		end
 	synch print
 	end expect .. end
@@ -77,10 +77,10 @@ def asyncAnd(answers) {
                 resolver.resolve(false)
             }
         } catch exception {
-        resolver.smash(exception)
-    }
-}
-return result
+        	resolver.smash(exception)
+    	}
+	}
+	return result
 }
 ```
 
