@@ -88,7 +88,7 @@ We can see the callbacks start to emerge a bit. You `when` a promise and you `ca
 
 ## Getting twisted
 
-The work Mark did inspired our next character. In 2001, [Glyph Lefkowitz](https://blog.glyph.im/pages/about.html) was working on the [Twisted](https://twisted.org/) library in Python. In this library, the concept of **deferred** was added. This was heavily inspired by Mark's work, and at [PyCon 2003](https://docs.twisted.org/en/twisted-22.8.0/historic/index.html), he wrote a paper on this topic that cited Mark’s paper on the E language. Due to limitations with Python, this had to take a different shape. In this [initial implementation](https://github.com/twisted/twisted/commit/53dc26020ce1075e6a2936e7ab012cadfb05eaf6), you would create a deferred and register callbacks as well as error callbacks.
+The work Mark did inspired our next character. In 2001, [Glyph Lefkowitz](https://blog.glyph.im/pages/about.html) was working on the [Twisted](https://twisted.org/) library in Python. In this library, the concept of **deferred** was added. This was heavily inspired by Mark's work, and at [PyCon 2003](https://docs.twisted.org/en/twisted-22.8.0/historic/index.html), he wrote a paper on this topic that cited Mark’s paper on the E language. In this [initial implementation](https://github.com/twisted/twisted/commit/53dc26020ce1075e6a2936e7ab012cadfb05eaf6), you would create a deferred and register callbacks as well as error callbacks.
 
 ```python
 from twisted.internet import reactor, defer
