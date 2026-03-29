@@ -19,7 +19,7 @@ By this point, I was quite proficient in JavaScript, so I decided to write all t
 
 Below is the architecture I created for this project.
 
-![Robit Architecture](./robit-architecture.png)
+![Robit Architecture](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/whats-a-robit/robit-architecture.png)
 
 On the server machine, which in this case was a random computer I owned, there was the [Electron application](https://ilusr.com/robitclientnative/). That communicated with my personal domain to access the [static assets](https://ilusr.com/robit/). Now, depending on whether you viewed the web page in the browser or on the Electron application, you would get a different experience.
 
