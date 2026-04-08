@@ -7,19 +7,19 @@ In the last blog I covered the high level overview of Robit. In this blog I will
 
 ## Choosing a library
 
-I wrote this server in Node.js because I wanted the path of least resistence. By this point in my career basically everything had shifted to JavaScript and taking the time to setup a proper C# or Java server required a bit more effort than just creating someting in node. Since I needed to interact with discord I did a quick search of what was available and found [discord.js](https://discord.js.org/). In an all to typical pattern for me I spent just enough time looking to find the popular option for the problem I had. I did not consider any alternatives and spend the bare minimum amount of time to figure out what I needed to get started. The result of this is I build a system that ignored most of what the library I was pulling in had to offer.
+I wrote this server in Node.js because I wanted the path of least resistence. By this point in my career I was completely preoccupied with JavaScript. Taking the time to setup a proper C# or Java server required more effort than creating someting in Node. To interact with discord I did a quick search and found [discord.js](https://discord.js.org/). As is typical, I spent the bare minimum amount of time to find the popular library. I did not consider any alternatives and learned the bare minimum about the library. The result, I build a system that ignored most of what the library I was pulling in had to offer.
 
-The way I used the library was to subscribe to any message on all channels for the server in question. Then I would parse each message. If the message happened to start with `!robit` the server would proceed to process the message. Now much has changed since I last looked at this project but it appears that much of what I did was supported by default with the concept of [commands](https://discordjs.guide/legacy/slash-commands/advanced-creation) in discord.js. A little more time spent researching and I could have narrowed the surface area of my backend even more.
+The way I used the library was to subscribe to any message on all channels for the server in question. At this point Robit would parse each message. If the message happened to start with `!robit` the server would proceed to process the message. Much has changed since I last looked at this project. Much of what I did was supported by default with the concept of [commands](https://discordjs.guide/legacy/slash-commands/advanced-creation) in discord.js. A little more time spent researching and I could have narrowed the surface area of my backend even more.
 
 ## Running the server
 
-This is another project where the runtime of the project changed overtime. My like other projects I had the entire configuation of this application was determined by a single JSON configuration file. This configuration file had all of the permissions, actions, etc defined inside of it. At the start of the project this would only run on a local machine and assumed you would run the program using node and passing in the configuration file.
+This is another project where the supported runtime of the project changed overtime. Much like my like other projects, the entire configuation of this application was determined by a single JSON file. This configuration file had all of the permissions, actions, etc defined inside of it. In the beginning, this would only run on a local machine and assumed you would run the program using node while passing in the configuration file.
 
 ```bash
 > node main.js myconfig.json
 ```
 
-Just looking at how I handled that is a bit humorous to me.
+Looking at how I handled the agrument processing is a bit humorous to me.
 
 ```javascript
 let configFile;
@@ -31,7 +31,7 @@ process.argv.forEach((val, i, arr) => {
 });
 ```
 
-There are a couple problems I have with this. First it enumerates all arguments and second it takes the last JSON file. So if you provided multiple JSON files it would just read the last which may or may not be the desired case. Now there are many ways I could have handled this better. Some people would reach for a arguments parser like [Yargs](https://yargs.js.org/), but I didn't really need all that flexibility. What kind of bothers me now with this is just how much I felt compelled to use `forEach` instead of a standard for loop or a loop that could have had better performance. For example I would have preferred any of these options instead
+There are a couple problems I have with this. First, it enumerates all arguments, and second it takes the last JSON file. If you provided multiple JSON files it would just read the last one. This may or may not be the desired case. Now there are many ways I could have handled this better. I could have made this an option instead of a positional arugment. For this I could have gone with an arguments parser like [Yargs](https://yargs.js.org/). However, positional arugments are not the worst thing ever. Another thing that bothers me now is just how much I felt compelled to use `forEach`. There are many other ways that I could have gotten the same effect with more precision and efficiency.
 
 ```javascript
 // So you just have to use functional programming
@@ -51,19 +51,19 @@ for (let val of process.argv) {
 const configFile = require('./robit-config.json');
 ```
 
-Now eventually I decided to expand the scope of this. Docker is cool so everything even toy projects need to run in docker right? As a result I went through the effort of making a docker setup.
+Eventually I decided to expand the scope of this. Docker is cool, so everything even toy projects need to run in docker right?
 
 ## Containerization
 
-With containers comes an interesting problem. If I build an artifact and give it to you now I have an issue of getting your specific config into my build container. A naive solution would be to provide the docker file and make you define your config and build your own docker image with the config inside. However if you are going to do that why use docker at all?
+With containers comes an interesting problem. If I build an artifact and give it to you now I have an issue of getting your specific config into my built container. A naive solution would be to provide the Dockerfile and make you define your config and build your own docker image with the config inside. However if you are going to do that why use docker at all?
 
-This created a bit of an issue for me. Now there are lot's of ways I could have solved this problem: use a volumne, pass in the JSON as an insanely long argument, require that the config is hosted somewhere and do a CURL against an argument to get the file, the list goes on. What I decided on was that my application would now have an HTTP API using [express](https://expressjs.com/) to allow you to set the configuration.
+There are many ways I could have solved this problem: use a volumne, pass in the JSON as an insanely long argument, require that the config is hosted somewhere and do a CURL against an argument to get the file, the list goes on. What I decided on was that my application would be extended to have an HTTP API using [express](https://expressjs.com/). This API would allow you to set the configuration.
 
 ## Building the API
 
-The primary goal of the API was to allow a user to create a config and send it to a running robit server to update the config. This also added the ability to start and stop the server. However the last an possibly most weird case was a log collection.
+The primary goal of the API was to allow a user to create a configuration file and send it to a running robit server to update the configuration. This also added the ability to start and stop the server. However this also added another seemingly weird API which was log collection.
 
-While not the topic of this particular blog post the way this worked was the electron application would interface with this API to manage the state of the application. This included a view in which you could see the log mesasge from the service. Now I could have piped the stdout of the container back to the electron app but what I did instead was pull the logs via an HTTP request. The result was not being allowed to use the `console` directly for my logging. There are plently of log wrappers that I could have used like [Winston](https://github.com/winstonjs/winston) but instead I just built my own thing.
+While not the topic of this particular blog post reason for this was rooted in the electron application. The electron application would interface with this API to manage the application. This included a view in which you could see the log mesasges from the running process. I could have piped the stdout of the container back to the electron application using the child process. What I did instead was pull the logs via an HTTP request. The result was not being allowed to use the `console` directly for my logging. There are plently of libraries that I could have used like [Winston](https://github.com/winstonjs/winston) but instead I just built my own thing.
 
 ```javascript
 let watching = false;
@@ -95,11 +95,11 @@ module.exports = {
 }
 ```
 
-Now this is missing all sorts of featues that I would ideally like. Differing log levels and log formatting are just not part of the deal here. I could have saved myself some effort by just taking the time to properly enable stdout on the spawning of the docker process and just consuming the events from stdout.
+This solution is missing all sorts of featues that I would ideally like. Differing log levels and log formatting are just not part of the deal here. There are many options I could have evaluated to make my life easier including the use a thrid party or proper leveraging of stdout.
 
 ## Security strikes again
 
-Once again as I look back on this project I see that security was not my primary consideration. This surfaced in two different ways. The first an more unfortunate one was around the command processing. In the case of these commands I built a simple permission system. The idea was there might be some commands that you didn't want everyone on the server to be able to issue. To do this I stored the permissions as a key value pair. The key was the users name and the value was an array of all the permissions the user had. For example you might have something like this
+Once again, I see that security was not my primary consideration. This surfaced in two different ways. The first an more unfortunate one was around command permisions. In the case of these commands I built a simple permission system. The idea was there might be some commands that you didn't want everyone on the server to be able to issue. The solution I created for permissions as a key value pair. The key was the users name and the value was an array of all the commands the user had access to.
 
 ```json
 {
@@ -111,27 +111,27 @@ Once again as I look back on this project I see that security was not my primary
 }
 ```
 
-Now if you haven't figured it out the big problem here is it was keyed off of display name. The funny thing about display names in discord is you can change them. So, if for instance sally changed their discord name to admin they would get permission to all actions.
+If you haven't figured it out yet, the big problem is that the solution keyed off the display name. The funny thing about display names in discord is you can change them. So, if for instance, sally changed their discord name to admin they would get permission to all actions.
 
-The other area this surfaced was on the web server. As I mentioned the interaction with the server when using docker was via an HTTP API. This API had no permissioning and that "might" be considered safe if you are only running on your local without the port exposed to the outside world. However it it certainly poor form. To make matters worse regardless of if you ran in docker or not the HTTP server was always started even though it wasn't needed. Looking at this again I was reminded of the [zoom security issue](https://nvd.nist.gov/vuln/detail/cve-2019-13450) around running a local web server. If you don't need the web server for the flow maybe you shouldn't run it.
+The other area security issues surfaced was on the web server. The interaction with the server when using docker was via an HTTP API. This API had no permissioning. That choice "might" be considered safe if you are running on your local machine without the port exposed to the outside world. However, it is certainly poor form and not secure. To make matters worse, regardless of if you ran in docker or not, the HTTP server was always used. This was despite the fact it wasn't needed. This remindes me of the [zoom security issue](https://nvd.nist.gov/vuln/detail/cve-2019-13450) from 2019 dealing with a local web server. If you don't need the web server maybe you shouldn't run it.
 
 ## Get that bundler out of here
 
-One thing I immediately regretted seeing when looking back on this project could be summed up with `webpack.config.js`. I don't have a great memory of this decision but either I thought it would be wise to bundle my application into a single file or I wanted it bundled to make it easier to download off of GitHub. Whatever the true reason is I ended up using webpack to bundle my Node.js application into a single javascript file. This required weird things like the mixing of ESM and CJS module systems along with tools like babel.
+Another regret could be summed up with `webpack.config.js`. I don't have a great memory of this decision. Either I thought it would be perfomant to bundle my Node application, or I a bundled to make it easier to download from GitHub. Whatever the reason, I ended up using webpack to bundle my Node.js application. As a result, strange tools like babel ended up being a part of my system.
 
 Every time I upgrade a project the biggest pain point I have is around the build tooling. Sadly in this case I inflicted the pain on myself when it was not required.
 
 ## The features I forgot
 
-Once again looking through the code of this project I was reminded of some interesting features I forgot to mention and figured I would mention here.
+Looking through the code, I was reminded of some interesting features I had not mentioned before.
 
 ### Harassment as a feature
 
-I am not proud of this and I don't even think I fully realized the issue at the time. However I created what I can only describe as the perfect harassment feature. You could configure an action to repeat whatever message you wanted to another channel. This could allow a user to send a message directly to Robit and it would happily repeat that message. I even created the action on my local server for a while and called it whisperbroadcast. So the following message "!robit whisperbroadcast Lenny's mother was a hamster and his father smelt of elderberries" would have sent the message to a larger channel to harass poor Lenny.
+I am not proud of this and I don't think I realized the issue I was creating. However I created what I can only describe as the perfect harassment feature. You could configure an action to repeat any message you wanted to another channel. This could allow a user to send a message directly to Robit and it would happily repeat that message without record of the orignating user. I even created the action on my local server for a while and called it "whisperbroadcast". In practice the following message "!robit whisperbroadcast Lenny's mother was a hamster and his father smelt of elderberries" send directly to the bot, would have sent the message to a larger channel to harass poor Lenny.
 
 ### Why shouldn't discord be a music player?
 
-The other thing I realize I spend an extrodinary amount of time on was finding a way to use discord like a music player. I created a set of special actions that wold allow robit to read some part of the file system, gather all the files, and then allow you to play those in a voice channel. So if you configured that correctly in the JSON you could do something like "!robit playMusic" which would start a voice channel which would play music to that channel. You could then control the music with commands like "next", "shuffle", "stop".
+As it turns out, I spend an extrodinary amount of time on turning discord into a music player. I created a set of actions that would allow robit to read the file system, gather all the files, and then provide commands for you to play those in a voice channel. If you configured that correctly in the JSON, you could do something like "!robit playMusic" which would start a voice channel to play music in that channel. You could then control the music with commands like "next", "shuffle", "stop".
 
 Looking at this code I realized I commited the cardinal sin of Node.js programming.
 
@@ -155,7 +155,7 @@ function getMusicFilesFromDirectory(dir) {
 };
 ```
 
-That is correct I used the "sync" options on the `fs` module. If you will excuse me for a brief tangent, this goes against much of what Node's creator would have wanted. Part of the initial thesis for Node was that even though Javascript is single threaded it is not the thread that makes things faster. For instance you could have a slow Java server that use 100 threads. Instead what you want is a fast loop on a single thread with a scheduler and blocking IO work being done outside of the main application loop. If you haven't watched it I highly recommend watching [this talk](https://www.youtube.com/watch?v=EeYvFl7li9E). Since this happened only once it is fine but a solution more in the spirit of Node would have been something like the following
+That's right I used a "sync" API from the `fs` module. Part of the initial thesis for Node was that even though Javascript is single threaded it is not the thread that makes things faster. Instead proper handling of IO is what is important.[This talk](https://www.youtube.com/watch?v=EeYvFl7li9E) does a far better job explaining this than I could ever do. Since this happened only once it is fine, but a solution more in the spirit of Node would have been the following
 
 ```javascript
 async function getMusicFilesFromDirectory(dir) {
@@ -178,8 +178,8 @@ async function getMusicFilesFromDirectory(dir) {
 
 ## Javascript is a weird language
 
-One thing I noticed when looking at this project that Javascript is a programming melting pot. In this project alone I see a interesting mix of functional and object oriented programming styles. All of my HTTP handling code and discord message processing code is written in a functional way. I cannot tell if that is because the libraries surrounding that promote that style of thinking or a creation of my own. However, where things get a bit more interesting is that for the action handling the composition of actions, their metadata, and associated actions had all been done in an object oriented way. These actions even had a base class that handled the sending of messages back to channels. For these actions I could have just as easily used a series of functions without class but instead I decided to mix paradigms.
+This project reminds me that Javascript is a melting pot. In this project alone I see a interesting mix of functional and object oriented programming paradigms. The HTTP handling code and discord message processing code is written in a functional way. However, the composition of actions, their metadata, and associated actions was done in an object oriented manner. These actions even had a base class that handled the sending of messages back to channels. For these actions I could have just as easily used a series of functions without class but instead I decided to mix paradigms. I assume this difference is because libraries like Express take on a functional paradigm while I was thinking in an object oriented fashion. This caused the parts that are closer to the library to take on a more functional paradigm where I was more comfortable with an object oriented paradigm at the time.
 
 ## Rounding it out
 
-Once again in this project I build more than was required, supported more deployments than I needed to, and to top it all off once again I neglected to understand the ecosystem I was building on. These problems appear to be all to common in these projects I have taken on. I also see where chasing the fad caused me issues later on. Having to continue to support my choice to use yarn or webpack created continued friction over time. As we close this chapter of Robit's development we prepare for a dive into the client that powered this server. This includes some learnings around electron and React.
+Once again I build more than was required, supported more deployments than needed, and once again I neglected to understand the ecosystem. These problems appear to be all to common in these projects I have taken on. Also chasing fads caused me issues later on. Having to continue to support the choice to use yarn or webpack created continued friction over time. As we close out this chapter of Robit's development, we prepare for a dive into the client that powered this server. This will focus on learnings specific to Electron and React.
