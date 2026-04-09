@@ -3,17 +3,17 @@ title: 'Building a Discord Bot'
 date: '2026-04-03'
 ---
 
-In the last blog I covered the high level overview of Robit. In this blog I will talk a bit more specifically on the build out of the server. As I mentioned in the last blog the main goal for this project was to learn electron, so the work on the server was not the main focus for me. What I wanted to do was handle messages from discord channels and do some action based on what was observed.
+Now that we know the high level overview of Robit, its time to cover the build out of the server. As I mentioned in the last blog the main goal for this project was to learn electron, so the work on the server was not the main focus for me. What I wanted the bot to do was handle messages from discord channels and perform some actions based on what was observed.
 
 ## Choosing a library
 
-I wrote this server in Node.js because I wanted the path of least resistence. By this point in my career I was completely preoccupied with JavaScript. Taking the time to setup a proper C# or Java server required more effort than creating someting in Node. To interact with discord I did a quick search and found [discord.js](https://discord.js.org/). As is typical, I spent the bare minimum amount of time to find the popular library. I did not consider any alternatives and learned the bare minimum about the library. The result, I build a system that ignored most of what the library I was pulling in had to offer.
+This server was written in Node.js because it was the path of least resistence. By this point in my career I was completely preoccupied with JavaScript. Setting up a proper C# or Java server simply required more effort than using Node. To interact with discord I did a quick search and found [discord.js](https://discord.js.org/). As is typical, I spent the bare minimum amount of time to find the popular library. I did not consider any alternatives and learned the bare minimum about the library. The result, I build a system that ignored most of what the library I was pulling in had to offer.
 
-The way I used the library was to subscribe to any message on all channels for the server in question. At this point Robit would parse each message. If the message happened to start with `!robit` the server would proceed to process the message. Much has changed since I last looked at this project. Much of what I did was supported by default with the concept of [commands](https://discordjs.guide/legacy/slash-commands/advanced-creation) in discord.js. A little more time spent researching and I could have narrowed the surface area of my backend even more.
+The way I used the library involved subscribing to message events on all channels for the server in question. Then Robit would parse each message. If the message happened to start with `!robit` the server would proceed to process the message. Much of what I did was supported by default with the concept of [commands](https://discordjs.guide/legacy/slash-commands/advanced-creation) in discord.js. A little more time spent researching and I could have narrowed the surface area of my backend even more.
 
 ## Running the server
 
-This is another project where the supported runtime of the project changed overtime. Much like my like other projects, the entire configuation of this application was determined by a single JSON file. This configuration file had all of the permissions, actions, etc defined inside of it. In the beginning, this would only run on a local machine and assumed you would run the program using node while passing in the configuration file.
+This is another project where the supported runtime of the project changed overtime. Much like my like other projects, the entire configuation of this application was determined by a single JSON file. This configuration file had all of the permissions, actions, etc defined inside of it. In the beginning, this would only run on a local machine and assumed you would run the program using Node while passing in the configuration file.
 
 ```bash
 > node main.js myconfig.json
@@ -31,13 +31,13 @@ process.argv.forEach((val, i, arr) => {
 });
 ```
 
-There are a couple problems I have with this. First, it enumerates all arguments, and second it takes the last JSON file. If you provided multiple JSON files it would just read the last one. This may or may not be the desired case. Now there are many ways I could have handled this better. I could have made this an option instead of a positional arugment. For this I could have gone with an arguments parser like [Yargs](https://yargs.js.org/). However, positional arugments are not the worst thing ever. Another thing that bothers me now is just how much I felt compelled to use `forEach`. There are many other ways that I could have gotten the same effect with more precision and efficiency.
+There are a couple problems I have with this. First, it enumerates all arguments, and second it takes the last JSON file. If you provided multiple JSON files it would just read the last one. This may or may not be the desired case. Now there are many ways I could have handled this better. I could have made this an option instead of a positional arugment. For this I could have gone with an arguments parser like [Yargs](https://yargs.js.org/). However, positional arugments are not the worst thing ever. What bothers me most now is just how much I felt compelled to use `forEach`. There are many other ways that I could have gotten the same effect with more precision and efficiency.
 
 ```javascript
-// So you just have to use functional programming
+// So you just have to use functional programming.
 const configFile = process.argv.find(val => val.endsWith('json'))
 
-// the forgotten for loop
+// The forgotten for loop.
 let configFile;
 
 for (let val of process.argv) {
@@ -47,7 +47,7 @@ for (let val of process.argv) {
     }
 }
 
-// or you could just apply a convention
+// Why not just apply a convention?
 const configFile = require('./robit-config.json');
 ```
 
@@ -55,15 +55,15 @@ Eventually I decided to expand the scope of this. Docker is cool, so everything 
 
 ## Containerization
 
-With containers comes an interesting problem. If I build an artifact and give it to you now I have an issue of getting your specific config into my built container. A naive solution would be to provide the Dockerfile and make you define your config and build your own docker image with the config inside. However if you are going to do that why use docker at all?
+With containers comes an interesting problem. If I build an artifact and give it to you I have created an issue. How can I get your specific config into my built container? A naive solution would be to provide the Dockerfile and make you define your configuration and build your own docker image with the configuration inside. However if you are going to do that why use docker at all?
 
-There are many ways I could have solved this problem: use a volumne, pass in the JSON as an insanely long argument, require that the config is hosted somewhere and do a CURL against an argument to get the file, the list goes on. What I decided on was that my application would be extended to have an HTTP API using [express](https://expressjs.com/). This API would allow you to set the configuration.
+There are many ways I could have solved this problem: use [bind mounts](https://docs.docker.com/engine/storage/bind-mounts/), pass in the JSON as an insanely long argument, require that the configuration is hosted and do a CURL against an argument to get the file, the list goes on. What I decided on was that my application would be extended to have an HTTP API using [express](https://expressjs.com/). This API would allow you to set the configuration.
 
 ## Building the API
 
-The primary goal of the API was to allow a user to create a configuration file and send it to a running robit server to update the configuration. This also added the ability to start and stop the server. However this also added another seemingly weird API which was log collection.
+The primary goal of the API was to allow a user to create a configuration file and send it to a running robit server to update the configuration. This also added the ability to start and stop the server. However this also added another seemingly weird API, log collection.
 
-While not the topic of this particular blog post reason for this was rooted in the electron application. The electron application would interface with this API to manage the application. This included a view in which you could see the log mesasges from the running process. I could have piped the stdout of the container back to the electron application using the child process. What I did instead was pull the logs via an HTTP request. The result was not being allowed to use the `console` directly for my logging. There are plently of libraries that I could have used like [Winston](https://github.com/winstonjs/winston) but instead I just built my own thing.
+While not the topic of this particular blog post reason for this was rooted in the electron application. The electron application would interface with this API to manage the server. This included a view in which you could see the log messages from the running process. I could have piped the stdout of the container back to the electron application using the child process. What I did instead was pull the logs via an HTTP request. The result was not being allowed to use the `console` directly for my logging. There are plently of libraries that I could have used like [Winston](https://github.com/winstonjs/winston) but instead I just built my own thing.
 
 ```javascript
 let watching = false;
@@ -95,11 +95,11 @@ module.exports = {
 }
 ```
 
-This solution is missing all sorts of featues that I would ideally like. Differing log levels and log formatting are just not part of the deal here. There are many options I could have evaluated to make my life easier including the use a thrid party or proper leveraging of stdout.
+This solution is missing all sorts of featues. Differing log levels and log formatting are just not part of the deal here. There are many options I could have evaluated to make my life easier including the use a thrid party or proper leveraging of stdout.
 
 ## Security strikes again
 
-Once again, I see that security was not my primary consideration. This surfaced in two different ways. The first an more unfortunate one was around command permisions. In the case of these commands I built a simple permission system. The idea was there might be some commands that you didn't want everyone on the server to be able to issue. The solution I created for permissions as a key value pair. The key was the users name and the value was an array of all the commands the user had access to.
+Once again, I see that security was not my primary consideration. This surfaced in two different ways. The first an more unfortunate one was around command permisions. In the case of these commands I built a simple permission system. The idea was there might be some commands that you didn't want everyone on the server to be able to invoke. The solution I created for permissions as a key value pair. The key was the users name and the value was an array of all the commands the user had access to.
 
 ```json
 {
@@ -162,10 +162,11 @@ async function getMusicFilesFromDirectory(dir) {
     let files = await fs.readdir(dir);
 
     for (let file of files) {
-        const fStat = await fs.stat(file);
+        const path = `${dir}/${file}`;
+        const fStat = await fs.stat(path);
 
         if (fStat.isDirectory()) {
-            await getMusicFilesFromDirectory(dir);
+            await getMusicFilesFromDirectory(path);
             continue;
         }
 
