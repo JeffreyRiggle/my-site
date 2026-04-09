@@ -3,23 +3,23 @@ title: 'Building a Discord Bot'
 date: '2026-04-03'
 ---
 
-Now that we know the high level overview of Robit, its time to cover the build out of the server. As I mentioned in the last blog the main goal for this project was to learn electron, so the work on the server was not the main focus for me. What I wanted the bot to do was handle messages from discord channels and perform some actions based on what was observed.
+Now that we know the high level overview of Robit, its time to cover the build out of the server. As I mentioned in the last blog the main goal for this project was to learn electron, so the work on the server was not the main focus for me. What I wanted the bot to do was handle messages from discord channels and perform some actions based on what was observed. To create the path of least resistance the server was written in Node.js. By this point in my career I was completely preoccupied with JavaScript. Setting up a proper C# or Java server simply required more effort than using Node. 
 
-## Choosing a library
+## Choosing a package
 
-This server was written in Node.js because it was the path of least resistence. By this point in my career I was completely preoccupied with JavaScript. Setting up a proper C# or Java server simply required more effort than using Node. To interact with discord I did a quick search and found [discord.js](https://discord.js.org/). As is typical, I spent the bare minimum amount of time to find the popular library. I did not consider any alternatives and learned the bare minimum about the library. The result, I build a system that ignored most of what the library I was pulling in had to offer.
+To interface with Discord I did a quick search and found [discord.js](https://discord.js.org/). As is typical, I spent the bare minimum amount of time to find the popular package. I did not consider any alternatives and learned the bare minimum about the package. The result, I build a system that ignored most of what the package I was pulling in had to offer.
 
-The way I used the library involved subscribing to message events on all channels for the server in question. Then Robit would parse each message. If the message happened to start with `!robit` the server would proceed to process the message. Much of what I did was supported by default with the concept of [commands](https://discordjs.guide/legacy/slash-commands/advanced-creation) in discord.js. A little more time spent researching and I could have narrowed the surface area of my backend even more.
+The way I used the package involved subscribing to message events on all channels for the server in question. Then Robit would parse each message. If the message happened to start with `!robit` the server would proceed to process the message. Much of what I did was supported by default with the concept of [commands](https://discordjs.guide/legacy/slash-commands/advanced-creation) in discord.js. A little more time spent researching and I could have narrowed the surface area of my backend even more.
 
 ## Running the server
 
-This is another project where the supported runtime of the project changed overtime. Much like my like other projects, the entire configuation of this application was determined by a single JSON file. This configuration file had all of the permissions, actions, etc defined inside of it. In the beginning, this would only run on a local machine and assumed you would run the program using Node while passing in the configuration file.
+Once again the runtime of this project changed overtime. The entire configuation of this application was determined by a single JSON file. This configuration file had all of the permissions, actions, etc defined inside of it. In the beginning, this would only run on a local machine and assumed you would run the program using Node while passing in the configuration file.
 
 ```bash
 > node main.js myconfig.json
 ```
 
-Looking at how I handled the agrument processing is a bit humorous to me.
+In retropsect the agrument processing is a bit humorous to me.
 
 ```javascript
 let configFile;
@@ -31,16 +31,17 @@ process.argv.forEach((val, i, arr) => {
 });
 ```
 
-There are a couple problems I have with this. First, it enumerates all arguments, and second it takes the last JSON file. If you provided multiple JSON files it would just read the last one. This may or may not be the desired case. Now there are many ways I could have handled this better. I could have made this an option instead of a positional arugment. For this I could have gone with an arguments parser like [Yargs](https://yargs.js.org/). However, positional arugments are not the worst thing ever. What bothers me most now is just how much I felt compelled to use `forEach`. There are many other ways that I could have gotten the same effect with more precision and efficiency.
+As you could see, this will enumerate all arguments, and then take the last JSON file. If you provided multiple JSON files it would just read the last one. This may or may not be the desired case. Now there are many ways I could have handled this better. I could have made this an option instead of a positional arugment. For this I could have gone with an arguments parser like [Yargs](https://yargs.js.org/). However, positional arugments are not the worst thing ever. What bothers me most now is just how much I felt compelled to use `forEach`. There are many other ways that I could have gotten the same effect with more precision and efficiency.
 
 ```javascript
 // So you just have to use functional programming.
-const configFile = process.argv.find(val => val.endsWith('json'))
+const configFile = process.argv.findLast(val => val.endsWith('json'))
 
 // The forgotten for loop.
 let configFile;
 
-for (let val of process.argv) {
+for (let i = process.argv.length - 1; i > 0; i--) {
+    const val = process.argv[i];
     if (val.endsWith('json')) {
         configFile = val;
         break;
