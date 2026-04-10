@@ -1,6 +1,6 @@
 ---
 title: 'Building a Discord Bot'
-date: '2026-04-03'
+date: '2026-04-09'
 ---
 
 With the high-level overview of Robit out of the way, it’s time to cover how the server was built. As I mentioned in the last blog, the main goal of this project was to learn Electron, so working on the server was not the primary focus. What I wanted the bot to do was handle messages from Discord channels and perform a set of actions based on the content. To create the path of least resistance, the server was written in Node.js. By this point in my career, I was completely preoccupied with JavaScript. Setting up a proper C# or Java server simply required more effort than using Node.
@@ -10,6 +10,8 @@ With the high-level overview of Robit out of the way, it’s time to cover how t
 To interface with Discord, I did a quick search and found [discord.js](https://discord.js.org/). As is typical, I spent the bare minimum time to find the popular package. I did not consider any alternatives and learned the bare minimum about the package. The result: I built a system that ignored most of what the package I was pulling in provided.
 
 The way I used the package involved subscribing to message events on all channels for the server in question. Then Robit would parse each message. If the message started with `!robit` the server would proceed to process the message content. Much of what I did was supported by default in Discord.js with [commands](https://discordjs.guide/legacy/slash-commands/advanced-creation). A little more time spent researching, and I could have narrowed the surface area of my backend even more.
+
+In retrospect, this was a failure on my part to understand what I had chosen to interface with.
 
 ## Running the server
 
@@ -56,7 +58,7 @@ const configFile = './robit-config.json';
 const configFile = process.argv[process.argv.length - 1];
 ```
 
-Eventually, I decided to expand the scope of this. Docker is cool, so everything, even toy projects, should run in Docker, right?
+Eventually, I decided to expand the scope of this. Docker is cool, so everything, even toy projects, should run in Docker, right? Instead, this added deployment complexity without having a distribution problem to justify it.
 
 ## Containerization
 
@@ -100,7 +102,7 @@ module.exports = {
 }
 ```
 
-This solution is missing all sorts of features. Differing log levels and log formatting are just not part of the deal here. There are many options I could have evaluated to make my life easier, including using a third party or properly leveraging stdout.
+This solution is missing all sorts of features. Differing log levels and log formatting are just not part of the deal here. There are many options I could have evaluated to make my life easier, including using a third party or properly leveraging stdout. This was another case of over-engineering instead of using the ecosystem I had already bought into.
 
 ## Security strikes again
 
@@ -124,7 +126,7 @@ The other area where security issues surfaced was on the web server. The interac
 
 Another regret could be summed up with `webpack.config.js`. I don't have a great memory of this decision. Either I thought it would be efficient to bundle my Node application, or it was bundled to make it easier to download from GitHub. Whatever the reason, I ended up using webpack to bundle my Node.js application. As a result, strange tools like Babel ended up being a part of my system.
 
-Every time I upgrade a project, the biggest pain point is around the build tooling. Sadly, in this case, I inflicted the pain on myself when it was not required.
+Every time I upgrade a project, the biggest pain point is around the build tooling. Sadly, in this case, I inflicted the pain on myself when it was not required. This introduced build complexity without a clear need for doing so.
 
 ## The features I forgot
 
@@ -188,4 +190,4 @@ This project reminds me that JavaScript is a melting pot. In this project alone,
 
 ## Rounding it out
 
-Once again, I built more than was required, supported more deployments than needed, and neglected to understand the ecosystem. These problems appear to be all too common in these projects I have taken on. Also, chasing fads caused me issues later on. Having to support the choice of yarn and Webpack created continued friction over time. As we close out this chapter of Robit's development, we prepare for a dive into the client that powered this server. This will focus on learnings specific to Electron and React.
+I consistently introduced tools and abstractions before I had a concrete need for them. Most of the complexity in this system came from decisions like that, not from the problem itself. These problems appear to be all too common in these projects I have taken on. Also, chasing fads caused me issues later on. Having to support the choice of yarn and Webpack created continued friction over time. As we close out this chapter of Robit's development, we prepare for a dive into the client that powered this server. This will focus on learnings specific to Electron and React.
