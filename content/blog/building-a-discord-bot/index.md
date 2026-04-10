@@ -49,7 +49,11 @@ for (let i = process.argv.length - 1; i > 0; i--) {
 }
 
 // Why not just apply a convention?
-const configFile = require('./robit-config.json');
+// Maybe a forced file name
+const configFile = './robit-config.json';
+
+// Possibly a proper positional variable
+const configFile = process.argv[process.argv.length - 1];
 ```
 
 Eventually I decided to expand the scope of this. Docker is cool, so everything even toy projects need to run in docker right?
