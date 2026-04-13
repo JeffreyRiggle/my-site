@@ -35,15 +35,114 @@ Now in order to support these kinds of features you need to have an interprocess
 
 This worked well but it didn't fit my mental model. I wanted to be able to express two modes of communication. A client should be able to send a request and await it's response. It should also be able to subscribe to some event and get notifications over time. Since I couldn't find an easy way to do that with the standard feature set I built [ipc-bridge](https://ilusr.com/ipc-bridge/) to support my use cases. This abstraction allowed me to use my mental model across the IPC provided by Electron.
 
+```javascript
+let {client} = require('@jeffriggle/ipc-bridge-client');
+
+// Sending single request to Node runtime.
+client.sendMessage('doSomething', 'someData').then(() => {
+    // Logic for when request passes
+}).catch((err) => {
+    // Logic for when request failed
+});
+
+// Getting incremental updates from Node runtime
+client.subscribeEvent('customizablemessage', () => {
+    // Logic for when message comes from main process
+});
+```
+
+## Building static assets
+
+Now since Electron just uses a Chrome browser as a rendering layer you have all the same choices as if you had been building a typical web front-end. The first of which is choosing if you are going to use a framework and what framework you would want to use. In this case I decided to use React. Before this project I had rarely used React, I was still quite a bit skeptical of the memory consumption required for the virtual DOM. However, what I did find compelling was the mental model of a single render function. To make this as easy as possible I used the react-start-app that existed at the time. This opted into a default test framework, build process, and even the use of a service worker. One of the more problematic defaults was the linters that mostly got in my way.
+
+## Class verse function
+
+When I started this project class based react components was the only option. As such all components in this project are class based. At the time I constantly ran into problems with callbacks. I kept running into the common problem of forgetting my binding on my callback functions. Now the way I dealt with this problem seems like it could be problematic from a memory use pattern.
+
+```javascript
+class MyComponent {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            stateString: 'sup'
+        };
+    }
+
+    doSomething() {
+        console.log(this.state.stateString);
+    }
+
+    render() {
+        return <button onClick={this.doSomething.bind(this)}></button>
+    }
+}
+```
+
+This would create a new bound instance of `doSomething` on every render call. Some alternatives I have seen use cached bind or arrow functions.
+
+```javascript
+class MyComponent {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            stateString: 'sup'
+        };
+
+        this.doSomethingBound = this.doSomething.bind(this);
+    }
+
+    doSomething() {
+        console.log(this.state.stateString);
+    }
+
+    render() {
+        return <button onClick={this.doSomethingBound}></button>
+    }
+}
+```
+
+```javascript
+class MyComponent {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            stateString: 'sup'
+        };
+    }
+
+    doSomething = () => {
+        console.log(this.state.stateString);
+    }
+
+    render() {
+        return <button onClick={this.doSomething}></button>
+    }
+}
+```
+
+Now functional components handle this problem much better by completely avoiding this class of problem as there is no `this` to contend with.
+
+```javascript
+const MyComponent = () => {
+    const [stateString, _] = useState('sup');
+
+    const doSomething = useCallback(() => {
+        console.log(stateString);
+    }, []);
+
+    return <button onClick={doSomething}></button>
+}
+```
+
+Every time I come back to this project I have to fight the urge to change all components to functional components. While it would feel better it is not strictly required.
+
 ## Front-end topics
-* Built in a way that there had been two different experiences. A native browser and electron app version
 * Observation that this would have been a perfect case for redux
-* Used scss this time (do I actually care to talk about this)
-* React defaults around linting are annoying
 * Writing files is silly but recently they introduced https://developer.mozilla.org/en-US/docs/Web/API/FileSystemWritableFileStream/write wow
 * Didn't really use a component library but pulled in libraries for tooltip and datepicker
-* React class vs functional components (just coming back I felt compelled to use functional even though I didn't need it)
-    * bind all the things
 
 ## Node desktop topics
 * Weird health check logic
