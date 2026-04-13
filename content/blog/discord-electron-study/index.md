@@ -35,8 +35,6 @@ Now in order to support these kinds of features you need to have an interprocess
 
 This worked well but it didn't fit my mental model. I wanted to be able to express two modes of communication. A client should be able to send a request and await it's response. It should also be able to subscribe to some event and get notifications over time. Since I couldn't find an easy way to do that with the standard feature set I built [ipc-bridge](https://ilusr.com/ipc-bridge/) to support my use cases. This abstraction allowed me to use my mental model across the IPC provided by Electron.
 
-TODO research if there is a better way to do this now.
-
 ## Front-end topics
 * Built in a way that there had been two different experiences. A native browser and electron app version
 * Observation that this would have been a perfect case for redux
