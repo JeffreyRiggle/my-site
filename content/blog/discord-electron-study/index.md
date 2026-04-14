@@ -139,15 +139,216 @@ const MyComponent = () => {
 
 Every time I come back to this project I have to fight the urge to change all components to functional components. While it would feel better it is not strictly required.
 
-## Front-end topics
-* Observation that this would have been a perfect case for redux
-* Writing files is silly but recently they introduced https://developer.mozilla.org/en-US/docs/Web/API/FileSystemWritableFileStream/write wow
-* Didn't really use a component library but pulled in libraries for tooltip and datepicker
+## A missed oppertunity
 
-## Node desktop topics
-* Weird health check logic
-* Different behaviors for dev verses production mode (dev tools/site url)
-* Pretty funny how docker start worked if the operation didn't complete within 5 seconds it was considered a failure
-* Used okctokit to download a single file from GH that could have been a single HTTP request
+A vast majority of the front-end code in this project was building up a dynamic configuration file using components. However the way I did this was a bit crazy. Basically what I did was create a `configManager` this manager was not a class but instead a closure that had a global configuration object in it. As you added actions you would mutate the global actions array. A similar thing would happen for updating an action. Everytime you created an action component it would pull the related action metadata from the global state and mutate it in place.
+
+```javascript
+// relevent bits of configManager.js
+let config = {
+    greeting: "Robit online. Boop Boop",
+    audioSources: [],
+    access: {
+        default: [],
+        users: [],
+        deniedMessage: "You do not have the rights to perform this action"
+    },
+    deferredactions: [],
+    actions: []
+};
+
+export const addAction = (action) => {
+    config.actions.push(action);
+}
+
+export const getActionById = (id) => {
+    let retVal;
+
+    config.actions.forEach(v => {
+        if (!retVal && v.id === id) {
+            retVal = v;
+        }
+    })
+
+    return retVal;
+}
+```
+
+```javascript
+// relevant bit's of Action component.
+class Action extends Component {
+  constructor(props) {
+    super(props);
+
+    this.action = getActionById(params.id);
+    // ommitted for brevity
+  }
+
+  // ommitted for brevity
+
+  // event handler to mutate state
+  typeChanged(event) {
+      let newType = event.target.value;
+
+      this.action.type = newType;
+      this.setState({
+          selectedType: newType
+      });
+  }
+}
+```
+
+Now a couple things are a bit weird about this. The first being that I didn't store the action in state it was a member on the class. Also this leveraged mutations to make implicit changes to the global state by modifying the same underlying action object as was in the global cache. A much more modern and React acceptable way of solving this same problem would have been to use [Redux](https://redux.js.org/). This is almost the perfect case for that technology as my entire application logic was just a series of components whose end objective was to build a single global state to be sent to a HTTP endpoint or saved to disk.
+
+## Finally a better way
+
+As I was reviewing this code I happened on this piece of code I am all to familiar with seeing.
+
+```javascript
+const save = (data, type, fileName) => {
+    let el = document.createElement('a');
+
+    el.setAttribute('href', `data:${type};charset=utf-8,${encodeURIComponent(data)}`);
+    el.setAttribute('download', fileName);
+
+    document.body.appendChild(el);
+    el.click();
+    document.body.removeChild(el);
+}
+```
+
+I have seen and used similar bits of code just like this many times to programatically save something to the end users disk. Convinenced that there had to be a better way I set out to look this up on MDN and it turns out just a year ago that better way is finally [here](https://developer.mozilla.org/en-US/docs/Web/API/FileSystemWritableFileStream/write). I cannot wait to stop silently pressing links in the browser.
+
+## Adding in the dual experience
+
+Up until now all of the logic I have covered is specific to both experiences. However I didn't spend enough time talking about how I got two different experiences in the same front-end asset. This was something I had actually built into the `ipc-bridge` I discussed earlier. In this case I would expose a property that would let the front-end know if the electron app was hooked up. A slimmed down example of this can be seen here
+
+```javascript
+// Modified for brevity.
+class App extends Component {
+  constructor(props) {
+    super(props);
+
+    client.on(client.availableChanged, this.stateChanged.bind(this));
+
+    this.state = {
+      electron: client.available
+    }
+  }
+
+  stateChanged(state) {
+    this.setState({
+      electron: state
+    });
+  }
+
+  render() {
+    return (
+      <BrowserRouter basename="/robit">
+        <div className="App">
+          <div className="content">
+            <div className="sidebar">
+              <ul className="sidebar-list">
+                {this.state.electron && <li><NavLink to="/server" className="sidebar-item">Server</NavLink></li>}
+              </ul>
+            </div>
+            <div className="content-area">
+              <Routes>
+                {this.state.electron && <Route exact="true" path="/server" Component={Server}/>}
+              </Routes>
+              <Outlet />
+            </div>
+          </div>
+          <footer>
+            <Generator/>
+          </footer>
+        </div>
+      </BrowserRouter>
+    );
+  }
+}
+```
+
+By having the available state and a handler I was able to dynamically load additional routes into my application.
+
+## Getting to the Node runtime
+
+Up until now almost all of the logic I have talked about is the client assets. These would run fine with or without the destop part. However I think it is worthwhile to evaluate some of the choices in the Node runtime as well. There is far less of this code so there is a bit less to uncover here.
+
+## Detecting version
+
+One thing I often had to do during this project was debug the application. In order to do this I wanted the full application running on my local machine and I wanted access to the devtools for the electron application. I was able to control this behavior by setting a `NODE_ENV` varaible. When the variable was production I would be able to do both of these behaviors.
+
+## An excessive dependency
+
+One part of this application involved starting the web server locally. To do this I would download the compiled Robit application from GitHub, believe it or not I checked in the compiled version as well as the source. How I decided to solve this problem was to pull in [octokit](https://github.com/octokit/octokit.js) to get this file. However I could have just as easily did a simple HTTP GET and saved the extra dependency.
+
+## An overly aggressive timeout
+
+One area of code I found interesting coming back to this was the docker startup logic. Now if the application determined you had docker it would allow you to start up Robit as a docker container. To detect if you had docker a child process would be spawned to see if you had a docker version.
+
+```javascript
+const dockerEnabled = () => {
+    return new Promise((resolve, reject) => {
+        exec('docker --version', (err, stdout, stderr) => {
+            resolve(!err && !stderr);
+        });
+    });
+}
+```
+
+Once eligibility was determined you could opt to start this application in docker. This was done by pulling the docker container, starting it and waiting for a healthcheck to succeed. The problem was This was a very agressive health check. If you couldn't get the application started in 5 seconds it would abandon the attempt.
+
+```javascript
+function waitUp(timeout) {
+    const startTime = Date.now();
+    return new Promise((resolve, reject) => {
+        pollingInterval = setInterval(() => {
+            request.get('http://localhost:8080/robit/state', (err, response, body) => {
+                let json = JSON.parse(body);
+                
+                if (json.state === 'Stopped') {
+                    clearInterval(pollingInterval);
+                    resolve();
+                } else if (timeout < Date.now() - startTime) {
+                    clearInterval(pollingInterval);
+                    reject('timed out waiting for docker server');
+                }
+            })
+        }, 500);
+    });
+}
+
+function startRunningDockerServer(config) {
+    return new Promise((resolve, reject) => {
+        exec('docker pull jeffriggle/robit && docker run -p 8080:8080 -d jeffriggle/robit', (err, stdout, stderr) => {
+            if (err) {
+                reject(err)
+                return;
+            }
+    
+            waitUp(5000).then(() => {
+                request.post('http://localhost:8080/robit/start', {
+                    json: config
+                }, (err, response , body) => {
+                    if (err) {
+                        console.log(`Failed to set robit config. error ${err}, response: ${JSON.stringify(response)}. body: ${JSON.stringify(body)}`);
+                        reject(err);
+                        return;
+                    }
+
+                    resolve();
+                });
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    });
+}
+```
+
+I don't know if times are different but I cannot think of may docker containers I have pulled from the internet, started, and been able to interact with in under 5 seconds.
 
 ## Closing remarks
+
+This electron application in a way was a multi-process arcitecture that required some consideration at mulitple levels. This had a web front-end, talking to a desktop backend which in tern interacted with a web server. This was a neat little problem all rolled up into one silly little application. I am also continually reminded of the fact that the web ecosystem is in constant flux. It seems like no matter when you start a project if you do not keep up on the changes the web ecosystem will march on in a way that does not lead well to occasionally updated projects. This does not appear to be a problem with the technology itself, JavaScript. In fact code I wrote 10 years ago without a framework still runs just fine in modern browsers. This instead appears to be a result of cycles of hype and meta shifts in the landscape over years. I will be very curious to see if this is an artifact of the "pre-AI era" or if this pattern will continue to occur.
