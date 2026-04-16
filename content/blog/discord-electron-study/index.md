@@ -5,7 +5,7 @@ date: '2026-04-12'
 
 ## Why use Electron anyway?
 
-After a bit of a meandering journey through a silly little discord bot we now find ourselves evaluating the Electron application. My first experience with Electron was using the [Atom editor](https://atom-editor.cc/). At the time Atom was my daily driver. It was faster than [Visual Studio](https://visualstudio.microsoft.com/vs/), which at the time was a pretty low bar, it was more feature rich than [Notepad++](https://notepad-plus-plus.org/), and it was free unlike [Sublime Text](https://www.sublimetext.com/). I was intrigued by the idea of combining Node and Chrome in a way that allowed you to develop desktop applications. This sounded like much better experience than I had previously using [Swing](https://en.wikipedia.org/wiki/Swing_(Java)), [JavaFx](https://openjfx.io/), [WinForms](https://learn.microsoft.com/en-us/dotnet/desktop/winforms/), [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/), or [Qt](https://doc.qt.io/).
+After a bit of a meandering journey through a silly little discord bot we now find ourselves evaluating the Electron application. My first experience with Electron was using the [Atom editor](https://atom-editor.cc/). At the time Atom was my daily driver. It was faster than [Visual Studio](https://visualstudio.microsoft.com/vs/), it was more feature rich than [Notepad++](https://notepad-plus-plus.org/), and it was free unlike [Sublime Text](https://www.sublimetext.com/). I was intrigued by the idea of combining Node and Chrome in a way that allowed you to develop desktop applications. This sounded like much better experience than I had previously using [Swing](https://en.wikipedia.org/wiki/Swing_(Java)), [JavaFx](https://openjfx.io/), [WinForms](https://learn.microsoft.com/en-us/dotnet/desktop/winforms/), [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/), or [Qt](https://doc.qt.io/).
 
 What made this a uniquely good oppertunity to use electron was the fact that I wanted to manage another application running on my local machine. Since Node has access to the system and the ability to spawn child processes this was my chance to finally give the tool a go.
 
@@ -13,15 +13,11 @@ What made this a uniquely good oppertunity to use electron was the fact that I w
 
 In my first attempt to review the code I found myself fixated on issues that amounted to being nerd sniped on code style. Upon reflection I realized that may of these changes would amount to nearly identical bytecode. For example many of them had just been new features like [optional chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining) or [destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring).
 
-As I movee past the superficial critiques I noticed a few things that seemed non-stadandard. The first was that I had no unit tests in any of my electron app or rendered application code. The second was that I was using plain JavaScript, no Typescript anywhere to be seen. At first I wanted to call this an issue but again with more reflection I think this was wise.
+As I moved past the superficial critiques I noticed a few things that seemed non-stadandard. The first was that I had no unit tests in any of my electron app or rendered application code. The second was that I was using plain JavaScript, no TypeScript anywhere to be seen. At first I wanted to call this an issue but again with more reflection I think this was wise.
 
 Unit tests are wonderful when you are building a production product. However, when you are just tinkering and learning it only serves to get in your way. Making assertions on fundamently flawed prototypes is a perfect waste of time. 
 
-In the case of Typescript, a strong argument can be made that adding Typescript is only a net benefit. The common argument would be that you get to control how strict the types are an you can always abuse `any`, `function`, or `unknown` to unlock a higher velocity. That is certainly something I could not argue with. However, Typescript is not a first class citizen in this ecosystem. If you give raw Typescript to the browser or Node it will fail. In order to leverage Typescript this means adding in a build step to compile your Typescript. This takes time to setup the appropriate build pipeline. It also adds time on every chnage to compile your code. To make matters worse since you can fall back to such unrestrictive types you are just paying a development time cost for questionable gains. A code base that is typescript but only uses `any` is a net negative. While I am not against TypeScript in this case I would defend my choice not to use it.
-
-## Package manager wars
-
-One thing that kept coming up in these repositories was finding the use of [yarn](https://yarnpkg.com/). At the time it seemed like the clear winner, having the lock file was a massive win. I had been burned too many times with odd build artifacts due to some loose patch or minor version. Now years later I can see it is hard to dethrone the encumbant. A quick change to add a proper lock file and npm was back on top. That is not to say that yarn is not still valuable but a large majority of its popularty was erased in short time. In this case yarn was just another dependency I had to add to my machine and build pipelines so to make maintance easier I removed it.
+A strong argument can be made that adding TypeScript is only a net benefit. The common argument would be that you get to control how strict the types are. You can always abuse `any`, `function`, or `unknown` to unlock a higher velocity. That is certainly something I could not argue with. However, TypeScript is not a first class citizen in this ecosystem. If you give raw TypeScript to the browser or Node it will fail. In order to leverage TypeScript this means adding in a build step to compile your TypeScript. This takes time to setup the appropriate build pipeline. It also adds time on every chnage to compile your code. To make matters worse since you can fall back to such unrestrictive types you are just paying a development time cost for questionable gains. A code base that is TypeScript but only uses `any` is a net negative. While I am not against TypeScript in this case I would defend my choice not to use it.
 
 ## Getting started with Electron
 
@@ -31,7 +27,7 @@ In this case I opted for the web server hosting the static assets. This allowed 
 
 ### Enter IPC
 
-To support these kinds of features you need to have an interprocess communication channel between the browser and the Node process. Memory could be failing me but at the time the only way to do this was by using [ipcMain](https://www.electronjs.org/docs/latest/api/ipc-main). This gave you an event emitter to handle messages between the browser and the Node process.
+To support these kinds of features you need to have an interprocess communication channel between the browser and the Node process. At the time the only way to do this was by using [ipcMain](https://www.electronjs.org/docs/latest/api/ipc-main). This gave you an event emitter to handle messages between the browser and the Node process.
 
 This worked well but it didn't fit my mental model. I wanted to be able to express two modes of communication. A client should be able to send a request and await it's response. It should also be able to subscribe to some event and get notifications over time. Since I couldn't find an easy way to do that with the standard feature set I built [ipc-bridge](https://ilusr.com/ipc-bridge/) to support my use cases. This abstraction allowed me to use my mental model across the IPC provided by Electron.
 
@@ -67,7 +63,7 @@ By having the available state and a handler I was able to dynamically load addit
 
 Since Electron uses chromium as a rendering layer you have all the same choices you would have for building any other website. The first of which is choosing if you are going to use a framework and what framework you would want to use. In this case I decided to use React. Before this project I had rarely used React, I was still quite a bit skeptical of the memory consumption required for the virtual DOM. However, what I did find compelling was the mental model of a single render function. To make this as easy as possible I used the react-start-app that existed at the time. This opted into a default test framework, build process, and even the use of a service worker.
 
-### Class verse function
+### Class verses function
 
 When I started this project class based React components was the only option. As a result I constantly ran into problems with callbacks. I kept running into the common problem of forgetting my binding on my callback functions. The way I dealt with this problem problematic from a memory use perspective.
 
@@ -153,7 +149,7 @@ Every time I come back to this project I have to fight the urge to change all co
 
 ### A missed oppertunity
 
-A vast majority of the front-end code in this project was building up a dynamic configuration file using components. The way I approached this problem was a bit crazy. I created a `configManager` this manager was not a class but instead a closure that had a global configuration object in it. As you added actions you would mutate the global actions array. A similar thing would happen for updating an action. Everytime you created an action component it would pull the related action metadata from the global state and mutate it in place.
+A vast majority of the front-end code in this project was building up a dynamic configuration file using components. The way I approached this problem was interesting in hindsight. I created a `configManager` this was not a class but a closure that had a global configuration object in it. As you added actions you would mutate the global actions array. A similar thing would happen for updating an action. Everytime you created an action component it would pull the related action metadata from the global state and mutate it in place.
 
 ```javascript
 // relevent bits of configManager.js
@@ -193,10 +189,7 @@ class Action extends Component {
     super(props);
 
     this.action = getActionById(params.id);
-    // ommitted for brevity
   }
-
-  // ommitted for brevity
 
   // event handler to mutate state
   typeChanged(event) {
@@ -210,7 +203,7 @@ class Action extends Component {
 }
 ```
 
-There are a couple issues I have with this. I didn't store the action in state it was a member on the class. However the more egregious offender was the implicit changes. This built up its configuration by modifying the same underlying action object as was in the global. A much more modern and acceptable way of solving this same problem would have been to use [Redux](https://redux.js.org/). I cannot think of a more perfect case for that technology. My entire application logic was a series of components whose end objective was to build a single global state.
+There are a couple issues I have with this. I didn't store the action in state it was a member on the class. However the more egregious offender was the implicit changes. This built up its configuration by modifying the same underlying action object as was in the global. A much more modern and acceptable way of solving this same problem would have been to use [Redux](https://redux.js.org/). By using redux I would have the same global state I wanted but with a couple of benefits. The first would be that I wouldn't have implicit changes. All updates when using the redux pattern should result in an global immutable state being changed over time by determinstic actions. The second benefit would be state consistency in the component. In this example you can see I am managing the state of the action outside of the props or state of the component. Going with a redux pattern this would not have been the case.
 
 ### Finally a better way
 
@@ -233,15 +226,27 @@ Convinenced that there had to be a better way I set out to survey the landscape.
 
 ## Getting to the Node runtime
 
-Up until now almost all of the logic I have talked about is the client assets. These would run fine with or without the destop part. However I think it is worthwhile to evaluate some of the choices in the Node runtime as well. There is far less of this code so there is a bit less to uncover here.
+Up until now almost all of the logic I have talked about is the client assets. These would run fine with or without the desktop part. However I think it is worthwhile to evaluate some of the choices in the Node runtime as well. There is far less of this code so there is a bit less to uncover here.
 
 ### Detecting environment
 
-Debugging the application was something I found I needed early on. To do this I wanted the full application running on my local machine. I also wanted access to the devtools in the chromium view. I was able to control this behavior by setting a `NODE_ENV` varaible. When the variable was production I would be able to do both of these behaviors.
+Debugging the application was something I needed early on. I wanted the full application running on my local machine. I also wanted access to the devtools in the chromium view. I was able to control this behavior by setting a `NODE_ENV` varaible. When the variable was production I would be able to do both of these behaviors.
+
+```javascript
+const isDev = process.env.NODE_ENV !== 'production';
+const appUrl = isDev ? 'http://localhost:3000/robit' : 'http://ilusr.com/robit';
+
+// opening the browser window
+if (isDev) {
+    window.webContents.openDevTools();
+}
+
+window.loadURL(appUrl);
+```
 
 ### An excessive dependency
 
-A key flow involved starting the web server locally. To do this I would download the compiled Robit "application", more like JavaScript file, from GitHub. That's right I checked in the compiled version as well as the source, blasphemy. To download this single asset I added [octokit](https://github.com/octokit/octokit.js) as a dependency. However I could have just as easily did a simple HTTP GET and saved the extra dependency.
+A key flow involved starting the web server locally. To do this I would download the compiled Robit "application", more like JavaScript file, from GitHub. That's right I checked in the compiled version as well as the source, blasphemy. To download this single asset I added [octokit](https://github.com/octokit/octokit.js) as a dependency. However I could have just as easily did a simple HTTP GET and saved the extra dependency. The effort to use the HTTP library would have been low. To avoid this low effort I took on the risk of including a large depedency and its current 222 dependencies. That wildly expanded the amount of code I had consumed and should be auditing for security issues.
 
 ### An overly aggressive timeout
 
