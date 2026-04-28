@@ -1,5 +1,5 @@
 ---
-title: 'First excusion into Electron'
+title: 'First excursion into Electron'
 date: '2026-04-18'
 ---
 
