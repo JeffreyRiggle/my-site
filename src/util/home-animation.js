@@ -197,7 +197,10 @@ function runMainLoop(context) {
     context.shadowBlur = originalShadowBlur;
     
     for (let option of options) {
-        context.fillStyle = 'rgba(0, 179, 179, .8)';
+        let initialStrokeStyle = context.strokeStyle;
+        context.fillStyle = 'transparent';
+        context.lineWidth = 5;
+        context.strokeStyle = 'rgba(0, 179, 179, .8)';
         if (option.hover) {
             context.shadowColor = '#007f7f';
             context.shadowBlur = 25;
@@ -205,8 +208,10 @@ function runMainLoop(context) {
         context.beginPath();
         context.rect(option.x, option.y, option.width, option.height);
         context.fill();
+        context.stroke();
 
-        context.fillStyle = '#021212';
+        context.fillStyle = 'rgb(0, 179, 179)';
+        context.strokeStyle = initialStrokeStyle;
         context.font = "24px 'Courier New', Courier, monospace";
         const textSize = context.measureText(option.text);
         context.fillText(
@@ -239,8 +244,9 @@ function initMobileOptions() {
     const optionHeight = canvasWidth / 4;
     const optionX = (canvasWidth / 2) - (optionWidth / 2);
     options = [
-        { x: optionX, y: (canvasHeight * .25) - (optionHeight / 2), width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
-        { x: optionX, y: (canvasHeight * .75) - (optionHeight / 2), width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' }
+        { x: optionX, y: (canvasHeight * .16) - (optionHeight / 2), width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
+        { x: optionX, y: (canvasHeight * .49) - (optionHeight / 2), width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' },
+        { x: optionX, y: (canvasHeight * .82) - (optionHeight / 2), width: optionWidth, height: optionHeight, text: 'Scenes', ref: 'scenes' }
     ]
 }
 
@@ -249,8 +255,9 @@ function initDesktopOptions() {
     const optionHeight = canvasWidth / 8;
     const optionY = (canvasHeight / 2) - (optionHeight / 2);
     options = [
-        { x: (canvasWidth * .25) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
-        { x: (canvasWidth * .75) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' }
+        { x: (canvasWidth * .16) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
+        { x: (canvasWidth * .49) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' },
+        { x: (canvasWidth * .82) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Scenes', ref: 'scenes' },
     ];
 }
 

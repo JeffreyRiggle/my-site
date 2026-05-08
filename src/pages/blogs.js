@@ -6,6 +6,7 @@ const BlogPage = () => {
     const result = useStaticQuery(graphql`
       {
         allMarkdownRemark(
+          filter: { fileAbsolutePath: { regex: "/(content/blog)/" } }
           sort: { fields: [frontmatter___date], order: DESC }
           limit: 1000
         ) {
