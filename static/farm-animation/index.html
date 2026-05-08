@@ -325,7 +325,10 @@
                 }
 
                 render(context, state) {
-                    this.velocity += Math.max((this.isDecelerating ? -1 : 1) * this.acceration * state.dt, 0);
+                    this.velocity += (this.isDecelerating ? -1 : 1) * this.acceration * state.dt;
+                    if (this.velocity < 0) {
+                        this.velocity = 0;
+                    }
                     this.point.y = this.point.y + (this.modifier * this.velocity * state.dt);
                     context.drawImage(this.image, this.point.x, this.point.y, this.size, this.size);
                 }
