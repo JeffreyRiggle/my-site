@@ -349,11 +349,12 @@ canvas {
     }
 }
 
-.project-list {
+.project-list, .scene-list {
     padding: 0;
 }
 
-.project-list li {
+.project-list li,
+.scene-list .scene-list-item {
     list-style: none;
     padding: 8px;
     border: 1px solid black;
@@ -364,18 +365,34 @@ canvas {
     box-shadow: 1px 4px #ccc;
 }
 
-.project-list li a {
+.project-list li a,
+.scene-list .scene-list-item a {
     color: #7ec699;
     font-size: 18px;
     font-weight: bold;
 }
 
-.project-list li a:visited {
+.project-list li a:visited,
+.scene-list .scene-list-item a:visited {
     color: #007938;
 }
 
 .project-list li .description {
     margin-top: 8px;
+}
+
+.scene-list .scene-list-item .description {
+    margin-top: 16px;
+}
+
+.scene-list .scene-list-item .description details summary {
+    list-style-type: '> ';
+    font-weight: 'bold';
+}
+
+.scene-list .scene-list-item .description details[open] summary {
+    list-style-type: 'v ';
+    font-weight: 'bold';
 }
 
 .project-content-page img {

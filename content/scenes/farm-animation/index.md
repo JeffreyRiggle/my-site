@@ -4,17 +4,16 @@ date: '2026-05-07'
 ---
 
 <details>
-    <summary>Additional Information</summary>
+    <summary>More details</summary>
 
-### Description
+**Description**
 Basic study of motion and procedural generation in a farm setting
 
-### Tools Used
-2D Canvas
+**Medium**: 2D Canvas
 
-### Topics Researched
- * Basic motion (acelleration, decelleration)
+**Topics Researched**
+ * Basic motion (acceleration, deceleration)
  * Basic predictive collision detection
- * procedural generation
- * time cycles based on radial movement
-</details >
+ * Procedural generation
+ * Time cycles based on radial movement
+</details>

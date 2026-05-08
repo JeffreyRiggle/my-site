@@ -32,13 +32,13 @@ const ScenesPage = () => {
     return (
         <Layout title="Scenes">
           <h1>Scenes</h1>
-          <p>This is a place where I study animation. Do a better job here</p>
-          <ul className="project-list">
+          <p>This is a collection of animation studies I have done.</p>
+          <ul className="scene-list">
               {result.allMarkdownRemark.edges.map(edge => {
                   return (
-                  <li>
+                  <li className="scene-list-item">
                     <Link to={edge.node.fields.slug}>{edge.node.frontmatter.title} - {edge.node.frontmatter.date}</Link>
-                    <div dangerouslySetInnerHTML={{ __html: edge.node.html }} />
+                    <div className="description" dangerouslySetInnerHTML={{ __html: edge.node.html }} />
                   </li>);
               })}
           </ul>
