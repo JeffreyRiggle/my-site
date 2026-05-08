@@ -23,6 +23,9 @@ const Layout = ({ children, title }) => {
             <Link to="/blogs" className="header-link">
               Blogs
             </Link>
+            <Link to="/scenes" className="header-link">
+              Scenes
+            </Link>
           </h1>
         </div>
       </header>

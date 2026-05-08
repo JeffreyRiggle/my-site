@@ -1,0 +1,780 @@
+<html>
+    <head>
+        <title>Farm Scene | ilusr</title>
+        <style>
+            body {
+                margin: 0;
+            }
+        </style>
+        <link rel="icon" href="/favicon-32x32.png" type="image/png">
+        <script type="text/javascript">
+            const smallCloud = document.createElement('img');
+            smallCloud.src = './cloud.png';
+            const farmImage = document.createElement('img');
+            farmImage.src = './farm.png';
+            const farmNoWindImage = document.createElement('img');
+            farmNoWindImage.src = './farm-no-wind.png';
+
+            const deerImage1 = document.createElement('img');
+            deerImage1.src = './deer-step0.png';
+            const deerImage2 = document.createElement('img');
+            deerImage2.src = './deer-step1.png';
+            const deerImage3 = document.createElement('img');
+            deerImage3.src = './deer-step2.png';
+            const deerImage4 = document.createElement('img');
+            deerImage4.src = './deer-step3.png';
+            const deerImage5 = document.createElement('img');
+            deerImage5.src = './deer-step4.png';
+            const deerAnimation = [deerImage1, deerImage2, deerImage3, deerImage4, deerImage5];
+
+            const deerStopped1 = document.createElement('img');
+            deerStopped1.src = './deer-stopped-1.png';
+            const deerStopped2 = document.createElement('img');
+            deerStopped2.src = './deer-stopped-2.png';
+            const deerStopped3 = document.createElement('img');
+            deerStopped3.src = './deer-stopped-3.png';
+            const deerStopAnimation = [deerImage1, deerStopped1, deerStopped2, deerStopped3, deerStopped2, deerStopped1, deerImage1];
+
+            const farmField = document.createElement('img');
+            farmField.src = './field-2.png';
+            const farmField2 = document.createElement('img');
+            farmField2.src = './field-3.png';
+            const farmField3 = document.createElement('img');
+            farmField3.src = './field-4.png';
+            const farmField4 = document.createElement('img');
+            farmField4.src = './field-5.png';
+            const farmField5 = document.createElement('img');
+            farmField5.src = './field-6.png';
+            const farmField6 = document.createElement('img');
+            farmField6.src = './field-7.png';
+            const farmField7 = document.createElement('img');
+            farmField7.src = './field-8.png';
+
+            const roadImage = document.createElement('img');
+            roadImage.src = './road.png';
+            
+            const forest = document.createElement('img');
+            forest.src = './forest-3.png';
+            const forest2 = document.createElement('img');
+            forest2.src = './forest-4.png';
+            const forest3 = document.createElement('img');
+            forest3.src = './forest-5.png';
+            const forest4 = document.createElement('img');
+            forest4.src = './forest-6.png';
+            
+            const caraway = document.createElement('img');
+            caraway.src = './car-away.png';
+            const carforward = document.createElement('img');
+            carforward.src = './car-forward.png';
+
+            const ground = document.createElement('img');
+            ground.src = './ground-2.png';
+            const ground2 = document.createElement('img');
+            ground2.src = './ground-3.png';
+            const ground3 = document.createElement('img');
+            ground3.src = './ground-4.png';
+
+            const windmill1 = document.createElement('img');
+            windmill1.src = './windmill-0.png';
+            const windmill2 = document.createElement('img');
+            windmill2.src = './windmill-1.png';
+            const windmill3 = document.createElement('img');
+            windmill3.src = './windmill-2.png';
+            const windmillAnimation = [windmill1, windmill2, windmill3];
+
+            const community = document.createElement('img');
+            community.src = './community.png';
+
+            class Sun {
+                constructor(screenHeight, screenWidth) {
+                    this.screenHeight = screenHeight;
+                    this.screenWidth = screenWidth;
+                    this.centerPoint = { x: screenWidth / 2, y: screenHeight / 2};
+                    this.point = { x: 0, y: screenHeight / 2 };
+                    this.angleDeg = 90;
+                    this.globalRadius = (Math.min(screenHeight, screenWidth) + 32) / 2;
+                    this.radius = 32;
+                    this.angle = this.angleDeg * (Math.PI / 100);
+                }
+
+                render(context, state) {
+                    const degChange = ((Math.PI * 2) / 15) * state.dt;
+                    this.angleDeg = this.angleDeg + degChange;
+                    if (this.angle > Math.PI * 2) {
+                        this.angleDeg = 0;
+                    }
+                    this.#updatePosition();
+                    let blurDetails = this.#getBlurDetails();
+
+                    let originalBlurColor = context.shadowColor;
+                    let originalBlur = context.shadowBlur;
+                    context.beginPath();
+                    if (blurDetails) {
+                        context.shadowColor = blurDetails.color;
+                        context.shadowBlur = blurDetails.amount;
+                    }
+                    context.fillStyle = 'yellow';
+                    context.arc(this.point.x, this.point.y, this.radius, 0, 2 * Math.PI);
+                    context.fill();
+                    context.shadowColor = originalBlurColor;
+                    context.shadowBlur = originalBlur;
+                }
+
+                #updatePosition() {
+                    this.angle = this.angleDeg * Math.PI;
+                    this.point.x = this.centerPoint.x + this.globalRadius * Math.cos(this.angle);
+                    this.point.y = this.centerPoint.y + this.globalRadius * Math.sin(this.angle);
+                }
+
+                #getBlurDetails() {
+                    const horizonNormalized = this.angle - Math.PI;
+                    const sunrise = horizonNormalized < Math.PI / 8;
+                    let percent = 0;
+
+                    if (sunrise) {
+                        percent = 1 - (horizonNormalized / (Math.PI / 8));
+                        return { color: 'yellow', amount: 300 * percent };
+                    }
+                    const sunset = horizonNormalized > (Math.PI * 7) / 8;
+                    if (!sunset) {
+                        return;
+                    }
+
+                    percent = (horizonNormalized - ((Math.PI * 7) / 8)) / Math.PI;
+                    return { color: 'red', amount: 300 * percent };
+                }
+            }
+
+            class Ground {
+                constructor(screenHeight, screenWidth) {
+                    this.point = { x: 0, y: screenHeight / 2 };
+                    this.width = screenWidth
+                    this.height = screenHeight / 2;
+                }
+
+                render(context, state) { 
+                    context.beginPath();
+                    context.fillStyle = context.createPattern(this.getPattern(state), 'repeat');
+                    context.rect(this.point.x, this.point.y, this.width, this.height);
+                    context.fill();
+                }
+
+                getPattern(state) {
+                    if (state.season === 'fall' && (state.seasonStage === 'middle' || state.seasonStage === 'late')) return ground2;
+                    if (state.season === 'winter') return ground3;
+                    return ground;
+                }
+            }
+
+            class Sky {
+                static NIGHT_COLOR = {
+                    red: 56,
+                    green: 61,
+                    blue: 69
+                };
+                static DAY_COLOR = {
+                    red: 173,
+                    green: 216,
+                    blue: 230
+                };
+
+                constructor(screenHeight, screenWidth, globalState) {
+                    this.point = { x: 0, y: 0 };
+                    this.width = screenWidth
+                    this.height = screenHeight / 2;
+                    this.state = globalState;
+                }
+
+                render(context) {
+                    context.beginPath();
+                    context.fillStyle = this.getFillColor();
+                    context.rect(this.point.x, this.point.y, this.width, this.height);
+                    context.fill();
+                }
+
+                getFillColor() {
+                    if (this.state.isNight) {
+                        return this.toRgb(Sky.NIGHT_COLOR);
+                    }
+
+                    const horizonNormalized = this.state.sunAngle - Math.PI;
+                    if (horizonNormalized > Math.PI / 8 && horizonNormalized < (Math.PI * 7) / 8) {
+                        return this.toRgb(Sky.DAY_COLOR);
+                    }
+
+                    const accending = horizonNormalized < Math.PI / 2;
+                    const startingPoint = accending ?  horizonNormalized : horizonNormalized - ((Math.PI * 7) / 8);
+                    const transitionPercent = accending ? (startingPoint / (Math.PI / 8)) : 1 - (startingPoint / (Math.PI / 8));
+                    return this.toRgb({
+                        red: this.linearInterpolation(Sky.NIGHT_COLOR.red, Sky.DAY_COLOR.red, transitionPercent),
+                        green: this.linearInterpolation(Sky.NIGHT_COLOR.green, Sky.DAY_COLOR.green, transitionPercent),
+                        blue: this.linearInterpolation(Sky.NIGHT_COLOR.blue, Sky.DAY_COLOR.blue, transitionPercent)
+                    });
+                }
+
+                linearInterpolation(valueA, valueB, percent) {
+                    return Math.round(((1-percent) * valueA) + (valueB * percent))
+                }
+
+                toRgb(color) {
+                    return `rgb(${color.red}, ${color.green}, ${color.blue})`;
+                }
+            }
+
+            class Cloud {
+                constructor(screenHeight, screenWidth) {
+                    this.point = { x: 0, y: Math.random() * (screenHeight / 3) };
+                    const isLargeCloud = Math.random() > .5;
+                    this.size = isLargeCloud ? 64 : 32;
+                    this.velocity = Math.max(Math.random() * 5, 1);
+                }
+
+                render(context) {
+                    this.point.x = this.point.x + this.velocity;
+                    context.drawImage(smallCloud, this.point.x, this.point.y, this.size, this.size);
+                }
+            }
+
+            class Deer {
+                constructor(screenHeight, screenWidth) {
+                    this.point = { x: screenWidth, y: screenHeight - Math.max(100, (Math.random() * (screenHeight / 2))) };
+                    this.size = 16;
+                    this.collisionRadius = 32;
+                    this.acceration = 30;
+                    this.animationPhase = 0;
+                    this.lastUpdated = 0;
+                    this.velocity = 0;
+                    this.stops = [];
+                    this.isStopped = false;
+
+                    let totalStops = Math.round(Math.random() * 5);
+                    let lastStopDistance = 0;
+                    for (let i = 0; i < totalStops; i++) {
+                        let dist = Math.round(Math.random() * (screenWidth / totalStops));
+                        this.stops.push(dist);
+                        lastStopDistance = dist;
+                    }
+                    this.stopLocation = lastStopDistance ? screenWidth - lastStopDistance : -32; 
+                }
+
+                render(context, state) {
+                    let targetAnimation = this.isStopped ? deerStopAnimation : deerAnimation;
+                    if (this.lastUpdated === 0 || state.lastTime - this.lastUpdated > 50) {
+                        this.animationPhase = this.animationPhase + 1;
+                        if (this.animationPhase >= targetAnimation.length) {
+                            this.animationPhase = 0;
+                        }
+                        this.lastUpdated = state.lastTime;
+                    }
+
+                    if (this.isStopped && this.animationPhase == deerStopAnimation.length - 1) {
+                        this.isStopped = false;
+                        this.animationPhase = 0;
+                    }
+
+                    if (!this.isStopped) {
+                        let distanceFromStop = this.point.x - this.stopLocation;
+
+                        let stopDist = (this.velocity * this.velocity) / (2 * this.acceration);
+                        let isDecelerating = stopDist >= distanceFromStop;
+                        
+                        if (this.stops.length && distanceFromStop <= 1) {
+                            this.animationPhase = 0;
+                            this.isStopped = true;
+                            this.stopLocation = this.point.x - this.stops.at(-1);
+                            this.velocity = 0;
+                            this.stops.pop();
+                        } else if (distanceFromStop <= 1) {
+                            this.stopLocation = -32;
+                        }
+
+                        this.velocity += (isDecelerating ? -1 : 1) * this.acceration * state.dt;
+                        this.point.x = this.point.x - this.velocity * state.dt;
+                    }
+
+                    context.drawImage(targetAnimation[this.animationPhase], this.point.x, this.point.y, 32, 32);
+                }
+                
+                futurePosition(dt) {
+                    if (this.isStopped) return this.point;
+
+                    let distanceFromStop = this.point.x - this.stopLocation;
+
+                    let stopDist = (this.velocity * this.velocity) / (2 * this.acceration);
+                    let isDecelerating = stopDist >= distanceFromStop;
+
+                    return {
+                        x: this.point.x - ((this.velocity + (isDecelerating ? -1 : 1) * this.acceration * dt) * dt),
+                        y: this.point.y
+                    }
+                }
+            }
+
+            class Car {
+                constructor(canvasWidth, canvasHeight, forward) {
+                    const x = (canvasWidth / 2) + (!forward ? 6 : -22);
+                    const y = !forward ? canvasHeight : canvasHeight / 2;
+                    this.point = { x, y };
+                    this.size = 20;
+                    this.collisionRadius = 20;
+                    this.acceration = 70;
+                    this.velocity = 1;
+                    this.image = forward ? carforward : caraway;
+                    this.modifier = forward ? 1 : -1;
+                    this.isDecelerating = false;
+                }
+
+                render(context, state) {
+                    this.velocity += Math.max((this.isDecelerating ? -1 : 1) * this.acceration * state.dt, 0);
+                    this.point.y = this.point.y + (this.modifier * this.velocity * state.dt);
+                    context.drawImage(this.image, this.point.x, this.point.y, this.size, this.size);
+                }
+
+                futurePosition(dt) {
+                    return {
+                        x: this.point.x,
+                        y: this.point.y + (this.modifier * (this.velocity + (this.acceration * dt)) * dt)
+                    }
+                }
+            }
+
+            class Field {
+                constructor(point, width, height) {
+                    this.point = point;
+                    this.width = width;
+                    this.height = height;
+                }
+
+                render(context, state) { 
+                    context.beginPath();
+                    const targetX = this.getTargetX(state);
+                    const pattern = context.createPattern(this.getPattern(state), 'repeat');
+                    const patternTransform = new DOMMatrix().translate(targetX, this.point.y);
+                    pattern.setTransform(patternTransform);
+                    context.fillStyle = pattern;
+                    const targetWidth = this.getTargetWidth(state);
+                    const targetHeight = this.getTargetHeight(state);
+                    context.rect(targetX, this.point.y, targetWidth, targetHeight);
+                    context.fill();
+                }
+
+                getTargetX(state) {
+                    if (state.showCommunity) {
+                        return this.point.x + 25;
+                    }
+
+                    return this.point.x + 50;
+                }
+
+                getTargetWidth(state) {
+                    if (state.showCommunity) {
+                        let targetWidth = this.width - 25;
+
+                        let overflow = targetWidth % 150;
+                        return targetWidth - overflow;
+                    }
+
+                    return this.width - 50;
+                }
+
+                getTargetHeight(state) {
+                    if (state.showCommunity) {
+                        let targetHeight = this.height;
+
+                        let overflow = targetHeight % 150;
+                        return targetHeight - overflow;
+                    }
+
+                    return this.height;
+                }
+
+                getPattern(state) {
+                    if (state.showCommunity) return community;
+                    if (state.stopGrowing) return farmField7;
+                    if (state.season === 'spring' && state.seasonStage === 'early') return farmField;
+                    if (state.season === 'spring' && state.seasonStage === 'middle') return farmField2;
+                    if (state.season === 'spring' && state.seasonStage === 'late') return farmField3;
+                    if (state.season === 'summer') return farmField4;
+                    if (state.season === 'fall' && state.seasonStage === 'early') return farmField5;
+                    if (state.season === 'fall' && state.seasonStage === 'middle') return farmField6; 
+                    return farmField7;
+                }
+            }
+
+            class Forest {
+                constructor(point, width, height) {
+                    this.point = point;
+                    this.width = width;
+                    this.height = height;
+                }
+
+                render(context, state) {
+                    context.beginPath();
+                    context.fillStyle = context.createPattern(this.getPattern(state), 'repeat');
+                    context.rect(this.point.x, this.point.y, this.width, this.height);
+                    context.fill();
+                }
+
+                getPattern(state) {
+                    if (state.season === 'fall' && state.seasonStage === 'early') return forest2;
+                    if (state.season === 'fall' && state.seasonStage === 'middle') return forest3;
+                    if ((state.season === 'fall' && state.seasonStage === 'late') || state.season === 'winter') return forest4;
+
+                    return forest;
+                }
+            }
+
+            class Road {
+                constructor(point, height) {
+                    this.point = point;
+                    this.height = height;
+                }
+
+                render(context) {
+                    context.save();
+                    context.translate(this.point.x, 0);
+                    context.beginPath();
+                    context.fillStyle = context.createPattern(roadImage, 'repeat-y');
+                    context.rect(0, this.point.y - this.height, 50, this.height);
+                    context.fill();
+                    context.restore();
+                }
+            }
+
+            class Farm {
+                constructor(screenHeight, screenWidth) {
+                    this.point = { x: screenWidth - (screenWidth / 2) + 25, y: screenHeight - 75 };
+                }
+
+                render(context, state) {
+                    context.drawImage(this.getFarmPattern(state), this.point.x, this.point.y, 100, 50);
+                }
+
+                getFarmPattern(state) {
+                    return state.windmillOutcome && state.year > 1 ? farmNoWindImage : farmImage;
+                }
+            }
+
+            class Windmill {
+                constructor(screenHeight, screenWidth) {
+                    this.showStage = { year: 2, day: Math.floor(Math.random() * 18) };
+                    this.isShowing = false;
+                    this.stage = Math.floor(Math.random() * 3);
+                    this.lastUpdated = 0;
+                    this.point = { x: Math.random() * screenWidth - 25, y: (screenHeight / 2) - 50 };
+                    this.stopDuration = 0;
+                }
+
+                render(context, state) {
+                    if (!this.isShowing && state.year >= this.showStage.year && state.day >= this.showStage.day) {
+                        this.isShowing = true;
+                    }
+
+                    if (!this.isShowing) return;
+
+                    if (this.stopDuration <= 0 && Math.random() < .01) {
+                        this.stopDuration = Math.random();
+                    } else if (this.stopDuration > 0) {
+                        this.stopDuration -= state.dt;
+                    }
+
+                    if (this.stopDuration <= 0 && (this.lastUpdated === 0 || state.lastTime - this.lastUpdated > 50)) {
+                        this.stage = this.stage + 1;
+                        if (this.stage >= windmillAnimation.length) {
+                            this.stage = 0;
+                        }
+                        this.lastUpdated = state.lastTime;
+                    }
+
+                    context.drawImage(windmillAnimation[this.stage], this.point.x, this.point.y, 50, 50);
+                }
+            }
+
+            class Moon {
+                constructor(screenHeight, screenWidth, globalState) {
+                    this.globalState = globalState;
+                    this.screenWidth = screenWidth;
+                    this.point = { x: Math.random() * screenWidth, y: 48 };
+                    this.radius = 24;
+                    this.velocity = .1;
+                }
+
+                render(context) {
+                    this.#updatePosition();
+
+                    if (!this.globalState.isNight) return;
+
+                    context.beginPath();
+                    context.fillStyle = '#FFFFE0';
+                    context.arc(this.point.x, this.point.y, this.radius, 0, 2 * Math.PI);
+                    context.fill();
+                }
+
+                #updatePosition() {
+                    if (!this.globalState.isNight) {
+                        this.point.x = this.point.x + this.velocity;
+                    }
+
+                    if (this.point.x - this.radius > this.screenWidth) {
+                        this.point.x = 0;
+                    }
+                }
+            }
+
+            class Star {
+            	constructor(canvasWidth, canvasHeight, globalState) {
+                    this.globalState = globalState;
+            		this.point = { x:  Math.random() * canvasWidth, y:  Math.random() * (canvasHeight / 2) };
+            		this.size = Math.random() + .05;
+            		this.blinkChance = .003;
+            		this.alpha = 1;
+            		this.alphaChange = 0;
+            	}
+            
+            	render(context) {
+                    if (!this.globalState.isNight) return;
+                    this.#update();
+            		context.beginPath();
+            		context.arc(this.point.x, this.point.y, this.size, 0, 2 * Math.PI);
+            		context.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+            		context.fill();
+            		context.closePath();
+            	}
+            
+            	#update() {
+            		if (this.alphaChange === 0 && Math.random() < this.blinkChance) {
+            			this.alphaChange = -1;
+            			return;
+            		}
+                
+            		if (this.alphaChange === 0) return;
+                
+            		this.alpha += this.alphaChange * .05;
+            		if (this.alpha <= 0) {
+            			this.alphaChange = 1;
+            		} else if (this.alpha >= 1) {
+            			this.alphaChange = 0;
+            		}
+            	}
+            }
+
+            addEventListener('load', () => {
+                const canvas = document.getElementById('view');
+                const context = canvas.getContext('2d');
+
+                const canvasWidth = canvas.width = window.innerWidth;
+                const canvasHeight = canvas.height = window.innerHeight;
+                const sun = new Sun(canvasHeight, canvasWidth);
+                const globalState = { 
+                    sunAngle: sun.angleDeg,
+                    day: 1,
+                    year: 1,
+                    showCommunity: false,
+                    stopGrowing: false,
+                    windmillOutcome: Math.random() > .5, 
+                    communityOutcome: Math.random() > .5
+                };
+                const moon = new Moon(canvasWidth, canvasHeight, globalState);
+                const ground = new Ground(canvasHeight, canvasWidth);
+                const sky = new Sky(canvasHeight, canvasWidth, globalState);
+                const road = new Road({ x: (canvasWidth / 2) - 25, y: canvasHeight }, canvasHeight / 2);
+                let clouds = [];
+                let deer = [];
+                let stars = [];
+                let farm = new Farm(canvasHeight, canvasWidth);
+                let cars = [];
+                let field = new Field({ x: canvasWidth - (canvasWidth / 2), y: canvasHeight / 2 }, (canvasWidth / 2), (canvasHeight / 2) - 100);
+
+                let starCount = Math.max(Math.random() * 100, 10);
+                for (let i = 0; i < starCount; i++) {
+                    stars.push(new Star(canvasWidth, canvasHeight, globalState));
+                }
+
+                let maxPatternWidth = Math.floor(((canvasWidth - 50) / 2) / 50);
+                let forestWidth = maxPatternWidth * 50;
+                let maxPatternHeight = Math.floor((canvasHeight / 2) / 50);
+                let forestHeight = maxPatternHeight * 50;
+                const forest = new Forest({ x: 0, y: canvasHeight - forestHeight }, forestWidth, forestHeight);
+                const windmills = [];
+
+                if (globalState.windmillOutcome) {
+                    for (let i = (Math.floor(Math.random() * 50)); i--; i >= 0 ) {
+                        windmills.push(new Windmill(canvasHeight, canvasWidth));
+                    }
+                }
+
+                const spawnClouds = () => {
+                    const cloudCount = Math.floor(Math.random() * 5);
+                    for (let i = 0; i < cloudCount; i++) {
+                        clouds.push(new Cloud(canvasHeight, canvasWidth));
+                    }
+
+                    return Math.random() * 5000;
+                }
+
+                const spawnDeer = (state) => {
+                    if (state.showCommunity) return -1;
+                    const deerCount = Math.ceil(Math.random() * 2);
+                    for (let i = 0; i < deerCount; i++) {
+                        deer.push(new Deer(canvasHeight, canvasWidth));
+                    }
+                    return Math.random() * 40000;
+                }
+
+                const spawnCars = () => {
+                    let pendingCar = new Car(canvasWidth, canvasHeight, Math.random() > .5);
+                    if (!cars.some(c => willCollideSoon(c, pendingCar, 1))) {
+                        cars.push(pendingCar);
+                    };
+
+                    return Math.random() * 10000;
+                }
+                
+                let nextCloudSpawnTime = 0;
+                let nextDeerSpawnTime = 0;
+                let nextCarSpawnTime = 0;
+
+                function willCollideSoon(a, b, dt) {
+                    const radius = a.collisionRadius + b.collisionRadius;
+
+                    let iter = 1;
+                    let t = iter * dt;
+                    while (t <= 2) {
+                        const futurePointA = a.futurePosition(t);
+                        const futurePointB = b.futurePosition(t);
+                
+                        const dx = futurePointA.x - futurePointB.x;
+                        const dy = futurePointA.y - futurePointB.y;
+                
+                        if (dx * dx + dy * dy <= radius * radius) {
+                            return true;
+                        }
+                        iter++;
+                        t = iter * dt;
+                    }
+
+                    return false;
+                }
+
+                const runLoop = () => {
+                    requestAnimationFrame(timestamp => {
+                        if (!globalState.lastTime) {
+                            globalState.lastTime = timestamp;
+                            globalState.dt = 0;
+                        } else {
+                            globalState.dt = (timestamp - globalState.lastTime) / 1000;
+                            globalState.lastTime = timestamp;
+                        }
+
+                        context.clearRect(0,0, canvasWidth, canvasHeight);
+                        sky.render(context);
+                        sun.render(context, globalState);
+                        moon.render(context);
+                        ground.render(context, globalState);
+                        road.render(context);
+                        farm.render(context, globalState);
+                        field.render(context, globalState);
+                        stars.forEach(s => s.render(context));
+                        clouds.forEach(c => c.render(context));
+                        clouds = clouds.filter(c => c.point.x - c.size < canvasWidth);
+                        deer.forEach(c => c.render(context, globalState));
+                        deer = deer.filter(d => d.point.x - d.size > 0);
+                        cars.forEach(c => c.render(context, globalState));
+                        cars = cars.filter(d => d.point.y > canvasHeight / 2 && d.point.y < canvasHeight);
+
+                        forest.render(context, globalState);
+                        windmills.forEach(w => w.render(context, globalState));
+
+                        const newIsNight = sun.angle < Math.PI;
+                        function getSeasonStage(dayInSeason) {
+                            if (dayInSeason <= 2) return 'early';
+                            if (dayInSeason <= 4) return 'middle';
+                            return 'late';
+                        }
+                        if (newIsNight && !globalState.isNight) {
+                            globalState.day++;
+                            if (globalState.day <= 6) {
+                                globalState.season = 'spring';
+                                globalState.seasonStage = getSeasonStage(globalState.day);
+                            } else if (globalState.day <= 12) {
+                                globalState.season = 'summer';
+                                globalState.seasonStage = getSeasonStage(globalState.day - 6);
+                                
+                            } else if (globalState.day <= 18) {
+                                globalState.season = 'fall';
+                                globalState.seasonStage = getSeasonStage(globalState.day - 12);
+                            } else if (globalState.day <= 24) {
+                                globalState.season = 'winter';
+                                globalState.seasonStage = getSeasonStage(globalState.day - 18);
+                            } else {
+                                globalState.year++;
+                                globalState.day = 0;
+                                globalState.season = 'spring';
+                                globalState.seasonStage = getSeasonStage(0);
+                                if (globalState.communityOutcome) {
+                                    globalState.stopGrowing = globalState.year > 1 && globalState.year < 3;
+                                    globalState.showCommunity = globalState.year > 2;
+                                }
+                            }
+                        }
+                        globalState.isNight = sun.angle < Math.PI;
+                        globalState.sunAngle = sun.angle;
+                        
+                        if (timestamp > nextCloudSpawnTime) {
+                            nextCloudSpawnTime = timestamp + spawnClouds();
+                        }
+                        if (nextDeerSpawnTime !== -1 && timestamp > nextDeerSpawnTime) {
+                            nextDeerSpawnTime = timestamp + spawnDeer(globalState);
+                        }
+                        if (timestamp > nextCarSpawnTime) {
+                            nextCarSpawnTime = timestamp + spawnCars();
+                        }
+
+                        // maybe refactor this
+                        if (globalState.dt) {
+                            let { upCars, downCars } = cars.reduce((prev, c) => {
+                                if (c.modifier === 1) {
+                                    prev.upCars.push(c);
+                                } else {
+                                    prev.downCars.push(c);
+                                }
+                                return prev;
+                            }, { upCars: [], downCars: [] });
+
+                            upCars = upCars.sort((a, b) => a.point.y < b.point.y)
+                            for (let i = 0; i < upCars.length; i++) {
+                                let car = upCars[i];
+                                car.isDecelerating = deer.some(d => willCollideSoon(car, d, globalState.dt));
+                                if (car.isDecelerating) continue;
+
+                                for (let j = i - 1; j >= 0; j--) {
+                                    let c = upCars[j];
+                                    car.isDecelerating = willCollideSoon(car, c, globalState.dt);
+                                    if (car.isDecelerating) continue;
+                                }
+                            }
+
+                            downCars = downCars.sort((a, b) => a.point.y > b.point.y);
+                            for (let i = 0; i < downCars.length; i++) {
+                                let car = downCars[i];
+                                car.isDecelerating = deer.some(d => willCollideSoon(car, d, globalState.dt));
+                                if (car.isDecelerating) continue;
+
+                                for (let j = i - 1; j >= 0; j--) {
+                                    let c = downCars[j];
+                                    car.isDecelerating = willCollideSoon(car, c, globalState.dt);
+                                    if (car.isDecelerating) continue;
+                                }
+                            }
+                        }
+                        runLoop();
+                    })
+                };
+                runLoop();
+            });
+        </script>
+    </head>
+    <body>
+        <canvas id="view"></canvas>
+    </body>
+</html>
