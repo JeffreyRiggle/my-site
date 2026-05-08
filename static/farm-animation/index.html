@@ -98,12 +98,7 @@
                 }
 
                 render(context, state) {
-                    const degChange = ((Math.PI * 2) / 15) * state.dt;
-                    this.angleDeg = this.angleDeg + degChange;
-                    if (this.angle > Math.PI * 2) {
-                        this.angleDeg = 0;
-                    }
-                    this.#updatePosition();
+                    this.#updatePosition(state);
                     let blurDetails = this.#getBlurDetails();
 
                     let originalBlurColor = context.shadowColor;
@@ -120,8 +115,14 @@
                     context.shadowBlur = originalBlur;
                 }
 
-                #updatePosition() {
-                    this.angle = this.angleDeg * Math.PI;
+                #updatePosition(state) {
+                    const angleChange = ((Math.PI * 2) / 7) * state.dt;
+                    this.angle = this.angle + angleChange;
+
+                    if (this.angle > Math.PI * 2) {
+                        this.angle = this.angle - Math.PI * 2;
+                    }
+
                     this.point.x = this.centerPoint.x + this.globalRadius * Math.cos(this.angle);
                     this.point.y = this.centerPoint.y + this.globalRadius * Math.sin(this.angle);
                 }
