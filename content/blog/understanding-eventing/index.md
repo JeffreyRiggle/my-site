@@ -3,38 +3,39 @@ title: 'Why not build an event loop'
 date: '2026-05-22'
 ---
 
-In the last blog series I made reference to a talk from Ryan Dahl on NodeJS. It can be easy to dismiss Javascript as a low performance language on the observation that it is a single threaded environment. However this talk directly opposes that stating the the real problem is getting I/O out of the hot path. Similar talks in the data driven design space argue for similar points. Memory access is almost always the problem. Generally speaking even the slowest arithmatic operations like divide, cosine, and sine are significantly faster than reading from RAM. Reading from disk and network are orders of magnitude slower than reading from RAM. The key argument in this talk more so than in other talks is if you keep a single loop completely saturated while pushing blocking IO out of the hotpath you can get better performance at a reduced memory cost. Threading does come at a performance cost the moment you have to deal with shared memory. Once you have shared memory you have mutexes and complicated logic that can create worse problems than single threaded code. On top of that each thread comes with its own memory. At a minium every thread has its own stack which is easily 1 megabyte or more of memory required.
+In the last blog series I made reference to a [presentation](https://www.youtube.com/watch?v=EeYvFl7li9E) from Ryan Dahl on NodeJS and wanted to explore the concepts in that talk more. It can be easy to dismiss Javascript as a low performance language based on the observation that it is a single threaded environment. However this talk directly opposes that mindset. Instead it suggests the the real problem is getting I/O out of the hot path. Data locality is almost always the problem. Generally speaking even the slowest arithmatic operations like divide, cosine, and sine are significantly faster than reading from RAM. Reading from disk and network are orders of magnitude slower than reading from RAM. The key argument is if you keep a single loop completely saturated while pushing blocking IO out of the hot path you can get better performance at a reduced memory cost. This is because threading comes at a performance cost. For starters each thread comes with its own memory. At a minium every thread has its own stack which is easily 1 megabyte or more of memory required. Also once you have shared memory between threads you have mutexes and complicated logic that can create worse problems than single threaded code. 
 
-Upon thinking about this a bit more I thought it might be fun to try out building out a simple event loop on a silly little problem just to see what I might find.
+Thinking about this a bit more I decided it might be fun to try out building out a simple event loop on a contained problem to better understand this space.
 
 ## Doing some research
 
-Before I got too into this I wanted to understand a bit better what was under the hood of NodeJS. Going into this I knew that NodeJS was largely a C++ project with V8 bindings. However I was a bit less familar with the machinery it used to handle its non-blocking IO. Doing a bit of research I found that modern NodeJS uses [uvlib](https://libuv.org/) to handle this. This library handles everything from file access and child processes to sockets and DNS resolution. What struck me as a little bit odd was in the original talk I referenced Ryan talked about using [libev](https://software.schmorp.de/pkg/libev.html) to handle eventing. In an attempt to find more I looked into that library and found that it was related to yet another eventing library [libevent](https://libevent.org/). Each library building their own unique features to allow for better performance in event loops. After digging a bit more I found that Ryan Dahl even [wrote](https://tinyclouds.org/iocp-links/) a bit about all of these libraries and how they came to libuv.
+Before I got too into this I wanted to get a better understading of what was under the hood of NodeJS. Going into this I knew that NodeJS was largely a C++ project with [V8](https://v8.dev/) bindings. However I was a bit less familar with the machinery it used to handle its non-blocking IO. Doing a bit of research I found that modern NodeJS uses [uvlib](https://libuv.org/) to handle this. This library handles everything from file access and child processes to sockets and DNS resolution. This struck me as a little bit odd. In the original talk I referenced Ryan talked about using [libev](https://software.schmorp.de/pkg/libev.html) to handle eventing. In an attempt to figure out what happened I started digging. Looked into that library I found that it was related to yet another eventing library [libevent](https://libevent.org/). Each library building their own unique features to allow for better performance in event loops. As it turns out Ryan Dahl even [wrote](https://tinyclouds.org/iocp-links/) about all of these libraries and how they came to create libuv.
 
-In many of these libraries the tradeoff focuses around what OS support they have and what APIs they build on. Many point the difference between [select](https://libevent.org/), [poll](https://man7.org/linux/man-pages/man2/poll.2.html), and [epoll](https://man7.org/linux/man-pages/man7/epoll.7.html). Each giving different performance benefits along the way. Since many of these optimizations operate at the kernal provided API surface to userland it can be quite difficult to create a multi-plaform, performant and coherent API.
+In many of these libraries the key differentiation revolves around the OS support they have and what APIs they build on. Many point to the difference between [select](https://libevent.org/), [poll](https://man7.org/linux/man-pages/man2/poll.2.html), and [epoll](https://man7.org/linux/man-pages/man7/epoll.7.html). Each giving different performance benefits along the way. Since many of these optimizations operate at the boundary between userland and the kernal it can be quite difficult to create a multi-plaform, performant and coherent API.
 
 ## Setting up an experiment
 
-While most of the literature on these eventing libraries had focused on sockets I was a bit more preoccupied with file access. I was still stuck on the original code a made that brough this all up, forcing a synchronous call on file access in NodeJS.
+While most of the literature on these eventing libraries had focused on sockets I was a bit more preoccupied with file access. I was still stuck on the original code a made that brough this all up, forcing a synchronous call on file access in NodeJS. Unfortunatly this was the one case where not all kernals provided good non-blocking IO APIs. Because of this utilizing things like epoll didn't fit naturally into this problem. However, there was still a way to move forward with building an event loop and taking the blocking IO off of the hot path.
 
 ### Building up the scenario
 
-First before I could do anything I had to set something up to test file access. What I decided would be a fairly easy thing to test would be reading a ton of JavaScript files, and doing some very basic parsing. Each file would have a collection of imports, a handful of constants and some functions. I decided the code in question would count the total constants and functions found across all files and follow the imports.
+Before I could do anything I had to set something up to test file access. I decided it would be easy to test reading JavaScript files, and doing some very basic parsing. Each file would have a collection of imports, a handful of constants, and some functions. The processing code would count the total constants and functions found across all files and follow the imports.
 
-Doing some very basic research I found that a reasonable range of files for a project would be somewhere in the around 10 or so files for a smaller project and closer to 1000 for a larger project. Since I didn't want to manually create that many files I decided the best way to get this experiment setup would be to write a little node program that generated a bunch of files. I wanted imports but I also didn't want any circlar references to lead to strange complications during generation or processing. So to avoid cicular references I pulled out some good old [Targan's](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm) to make sure non circular references got committed. Also to make it easier to parse I parsed the graph at the very end and referenced all roots in an index.js.
+Doing some basic research I found that a reasonable range of files for a project would be around 10 or so files for a smaller project and closer to 1000 for a larger project. Since I didn't want to manually create that many files I decided the best way to get this experiment setup would be to write a node program to generate these files. I wanted imports but I also didn't want any circlar references. I assumed circular references could lead to complications during processing. To avoid cicular references I pulled out [Targan's algorithm](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm) to make sure no circular references got generated. Also to make it easier to parse I parsed the graph at the very end I referenced all roots in an index.js.
 
-Lastly to entertain myself a bit I created a list of predefined words to generated files and variables with. This lead to fun little file names like `help-overwhelming-random.js`, `malware-darwin.js`, and `sqs-agentic-wheel-tokenizer.js`. 
+Also to entertain myself created a list of predefined words to be used in the generation of files and variables. This lead to funny file names like `help-overwhelming-random.js`, `malware-darwin.js`, and `sqs-agentic-wheel-tokenizer.js`. 
 
 ### Figuring out what to test
 
-Once I had a collection of different sized projects. I needed to settle on what to test. I decided I would start off by just comparing the performance of different cases across NodeJS and C. These would include the following
+Armed with the ability to create Javascript projects I now needed to decide what to test. Part of my interest was comparing the performance of different cases across NodeJS and C. This resulted in the following applications being created.
 
-* A NodeJS application that blocked on IO.
+* A NodeJS application that blocked on IO by using the sync APIs.
 * A NodeJS application that used the async libraries correctly.
 * A C application that blocked on IO.
 * A C application that used an event loop.
 
-Now because I found that there was different sizes of projects I decided each one of these would be tested against a handful of different sized projects. 
+Also since projects could be of different sizes I decided each one of these would be tested against a handful of different projects.
+
 * A tiny project with 10 files.
 * A small project with 50 files.
 * A medium project with 100 files.
@@ -45,7 +46,11 @@ With all of these I would gather timings and compare how they did relative to ea
 
 ### Benchmarking file access is tricky
 
-Before I go into the specifics of each example I want to preface with a little benchmarking tidbit. While I was conducting this experiment I realized that I was getting some crazy outliers in my initial testing. Likely people closer to the OS and file based performance will know where I am going with this. OS's know that file access is slow and attempt to compensate for this in some cases quite agressively. In my case I would see a massive boost on the second run of a program. In the case of these tests I was running on a Macbook using and M3 chip. The best way I could find to get the lowest variance in these tests was to `sudo purge` between each run. I would say take the exact numbers with a grain of salk and look more at the trend more so than the result.
+Before I go into the specifics of each example I want to preface with a little benchmarking tidbit. While I was conducting this experiment I realized that I was getting some crazy outliers in my initial testing. Those that are closer to the OS and file based performance will know where I am going with this. OS's know that file access is slow and attempt to compensate for this. In some cases quite agressively. In my case I would see a massive boost on the second run of a program. In the case of these tests I was running on a Macbook using and M3 chip. The best way I could find to get the lowest variance in these tests was to `sudo purge` between each run. 
+
+I also was a bit concerned about how specialized the M series architecture was so I did another round of tests on a Linux based machine. This also had similar caching that needed to be cleared between each run.
+
+I would say take the exact numbers with a grain of salk and look more at the trend more so than the result.
 
 ## Running the test
 
@@ -53,9 +58,9 @@ Each of these programs had required a bit of different effort. Admittedly I hadn
 
 ### Blocking NodeJS example
 
-This was the easiest one to write. In all cases I didn't want to do a full JavaScript parse. I just needed to do some simple testing and I abused that to its fullest. So instead of pulling out a proper parser, building an AST and travesting the tree I did a simple line by line check. The original form of this used a regular expression to get the import file path but I ended up scrapping I didn't like the Regex differences between JavaScript and C.
+This was the easiest one to write. I didn't want to do a full JavaScript parse for any implementation. The problem set was very well contained so I just needed to write something that worked. I abused that to its fullest. So instead of pulling out a proper parser, building an AST and travesting the tree I did a simple line by line check. The original form of this used a regular expression to get the import file path but I ended up scrapping it. I didn't like the Regex differences between JavaScript and C and didn't want this to be a comparision of Regex processing engines.
 
-The ending result can be found [here](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/simple-node/index.js). The most important part is that I used a while loop to do the processing
+This program can be found [here](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/simple-node/index.js). The most important part is that I used a while loop to do the processing
 
 ```Javascript
 while (filesToProcess.length > 0) {
@@ -64,7 +69,7 @@ while (filesToProcess.length > 0) {
 }
 ```
 
-This took suprizingly little time to write and even at the largest scale it was a faily quick program. The slowest execution time for 1500 files was ~273ms.
+This took suprizingly little time to write and even at the largest scale it was a faily quick program. The slowest execution time for 1500 files was ~273ms on Mac and ~363 on Linux.
 
 ### Async Node example
 
@@ -83,15 +88,13 @@ async function main() {
 }
 ```
 
-The final result can be found [here](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/async-node/index.js).
+This program can be found [here](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/async-node/index.js).
 
-However the resulting difference in performance was notable. In basically all but the tiny dataset the program ran twice as fast with the slowest observed time being ~124ms on the largest dataset.
+The resulting difference in performance was notable. In basically all but the tiny dataset the program ran nearly twice as fast. The slowest observed time being ~124ms on Mac and ~278ms on Linux.
 
 ### Basic C example
 
-This is where things started to slow down a bit. Since it had been so long since I had written C it took me way to long to get back into it. Eventually I produced a working program that had comparable outputs to the NodeJS version.
-
-Again I used the similar loop as seen before.
+This is where things started to slow down a bit. Since it had been so long since I had written C it took me way to long to get back into it. Eventually I produced a working program. Again I used the similar loop as seen before.
 
 ```c
   while (FILES_TO_PROCESS[FILE_TO_PROCESS_INDEX] != NULL)
@@ -101,13 +104,13 @@ Again I used the similar loop as seen before.
   }
 ```
 
-The code for this can be found [here](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/simple-c/main.c).
+The program can be found [here](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/simple-c/main.c).
 
-However due to the inefficient array scanning this started to slow down at larger scales. This had performance as bad as 350ms in some of the worst cases.
+Unfortunately due to the inefficient array scanning used in this program execution slow down at larger scales. This had performance as bad as ~350ms on Mac and ~363ms on Linux.
 
 ### Eventing C example
 
-This one required a bit of work. Originally I just tried putting some threads on the problem without much though. The main execution was done on a single thread but the way file memory was managed some terrible performance was created due to the inefficiencies of the threading and mutexes required. Eventually I got to a much more stable version that had a proper dynamically sizing thread pool and predicable event loop.
+This one required a bit of work. Originally I just tried putting some threads on the problem without building a legible abstraction. The main execution was done on a single thread but the way file memory was managed some terrible performance was created due to the inefficiencies of the threading and mutexes required. In the end I scrapped that [implemenation](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/async-c/main.c). Eventually I got to a much more [stable version](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/event-c/main.c) that had a proper dynamically sizing thread pool and predicable event loop.
 
 The main event loop ended up being similar to this.
 
@@ -130,7 +133,7 @@ void run(EventLoop* loop)
     // dispatch events
     if (loop->lastDispatchedEvent < loop->nextEvent)
     {
-        // Find and dipatch pending file events to idle threads.
+        // Find and dipatch pending read file events to idle threads.
     }
 
     for (int i = 0; i < threadPool->size; i++)
@@ -138,7 +141,7 @@ void run(EventLoop* loop)
         // Determine if thread has valid result
         if (isValid)
         {
-            // Invoke file handler
+            // Invoke file handler on a single main thread
             loop->handler(loop, threadPool->readers[i]->buffer, threadPool->readers[i]->fileSize);
             
             // Reset thread state
@@ -148,7 +151,7 @@ void run(EventLoop* loop)
 }
 ```
 
-In the end this version produced the fasted results with the slowest result being ~113ms. Similar to the other C example since I didn't use an efficient array search algorithm this could likely be faster.
+In the end this version produced the fasted results with the slowest result being ~113ms on Mac and ~195ms on Linux. Similar to the other C example since I didn't use an efficient array search algorithm this could likely be faster.
 
 ## Considering the results
 
