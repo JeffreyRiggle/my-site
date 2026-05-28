@@ -169,7 +169,7 @@ Conventional wisdom states that lower level languages are faster so lets take a 
 
 ![Node and C Comparision](./NodevC.png)
 
-What we will notice is that the C implementation is consistently faster but not by as much as you might think. These differences are not nearly as significat as one might expect. If we consider this workload more deeply a majority of required time complexity comes from reading from the file system. This problem is not directly owned by either language. The time to load a file is largely dictated by the kernal. Now where things can get interesting and where some of the benefit lies is that C gives you direct control over memory. In the C implementation I was able to get just a bit more performance by being clever with my memory allocations.
+What we will notice is that the C implementation is consistently faster. However, these differences are not nearly as significat as one might expect. If we consider this workload more deeply a majority of required time complexity comes from reading from the file system. This problem is not directly owned by either language. The time to load a file is largely dictated by the kernal. Now where things can get interesting and where some of the benefit lies is that C gives you direct control over memory. In the C implementation I was able to get just a bit more performance by being clever with my memory allocations.
 
 Lastly let's consider the cost of getting things wrong. Remember how I mentioned the original C abstraction I created wasn't working well? If we compare this to the Node example we can see that a poor implementation in C is quite detrimental.
 
