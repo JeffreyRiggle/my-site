@@ -155,7 +155,27 @@ In the end this version produced the fasted results with the slowest result bein
 
 ## Considering the results
 
-PUT SOME intereseting results from the sheet here
+With all the runs completed it was time to look at the results and see how things turned out. First the original hypothesis of NodeJS should tell us that using the async APIs over the sync APIs should produce a meaningful difference.
+
+![Node Comparision](./NodeCompare.png)
+
+In this chart we can see the difference between the sync node implementation (red) and async node implementation (blue). At the smallest scale the difference is negligable but at the larger scales the difference is notable.
+
+Now if we compare the same in the C implementations we see a similar pattern. Even though we are only using one thread for all of the processing we are still getting the same performance benefits we see in Node.
+
+![C Comparision](./CComparison.png)
+
+Conventional wisdom states that lower level languages are faster so lets take a look at how the C implementation fairs against the Node implementation.
+
+![Node and C Comparision](./NodevC.png)
+
+What we will notice is that the C implementation is consistently faster but not by as much as you might think. These differences are not nearly as significat as one might expect.
+
+Lastly let's consider the cost of getting things wrong. Remember how I mentioned the original C abstraction I created wasn't working well? If we compare this to the Node example we can see that a poor implementation in C is quite detrimental.
+
+![Bad C Implementation](./BadC.png)
+
+If you would like to look at the data and draw your own conclusions you can find the data [here](./EventTimingData.csv).
 
 ## TODO Better title for wrapping it up
 
