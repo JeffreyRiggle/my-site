@@ -1,5 +1,5 @@
 ---
-title: 'Why not build an event loop'
+title: 'Understanding Event Loop Through File I/O'
 date: '2026-05-22'
 ---
 
@@ -110,7 +110,7 @@ Unfortunately due to the inefficient array scanning used in this program executi
 
 ### Eventing C example
 
-This one required a bit of work. Originally I just tried putting some threads on the problem without building a legible abstraction. The main execution was done on a single thread but the way file memory was managed some terrible performance was created due to the inefficiencies of the threading and mutexes required. In the end I scrapped that [implemenation](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/async-c/main.c). Eventually I got to a much more [stable version](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/event-c/main.c) that had a proper dynamically sizing thread pool and predicable event loop.
+This one required a bit of work. Originally I just tried putting some threads on the problem without building a legible abstraction. The main execution was done on a single thread but the way file memory was managed some terrible performance was created due to the inefficiencies of the threading and mutexes required. In the end I scrapped that [implemenation](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/async-c/main.c). Eventually I got to a much more [stable version](https://github.com/JeffreyRiggle/event-queue-testing/blob/main/event-c/main.c) that had a proper dynamically sizing thread pool and predicable event loop. Now as I mentioned before the file APIs provided are a bit akward so its not a perfect event loop. In this case the implementation looks more like a managed thread pool to read files and an event loop that dispatches work to the thread pool while doing all of the processing work on a single thread in a loop.
 
 The main event loop ended up being similar to this.
 
@@ -159,7 +159,7 @@ With all the runs completed it was time to look at the results and see how thing
 
 ![Node Comparision](./NodeCompare.png)
 
-In this chart we can see the difference between the sync node implementation (red) and async node implementation (blue). At the smallest scale the difference is negligable but at the larger scales the difference is notable.
+In this chart we can see the difference between the sync node implementation (red) and async node implementation (blue). At the smallest scale the difference is negligable but at the larger scales the difference is notable. The real benefit with the async pattern is distributing the wait time for file IO. This means the performance benefit scales with the amount of files that need to be read and we can see that clearly in this example.
 
 Now if we compare the same in the C implementations we see a similar pattern. Even though we are only using one thread for all of the processing we are still getting the same performance benefits we see in Node.
 
@@ -169,14 +169,16 @@ Conventional wisdom states that lower level languages are faster so lets take a 
 
 ![Node and C Comparision](./NodevC.png)
 
-What we will notice is that the C implementation is consistently faster but not by as much as you might think. These differences are not nearly as significat as one might expect.
+What we will notice is that the C implementation is consistently faster but not by as much as you might think. These differences are not nearly as significat as one might expect. If we consider this workload more deeply a majority of required time complexity comes from reading from the file system. This problem is not directly owned by either language. The time to load a file is largely dictated by the kernal. Now where things can get interesting and where some of the benefit lies is that C gives you direct control over memory. In the C implementation I was able to get just a bit more performance by being clever with my memory allocations.
 
 Lastly let's consider the cost of getting things wrong. Remember how I mentioned the original C abstraction I created wasn't working well? If we compare this to the Node example we can see that a poor implementation in C is quite detrimental.
 
 ![Bad C Implementation](./BadC.png)
 
+In this case the results clearly show that if you are misusing allocations and creating additional thread contention on shared data you are going to run into performance problems. Just because you have access to lower level primitives doesn't mean you are by default faster. If you are not careful you have more ways to slow yourself down.
+
 If you would like to look at the data and draw your own conclusions you can find the data [here](./EventTimingData.csv).
 
-## TODO Better title for wrapping it up
+## What I learned from this experiment
 
 In this project I got to have a lot of fun learning about the lower level of event loops. I also got to see first hand how building something in an event loop correctly can produce much better results. While writing C again was a bit of a learning curve I was reminded just how much fun it is for me to think about lower level details like memory allocations and pointers. However it was also a reminder that just because something is written in a low level language doesn't mean it will be fast. It is all to easy to write a low level program that runs way slower than a high level language because you didn't think about the low level primitives correctly. In the next blog we will see that in action all over again.
