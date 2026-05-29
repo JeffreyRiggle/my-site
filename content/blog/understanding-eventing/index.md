@@ -1,9 +1,9 @@
 ---
-title: 'Understanding Event Loop Through File I/O'
+title: 'Understanding Event Loops Through File I/O'
 date: '2026-05-22'
 ---
 
-In the last blog series, I referenced a [presentation](https://www.youtube.com/watch?v=EeYvFl7li9E) by Ryan Dahl on NodeJS and wanted to explore the concepts in that talk more. It can be easy to dismiss JavaScript as a low-performance language based on the observation that it is a single-threaded environment. However, this talk directly opposes that mindset. Instead, it suggests that the real problem is removing I/O from the hot path. Data locality is almost always the problem. Generally speaking, even the slowest arithmetic operations, like division, cosine, and sine, are significantly faster than reading from RAM. Reading from disk and network is orders of magnitude slower than reading from RAM. The key argument is that if you keep a single loop completely saturated while pushing blocking IO out of the hot path, you can get better performance at a reduced memory cost. This is because threading comes at a performance cost. For starters, each thread comes with its own memory. At a minimum, every thread has its own stack, which easily consumes 1 megabyte or more of memory. Also, once you have shared memory between threads, you have mutexes that can create bigger problems than single-threaded code.
+In the last blog series, I referenced a [presentation](https://www.youtube.com/watch?v=EeYvFl7li9E) by Ryan Dahl on NodeJS and wanted to explore the concepts in that talk more. It can be easy to dismiss JavaScript as a low-performance language based on the observation that it is a single-threaded environment. However, this talk directly opposes that mindset. Instead, it suggests that the real problem is removing I/O from the hot path. Data locality is often the place where performance tradeoffs live. Generally speaking, even the slowest arithmetic operations, like division, cosine, and sine, are significantly faster than reading from RAM. Reading from disk or the network is orders of magnitude slower than reading from RAM. The key argument is that if you keep a single loop completely saturated while pushing blocking IO out of the hot path, you can get better performance at a reduced memory cost. This is because threading comes at a performance cost. For starters, each thread comes with its own memory. At a minimum, every thread has its own stack, which easily consumes 1 megabyte or more of memory. Also, once you have shared memory between threads, you have mutexes that can create bigger problems than single-threaded code.
 
 Thinking about this a bit more, I decided it might be fun to try building out a simple event loop on a contained problem to better understand this space.
 
@@ -21,7 +21,7 @@ While most of the literature on these eventing libraries had focused on sockets,
 
 Before I could do anything, I had to set something up to test file access. I decided it would be easy to test reading JavaScript files and doing some very basic parsing. Each file would have a collection of imports, a handful of constants, and some functions. The processing code would count the total constants and functions found across all files and queue up processing the imports.
 
-Doing some basic research, I found that a reasonable range of files for a project would be around 10 files for a smaller project and closer to 1000 for a larger project. Since I didn't want to manually create that many files, I decided the best way to bootstrap this experiment was to write a NodeJS program to generate these projects. I wanted imports, but I also didn't want any circular references. I assumed circular references could lead to complications during processing. I pulled out [Tarjan's algorithm](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm) to make sure no circular references got generated. Also, to make it easier to parse, I parsed the graph at the very end I referenced all roots in an index.js.
+Doing some basic research, I found that a reasonable range of files for a project would be around 10 files for a smaller project and closer to 1000 for a larger project. Since I didn't want to manually create that many files, I decided the best way to bootstrap this experiment was to write a NodeJS program to generate these projects. I wanted imports, but I also didn't want any circular references. I assumed circular references could lead to complications during processing. I pulled out [Tarjan's algorithm](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm) to make sure no circular references got generated. Also, to make it easier to parse, I parsed the graph at the very end and I referenced all roots in an index.js.
 
 Also, to entertain myself, I created a list of predefined words to combine for the naming of files and variables. This led to funny file names like `help-overwhelming-random.js`, `malware-darwin.js`, and `sqs-agentic-wheel-tokenizer.js`. 
 
@@ -50,7 +50,7 @@ Before I go into the specifics of each example, I want to preface with a little 
 
 I was a bit concerned about how specialized the M series architecture was, so I conducted another round of tests on a Linux-based machine. Linux also had similar caching that needed to be cleared between each run.
 
-I would say take the exact numbers with a grain of salt. Focus more on the trend than the result.
+I suggest taking the exact numbers with a grain of salt, and instead focus more on the trend than the result.
 
 ## Running the test
 
@@ -94,7 +94,7 @@ The resulting difference in performance was notable. In all but the tiny dataset
 
 ### Basic C example
 
-This is where things started to slow down a bit. Since it had been so long since I had written C, it took me way too long to get back into it. Eventually, I produced a working program. Again, I used a similar loop as seen before.
+This is where implementation speed started to slow down a bit. Since it had been so long since I had written C, it took me way too long to get back into it. Eventually, I produced a working program. Again, I used a similar loop as seen before.
 
 ```c
   while (FILES_TO_PROCESS[FILE_TO_PROCESS_INDEX] != NULL)
@@ -169,7 +169,7 @@ Conventional wisdom states that low-level languages are faster, so let's take a 
 
 ![Node and C Comparision](./NodevC.png)
 
-This shows that the C implementation is consistently faster. However, these differences are not nearly as significant as one might expect. If we consider this workload more deeply, a majority of the required time complexity comes from reading from the file system. This problem is not directly owned by either language. The time to load a file is largely dictated by the kernel. Now, where things can get interesting and where some of the benefits lie is that C gives you direct control over memory. In the C implementation, I was able to get just a bit more performance by being clever with my memory allocations.
+This shows that the C implementation is consistently faster. However, these differences are not nearly as significant as one might expect. If we consider this workload more deeply, a majority of the required time complexity comes from reading from the file system. This problem is not directly owned by either language. The time to load a file is largely dictated by the kernel and underlying hardware. Now, where things can get interesting and where some of the benefits lie is that C gives you direct control over memory. In the C implementation, I was able to get just a bit more performance by being clever with my memory allocations.
 
 Lastly, let's consider the cost of getting things wrong. Remember how I mentioned the original C abstraction I created wasn't working well? If we compare this to the Node example, we can see that a poor implementation in C is quite detrimental.
 
