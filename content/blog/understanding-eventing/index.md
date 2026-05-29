@@ -1,6 +1,6 @@
 ---
 title: 'Understanding Event Loops Through File I/O'
-date: '2026-05-22'
+date: '2026-05-29'
 ---
 
 In the last blog series, I referenced a [presentation](https://www.youtube.com/watch?v=EeYvFl7li9E) by Ryan Dahl on NodeJS and wanted to explore the concepts in that talk more. It can be easy to dismiss JavaScript as a low-performance language based on the observation that it is a single-threaded environment. However, this talk directly opposes that mindset. Instead, it suggests that the real problem is removing I/O from the hot path. Data locality is often the place where performance tradeoffs live. Generally speaking, even the slowest arithmetic operations, like division, cosine, and sine, are significantly faster than reading from RAM. Reading from disk or the network is orders of magnitude slower than reading from RAM. The key argument is that if you keep a single loop completely saturated while pushing blocking IO out of the hot path, you can get better performance at a reduced memory cost. This is because threading comes at a performance cost. For starters, each thread comes with its own memory. At a minimum, every thread has its own stack, which easily consumes 1 megabyte or more of memory. Also, once you have shared memory between threads, you have mutexes that can create bigger problems than single-threaded code.
@@ -11,7 +11,7 @@ Thinking about this a bit more, I decided it might be fun to try building out a 
 
 Before I got too into this, I wanted to get a better understanding of what was under the hood of NodeJS. Going into this, I knew that NodeJS was largely a C++ project with [V8](https://v8.dev/) bindings. However, I was a bit less familiar with the machinery it used to handle its non-blocking IO. After some research, I found that modern NodeJS uses [libuv](https://libuv.org/) to handle this. This library handles everything from file access and child processes to sockets and DNS resolution. This struck me as a little bit odd. In the presentation I referenced, Ryan mentioned using [libev](https://software.schmorp.de/pkg/libev.html) to handle eventing. In an attempt to figure out what happened, I started digging. Looked into that library I found it was related to yet another eventing library, [libevent](https://libevent.org/). Each library added its own unique features to improve performance in event loops. As it turns out, Ryan Dahl even [wrote](https://tinyclouds.org/iocp-links/) about all of these libraries and why they decided to create libuv.
 
-In many of these libraries, the key difference revolves around the OS support they provide and the APIs they build on. Many point to the difference between [select](https://libevent.org/), [poll](https://man7.org/linux/man-pages/man2/poll.2.html), and [epoll](https://man7.org/linux/man-pages/man7/epoll.7.html). Each gives different performance benefits along the way. Since many of these optimizations operate at the boundary between userland and the kernel, it can be quite difficult to create a multi-platform, performant, and coherent API.
+In many of these libraries, the key difference revolves around the OS support they provide and the APIs they build on. Many point to the difference between [select](https://man7.org/linux/man-pages/man2/select.2.html), [poll](https://man7.org/linux/man-pages/man2/poll.2.html), and [epoll](https://man7.org/linux/man-pages/man7/epoll.7.html). Each gives different performance benefits along the way. Since many of these optimizations operate at the boundary between userland and the kernel, it can be quite difficult to create a multi-platform, performant, and coherent API.
 
 ## Setting up an experiment
 
@@ -157,7 +157,7 @@ In the end, this version produced the fastest overall results, with the slowest 
 
 With all the runs completed, it was time to look at the results and see how things turned out. First, the original hypothesis of NodeJS tells us that using async APIs instead of sync APIs should produce a meaningful difference.
 
-![Node Comparision]([.](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/understanding-eventing/NodeCompare.png)
+![Node Comparision](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/understanding-eventing/NodeCompare.png)
 
 In this chart, we can see the difference between the sync node implementation (red) and the async node implementation (blue). At the smallest scale, the difference is negligible, but at larger scales, the difference is notable. The real benefit of the async pattern is distributing the wait time for file IO. This means the performance benefit scales with the number of files to be read, and we can see that clearly in this example.
 
