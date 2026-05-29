@@ -157,27 +157,27 @@ In the end, this version produced the fastest overall results, with the slowest 
 
 With all the runs completed, it was time to look at the results and see how things turned out. First, the original hypothesis of NodeJS tells us that using async APIs instead of sync APIs should produce a meaningful difference.
 
-![Node Comparision](./NodeCompare.png)
+![Node Comparision]([.](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/understanding-eventing/NodeCompare.png)
 
 In this chart, we can see the difference between the sync node implementation (red) and the async node implementation (blue). At the smallest scale, the difference is negligible, but at larger scales, the difference is notable. The real benefit of the async pattern is distributing the wait time for file IO. This means the performance benefit scales with the number of files to be read, and we can see that clearly in this example.
 
 Now, if we compare the same in the C implementations, we see a similar pattern. Even though we are using a single thread for all the processing, we are still getting the same performance benefits we see in Node.
 
-![C Comparision](./CComparison.png)
+![C Comparision](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/understanding-eventing/CComparison.png)
 
 Conventional wisdom states that low-level languages are faster, so let's take a look at how the C implementation fairs against the Node implementation.
 
-![Node and C Comparision](./NodevC.png)
+![Node and C Comparision](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/understanding-eventing/NodevC.png)
 
 This shows that the C implementation is consistently faster. However, these differences are not nearly as significant as one might expect. If we consider this workload more deeply, a majority of the required time complexity comes from reading from the file system. This problem is not directly owned by either language. The time to load a file is largely dictated by the kernel and underlying hardware. Now, where things can get interesting and where some of the benefits lie is that C gives you direct control over memory. In the C implementation, I was able to get just a bit more performance by being clever with my memory allocations.
 
 Lastly, let's consider the cost of getting things wrong. Remember how I mentioned the original C abstraction I created wasn't working well? If we compare this to the Node example, we can see that a poor implementation in C is quite detrimental.
 
-![Bad C Implementation](./BadC.png)
+![Bad C Implementation](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/understanding-eventing/BadC.png)
 
 In this case, the results clearly show that the misuse of allocations and creation of additional thread contention on shared data will result in performance problems. Just because you have access to low-level primitives doesn't mean you are faster by default. If you are not careful, you have more ways to slow yourself down.
 
-If you would like to look at the data and draw your own conclusions, you can find the raw data [here](./EventTimingData.csv).
+If you would like to look at the data and draw your own conclusions, you can find the raw data [here](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/understanding-eventing/EventTimingData.csv).
 
 ## What I learned from this experiment
 
