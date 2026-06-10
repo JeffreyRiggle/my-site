@@ -176,6 +176,33 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
   }
 }
 
+exports.sourceNodes = async ({
+  actions,
+  createNodeId,
+  createContentDigest,
+}) => {
+  const { createNode } = actions
+
+  const response = await fetch(
+    "https://dev.to/api/articles?username=jeffrey_riggle_e261fba011"
+  )
+
+  const articles = await response.json()
+
+  for (const article of articles) {
+    createNode({
+      ...article,
+      id: createNodeId(`devto-article-${article.id}`),
+      parent: null,
+      children: [],
+      internal: {
+        type: "DevToArticle",
+        contentDigest: createContentDigest(article),
+      },
+    })
+  }
+}
+
 const downloadGitFile = (response, fileName, repo) => {
   return new Promise((resolve, reject) => {
     response.pipe(fs.createWriteStream(fileName)).on('finish', () => {
