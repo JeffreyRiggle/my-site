@@ -47,6 +47,14 @@ const Layout = ({ children, title }) => {
               alt="email"
               width={32}
               height={32} />
+          </a>
+          <a href="/rss.xml">
+            <StaticImage 
+              layout="fixed"
+              src="../images/rss.png"
+              alt="RSS Feed"
+              width={32}
+              height={32} />
           </a><span>Jeff Riggle</span>
         </footer>
       </div>
