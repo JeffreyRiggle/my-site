@@ -1,6 +1,6 @@
 ---
-title: 'Building Engima'
-date: '2026-06-11'
+title: 'Building Enigma, Misreading Performance'
+date: '2026-06-18'
 ---
 
 As a continuation of the journey through old projects, we now arrive at my foray into [WASM](https://webassembly.org/). At the time WASM was evolving beyond [asm.js](http://asmjs.org/) and becoming a proper standard with a formal specification and binary format. To learn more, I wanted to come up with a problem to solve with WASM. While other people had been doing far more practical things like getting existing C projects to run in the browser, I wanted to build something else, and I wanted to use Rust.
