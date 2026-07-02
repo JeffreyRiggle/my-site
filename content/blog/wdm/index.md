@@ -227,7 +227,7 @@ export default class WatGenerator {
 Now this is a pretty good start but we can do better. We still haven't supported all operators, we can pretty trivially add support for parenthesis, divide, and multiplication. In this case all we have to do is extend our grammar and add a bit of extra logic to our operator logic.
 
 Let's tweek our grammar a bit first
-```antlr4
+```antlr
 grammar wdm;
 program: (expression | functiondef | importDef)+ EOF;
 expression
@@ -298,7 +298,7 @@ Alright so now we have supported some very basic arithmatic but what about those
 
 Our updated grammar starts to look a bit more complex.
 
-```antlr4
+```antlr
 grammar wdm;
 program: (expression | functiondef)+ EOF;
 functiondef: PUBLICMARKER? NAME '(' PARAMETER? (',' PARAMETER)* ')' DATATYPE '->' expression'\n'+;
@@ -493,7 +493,7 @@ pub floor(v:f) f -> _floor(v)
 
 However I backed myself into a bit of an uncomfortable situation. Since I produce two targets JavaScript and WAT the intrinsic support is a bit different between those targets and things could get a bit messy. Even in this example for Javascript I would have to use `Math.floor` while in WASM I would just use `floor`. Instead what I landed on was using one more feature of WASM we haven't talked about yet and that is import support. In WASM you can import external functions at load time to allow external code to be run inside of your WASM runtime. So now I can extend the grammar to include import functions.
 
-```antlr4
+```antlr
 importDef: IMPORTMARKER NAME '(' PARAMETER? (',' PARAMETER)* ')' DATATYPE '->' '\n'+;
 ```
 
