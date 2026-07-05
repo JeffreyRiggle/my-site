@@ -3,17 +3,17 @@ title: 'Learning WASM via WDM'
 date: '2026-07-01'
 ---
 
-In the last blog I realized that while I have used WASM I didn't fully understand WASM. Through the exercise of building my engima engine in rust and running it via WASM I built an understanding of the application of WASM and Rust toolchains supporting that flow. What I didn't learn was the specifics of what WASM has to offer.
+Reflecting on my last blog I realized, while I have used WASM I didn't fully understand WASM. Through the exercise of building my engima engine in rust and running it via WASM I built an understanding of the application of WASM and Rust toolchains supporting that flow. What I didn't learn was the specifics of what WASM has to offer.
 
 ## Learning via a new application of the technology
 
-In order to properly understand this technology I needed to interact directly with the WASM interface. This required me to think of some problem that operated at that level. After some consideration I decided the easiest way to do that was to create a toy programming language. Let's call this language WASM Dumb Math or WDM for short. The reason it's "dumb" is because it is not feature rich and it only supports basic arithmatic. Also since its dumb math we are only going to use 32bit primitives since 64bits is too much for the silly types of programs we are creating.
+In order to properly understand this technology I needed to interact directly with WASM. This required me to think of a problem that operated at a lower level. After some consideration I decided the easiest way would be to create a toy programming language. Let's call this language WASM Dumb Math or WDM for short. The reason it's "dumb" is because it is not feature rich and it only supports basic arithmatic. Also since its "dumb math" we are only going to use 32bit primitives since 64bits is too much for the silly types of programs we will be creating.
 
 ## What is WAT?
 
-Now before we get into anything around WDM we should understand a bit better how WASM works. Much like with assembly there are two representations we can work with. The first is the underlying binary representation of the program. These are the `.wasm` files and are optimized for parse time and file size. The second is a slightly more friendly human readible version of the code. These are `.wat` files and they compile down to `.wasm` files using a program like [wabt](https://github.com/webassembly/wabt). To compare lets look at the output of the same simple program using both formats.
+Now before we get into anything around WDM we should understand a bit better how WASM works. Much like assembly there are two representations we can work with. The first is the underlying binary representation of the program. These are the `.wasm` files and are optimized for parse time and file size. The second is a slightly more readible human friendly version of the code. These are `.wat` files and they compile down to `.wasm` files using a program like [wabt](https://github.com/webassembly/wabt). To compare let's look at the output of the same simple program using both formats.
 
-Base program written in the wat file format.
+Here we have a simple exported function called `add` that adds to variables `$a` and `$b` represented as a `.wat`.
 ```wat
 (module
   (func (export "add") (param $a f32) (param $b f32) (result f32)
@@ -24,7 +24,7 @@ Base program written in the wat file format.
 )
 ```
 
-Compiled output from the wasm file as a hexdump.
+When compiled the output from the wasm file as a hexdump would look like this.
 ```bash
 $ hexdump -C module.wasm
 00000000  00 61 73 6d 01 00 00 00  01 07 01 60 02 7d 7d 01  |.asm.......`.}}.|
@@ -35,11 +35,11 @@ $ hexdump -C module.wasm
 
 ## Features of WASM
 
-At its core Wasm is a very condensed binary representation of a program. This is often compared to traditional assembly versions like x86. As such it has a much more limited set of features than you might be used to if you have not worked in assembly. In the case of Wasm the supported primitive types are 32 and 64 bit integers and floats as well as a 128 bit vector type. To store these values you can use locals and globals. These are similar to registers in other assembly languages but without specific register names and semantics to focus on. Finally to manipulate these primitives there are different instructions. These include: control flow instructions like `if`, `else`, and `loop`, memory instructions like `load`, `store`, and `grow`, as well as numeric instructions like `add`, `subtract`, and `multiply`. Combining all of these features together you can take any program written in a language like rust and compile it down WASM and run in a browser.
+At its core WASM is a very condensed binary representation of a program. This is often compared to traditional assembly versions like x86. As such it has a much more limited set of features than you might be used to if you have not worked in an assembly language. In WASM the supported primitive types are 32 and 64 bit integers and floats as well as a 128 bit vector type. To store these values you can use locals and globals. These are similar to registers in other assembly languages but without specific register names and semantics to focus on. Finally to manipulate these primitives there are different instructions. These include: control flow instructions like `if`, `else`, and `loop`, memory instructions like `load`, `store`, and `grow`, as well as numeric instructions like `add`, `subtract`, and `multiply`. Combining all of these features together you can take any program written in a language like rust and compile it down WASM and run in a browser. Alternatively if you want to try and run this programs outside of a browser like environment you can look at the [wasi](https://wasi.dev/) project. For the purposes of this explortation we will focus on running via NodeJS.
 
 ## Getting into the language
 
-So now that we have a loose understanding of WASM features and syntax let's define our toy language. In this language we are going to keep things simple. First this will be a pure functional language. The compiled interface will export functions and those functions will have no side-effects. Additionally there will be no variable support. If you want to have dynamic calculations those will have to be provided as parameters to a function. Also since we are not interested in building a particularly useful language we will only support `i32` denoted as `i` and `f32` denoted as `f` types. Lastly to make this language slightly infuriating and different enough from other languages we will do a few things differently.
+Armed with a  loose understanding of WASM features and syntax let's define our toy language. In this language we are going to keep things simple. First this will be a pure functional language. The compiled interface will export functions and those functions will have no side-effects. Additionally there will be no variable support. If you want to have dynamic calculations those will have to be provided as parameters to a function. Also since we are not interested in building a particularly useful language we will only support `i32` denoted as `i` and `f32` denoted as `f` types. Lastly to make this language slightly infuriating and different enough from other languages we will do a few things differently.
 
 1. New line characters will be structurally important to parsing.
 2. No keyword will be used to denote a function.
@@ -55,17 +55,18 @@ pub add(a:f, b:f) f -> a + b
 pub multiply(a:f, b:f) f -> a * b
 pub divide(a:f, b:f) f -> a / b
 pub five() i -> 5_i
+
 ```
 
 With these examples we can loosely see the structure. There is an optional `pub` that denotes if the function is publically exposed. This is followed by a function name with parameters, then a return type, and finally the function body.
 
 ### Choosing a parsing strategy
 
-Now to parse this I could write my own parser and lexer and get all of that working, or I could use one of many open source projects that already do this. Since my goal is not to learn about WASM and not lexing and parsing existing tooling is the way to go. In this space there are many options like [antlr](https://www.antlr.org/), [JavaCC](https://javacc.github.io/javacc/), [lezer](https://lezer.codemirror.net/), and [tree-sitter](https://tree-sitter.github.io/tree-sitter/). In the end I landed on using antlr due to its maturity.
+Now to parse this I could write my own parser and lexer and get all of that working, or I could use one of many open source projects that already do this. Since my goal is not to learn about WASM and not lexing and parsing, existing tooling is the way to go. In this space there are many options like [antlr](https://www.antlr.org/), [JavaCC](https://javacc.github.io/javacc/), [lezer](https://lezer.codemirror.net/), and [tree-sitter](https://tree-sitter.github.io/tree-sitter/). In the end I landed on using antlr due to its maturity in the space.
 
 ### Setting up our generation
 
-So now that we know what we are building and how we are parsing it we just need to settle on a few finishing touches. The definition of the grammar but itself is not that interesting, we need to reduce it down to something. In this case we are going to have two targets for this. The first will be JavaScript and the second will be the WAT representation that we can compile down to WASM using WABT. The reason we want to generate JavaScript is to have a point of comparision. With all of this we can setup our harness with a simple NodeJS application.
+Now that we know what we are building and how we are parsing it we just need to settle on a few finishing touches. The definition of the grammar itself is not that interesting, we need to reduce it down to something executable. In this case we are going to have two targets. The first will be JavaScript, and the second will be the WAT representation that we can compile down to WASM using WABT. The reason we want to generate JavaScript is to have a point of comparision. With all of this we can setup our harness with a simple NodeJS application.
 
 ```javascript
 const input = fs.readFileSync('./input.wdm', 'utf8');
@@ -85,7 +86,7 @@ assembleWatWithWABT('program.wat', 'program.wasm');
 
 ### Building our first feature
 
-Now let's take a first step and work on a small feature. To do this we need to create the syntax required for this subset of the program. For starters let's just support static math with only addition and subtraction supported. Let's also just have this be an expression with a single export that is the main function. So in this version all we want to support is a program like the following.
+Let's take a first step and work on a small feature. To do this we need to create the syntax required for this subset of the program. For starters, let's just support static math with only addition and subtraction supported. Also we will have this be an expression with a single export that is the main function. So in this version all we want to support is a program like the following.
 
 ```wdm
 12_i + 13_i
@@ -107,7 +108,7 @@ async function run() {
 run();
 ```
 
- To support this simple case lets start with the grammar required.
+ To support this simple case lets examine the grammar required.
 
  ```antlr
 grammar wdm;
@@ -123,7 +124,7 @@ MINUS: '-';
 WS : [ \t\r\n]+ -> skip;
  ```
 
- Now to work with this we can create a very simple WAT generator.
+ Now to go along with this grammar we can create a very simple WAT generator.
 
  ```javascript
 import wdmLexer from "./wdmLexer.js";
@@ -208,7 +209,7 @@ export default class WatGenerator {
 }
 ```
 
- Now if we pass in our original function we get the following outputs.
+ If we pass in our function from above we get the following outputs.
 
  ```javascript
  export function main() {
@@ -236,9 +237,10 @@ $ hexdump -C ./gen/program.wasm
 
 ### Adding in some additional operators
 
-Now this is a pretty good start but we can do better. We still haven't supported all operators. We can pretty trivially add support for parenthesis, divide, and multiplication. All we have to do is extend our grammar and add a bit of extra logic to our operator logic.
+This is a pretty good start but we can do better. We still haven't supported all operators. We can trivially add support for parenthesis, divide, and multiplication. All we have to do is extend our grammar and add a bit of extra logic to our operator logic.
 
-Let's tweek our grammar a bit first
+Let's tweek our grammar a bit first.
+
 ```antlr
 grammar wdm;
 program: expression EOF;
@@ -264,7 +266,7 @@ visitExpression(context) {
     if (context instanceof wdmParser.AssociativeMathContext) {
         return this.visitAssociativeMath(context);
     }
-    // Existing contexts omitted.
+    // Existing contexts are omitted.
     return '';
 }
 
@@ -275,17 +277,17 @@ visitOperator(context) {
   if (context.MULTIPLY?.()) {
       return `${this.getTabs()}${this.currentNumberType}.mul\n`;
   }
-  // Existing operators omitted.
+  // Existing operators are omitted.
 }
 ```
 
-Now we can start expressing programs like this.
+With these changes we can start expressing programs like this.
 
 ```wdm
 12_f * 15_f + 66_f
 ```
 
-This program being represented as the following outputs.
+Which when compiled would produce the following outputs.
 
 ```javascript
 export function main() {
@@ -316,7 +318,7 @@ $ hexdump -C ./gen/program.wasm
 
 ### What about function calls?
 
-Alright so now we have supported basic arithmatic but what about those function calls. Currently everything could be reduced down to a single number at compile time and there would be no compelling reason to even use this language. To do this we are going to have to expand our grammar dramatically. Concepts like function definitions, function bodies, parameters, and function call semantics now have to come into play.
+So now we have supported basic arithmatic but what about those function calls? Currently everything could be reduced down to a single number at compile time and there would be no compelling reason to even use this language. To support this we are going to have to expand our grammar dramatically. Concepts like function definitions, function bodies, parameters, and function call semantics now come into play.
 
 Our updated grammar now allows you to have function definitions and calls.
 
@@ -346,7 +348,7 @@ NAME: [a-zA-Z]+[a-zA-Z0-9]*;
 WS : [ \t\r]+ -> skip;
 ```
 
-Now I could show you all the changes required to make this work but I think that would be a bit too distracting. Instead I will highlight this top level change to show how we expanded our support.
+I could show you all the changes required to make this work, but I think that would be a bit too distracting. Instead I will highlight this top level change to show how we expanded our support.
 
 ```javascript
 visitProgram(context) {
@@ -367,7 +369,7 @@ visitProgram(context) {
 }
 ```
 
-Now our program no longer declares a single export. We can now have many different functions defined or exported. With all of these features added we should now be able to produce working code for our original example.
+Our program no longer declares a single export. We can now have many different functions defined or exported. With all of these features added we should now be able to produce working code for our original example.
 
 ```wdm
 internalTest(a:f) f -> 12_f - a
@@ -464,7 +466,7 @@ $ hexdump -C ./gen/program.wasm
 000000ad
 ```
 
-One thing that is a bit interesting here is that the call semantics of a public function and a private function end up being different. Notice in this code we call the public method `subtract` with `1` but the `internalTest` with `$internalTest`?
+If we pay close attention the call semantics of a public function and a private function end up being different. Notice in this code we call the public method `subtract` with `1` but the `internalTest` with `$internalTest`?
 
 ```wat
 (func (export "randomTest") (param $a f32) (result f32)
@@ -479,23 +481,23 @@ One thing that is a bit interesting here is that the call semantics of a public 
 	)
 ```
 
-In this case `1` is the function index of the function we want to call. WASM allows us to execute functions in this way and allows us to use the same function internally and externally.
+In this case `1` is the function index of the function we want to call. WASM allows us to execute functions in this way if the exported function does not start with an `$`. Since our grammar does not allow functions to be defined this way we had to use the index to call those internally.
 
 ### How about absolute values?
 
-By now we have a pretty neat little language that allows us to do basic math and even handle values from external callers. However there are still some cases we cannot handle. The first of which is getting the absolute value of some number. Now there are a couple of ways we could do this. First we could add some sort of syntax to denote an absolute value. If we draw from a mathematics background we might be tempted to support something like the following.
+By now we have a pretty neat little language that allows us to do basic math and even handle values from external callers. However, there are still cases we cannot handle. The first of which is getting the absolute value of a number. There are a couple of ways we could do this. First, we could add syntax to denote an absolute value. If we draw from a mathematics background we might be tempted to support the following.
 
 ```wdm
 pub abs(v:f) f -> |v|
 ```
 
-This would even cleanly translate to assembly with the [abs instruction](https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/Numeric/abs).Instead I landed on the far less elegant solution to this problem. This is not because I thought it was better but instead because it allowed me to work with more primitive instructions. Another way to get the absolute value of a number is to use bitwise operators.
+This would cleanly translate to assembly with the [abs instruction](https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/Numeric/abs). Alas, I landed on a far less elegant solution to this problem. This is not because I thought it was better. Instead the solution choosen allowed me to work with more primitive instructions. Another way to get the absolute value of a number is to use bitwise operators.
 
 ```wdm
 pub abs(a:i) i -> (a ^ (a >> 31_i)) - (a >> 31_i)
 ```
 
-Since we know that these are always 32 bit signed values we can manipulate a single bit to produce the absolute value. The resulting output for this is likely what you might expect.
+Since we know that these are always 32 bit signed values, we can manipulate a single bit to produce an absolute value. The resulting output for this is hopefully predictable.
 
 ```javascript
 export function abs(a) {
@@ -530,19 +532,19 @@ $ hexdump -C ./gen/program.wasm
 
 ### Now let's break a rule
 
-Now we have a pretty fun little language but there are just some things that are still hard to express. For example what if I want to get the floor of some floating point value? While I could attempt to do this with bitwise operators this would be frought with error. Due to the mantissa and floating point nature of these values I would almost certainly get the floor wrong. Again one way we could do this is we could do this is to extend the grammar to support floor.
+Now we have a pretty fun little language, but there are just some things that are still hard to express. For example, what if I want to get the floor of a floating point value? While I could attempt to do this with bitwise operators, this would be frought with error. Due to the mantissa and floating point nature of these values, I would almost certainly get the floor wrong. Again one way we could do this is we could do this is to extend the grammar to support floor.
 
 ```wdm
 pub floor(v:f) f -> ⌊v⌋
 ```
 
-However this would lead to constant grammar changes as the function set expanded: floor, round, ceil, etc. Another approach would be some sort of [intrinstics function](https://en.wikipedia.org/wiki/Intrinsic_function) like C has. In this case I could use this code to do the floor instead.
+However this would lead to constant grammar changes as the function set expanded: floor, round, ceil, etc. Another approach would be some sort of [intrinstics function](https://en.wikipedia.org/wiki/Intrinsic_function) like C has. As a result I could use this code to do the floor instead.
 
 ```wdm
 pub floor(v:f) f -> _floor(v)
 ```
 
-However I backed myself into a bit of an uncomfortable situation. Since I produce two targets JavaScript and WAT the intrinsic support is a bit different between those targets and things could get a bit messy. Even in this example for Javascript I would have to use [Math.floor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor) while in WASM I would just use [floor](https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/Numeric/floor). Instead I landed on using one more feature of WASM we haven't talked about yet. This being import support. In WASM you can import external functions at load time to allow external code to be run inside of your WASM runtime. So now I can extend the grammar to include import functions.
+However I backed myself into a bit of an uncomfortable situation. Since I produce two targets JavaScript and WAT the intrinsic support is a bit different between those targets and things could get a bit messy. Even in this example for Javascript I would have to use [Math.floor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor) while in WASM I would just use [floor](https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/Numeric/floor). Instead of dealing with this complexity I landed on using one more feature of WASM we haven't talked about yet. This being import statements. In WASM you can import external functions at load time to allow external code to be run inside of your WASM runtime. Now I can extend the grammar to include import functions.
 
 ```antlr
 importDef: IMPORTMARKER NAME '(' PARAMETER? (',' PARAMETER)* ')' DATATYPE '->' '\n'+;
@@ -555,7 +557,7 @@ import floor(a:f) f ->
 pub main() f -> floor(6.7_f)
 ```
 
-Translates into the following outputs.
+Which translates into the following outputs.
 
 ```javascript
 let env = {};
@@ -585,6 +587,7 @@ $ hexdump -C ./gen/program.wasm
 00000030  01 0a 0b 01 09 00 43 66  66 d6 40 10 00 0b        |......Cff.@...|
 0000003e
 ```
+
 Add in a little tweak to the calling code and now we have our floor example working.
 
 ```javascript
@@ -603,7 +606,7 @@ async function runWasmNode() {
 runWasmNode();
 ```
 
-Now if you are paying close attention we broke a rule of our original language, did you catch it? That is right this language is no longer a pure functional language. We can now introduce side effects by importing functions that deal with time for example.
+If you are paying close attention we broke a rule of our original language, did you catch it? That's right, this language is no longer a pure functional language. We can now introduce side effects by importing functions that deal with time.
 
 ```wdm
 import now() f ->
