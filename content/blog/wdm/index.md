@@ -307,15 +307,6 @@ export function main() {
 )
 ```
 
-```bash
-$ hexdump -C ./gen/program.wasm
-00000000  00 61 73 6d 01 00 00 00  01 05 01 60 00 01 7d 03  |.asm.......`..}.|
-00000010  02 01 00 07 08 01 04 6d  61 69 6e 00 00 0a 15 01  |.......main.....|
-00000020  13 00 43 00 00 40 41 43  00 00 70 41 94 43 00 00  |..C..@AC..pA.C..|
-00000030  84 42 92 0b                                       |.B..|
-00000034
-```
-
 ### What about function calls?
 
 So now we have supported basic arithmatic but what about those function calls? Currently everything could be reduced down to a single number at compile time and there would be no compelling reason to even use this language. To support this we are going to have to expand our grammar dramatically. Concepts like function definitions, function bodies, parameters, and function call semantics now come into play.
@@ -450,6 +441,23 @@ export function five() {
 )
 ```
 
+Now if we pay closer attention we might notice the call semantics of a public function and a private function ended up being different. Notice in this code we call the public method `subtract` with `1` but the `internalTest` with `$internalTest`?
+
+```wat
+(func (export "randomTest") (param $a f32) (result f32)
+		f32.const 10
+		f32.const 5.35
+		f32.const 3.1
+		call 1
+		f32.mul
+		local.get $a
+		call $internalTest
+		f32.add
+	)
+```
+
+In this case `1` is the function index of the function we want to call. WASM allows us to execute functions in this way if the exported function does not start with an `$`. Since our grammar does not allow functions to be defined this way we had to use the index to call those internally. Another thing that becomes interesting is if we focus in on the resulting hexdump.
+
 ```bash
 $ hexdump -C ./gen/program.wasm
 00000000  00 61 73 6d 01 00 00 00  01 10 03 60 01 7d 01 7d  |.asm.......`.}.}|
@@ -466,22 +474,7 @@ $ hexdump -C ./gen/program.wasm
 000000ad
 ```
 
-If we pay close attention the call semantics of a public function and a private function end up being different. Notice in this code we call the public method `subtract` with `1` but the `internalTest` with `$internalTest`?
-
-```wat
-(func (export "randomTest") (param $a f32) (result f32)
-		f32.const 10
-		f32.const 5.35
-		f32.const 3.1
-		call 1
-		f32.mul
-		local.get $a
-		call $internalTest
-		f32.add
-	)
-```
-
-In this case `1` is the function index of the function we want to call. WASM allows us to execute functions in this way if the exported function does not start with an `$`. Since our grammar does not allow functions to be defined this way we had to use the index to call those internally.
+Notice that the compression of the `.wasm` vs the `.wat` file is quite significant here? In the `.wat` file we have used ~770 bytes where in the `.wasm` case we only used ~170. This makes a huge difference when you have to send that data over the network and parse it. 
 
 ### How about absolute values?
 
@@ -519,15 +512,6 @@ export function abs(a) {
 		i32.sub
 	)
 )
-```
-
-```bash
-$ hexdump -C ./gen/program.wasm
-00000000  00 61 73 6d 01 00 00 00  01 06 01 60 01 7f 01 7f  |.asm.......`....|
-00000010  03 02 01 00 07 07 01 03  61 62 73 00 00 0a 12 01  |........abs.....|
-00000020  10 00 20 00 20 00 41 1f  75 73 20 00 41 1f 75 6b  |.. . .A.us .A.uk|
-00000030  0b                                                |.|
-00000031
 ```
 
 ### Now let's break a rule
@@ -579,15 +563,6 @@ export function main() {
 )
 ```
 
-```bash
-$ hexdump -C ./gen/program.wasm              
-00000000  00 61 73 6d 01 00 00 00  01 0a 02 60 01 7d 01 7d  |.asm.......`.}.}|
-00000010  60 00 01 7d 02 0d 01 03  65 6e 76 05 66 6c 6f 6f  |`..}....env.floo|
-00000020  72 00 00 03 02 01 01 07  08 01 04 6d 61 69 6e 00  |r..........main.|
-00000030  01 0a 0b 01 09 00 43 66  66 d6 40 10 00 0b        |......Cff.@...|
-0000003e
-```
-
 Add in a little tweak to the calling code and now we have our floor example working.
 
 ```javascript
@@ -615,6 +590,8 @@ pub main() f -> now() / 10_f
 
 This is a minor price to pay to reduce complexity and it provides more functionalty anyway.
 
-## Welcome to play
+## Admission of impracticality
 
-If you found any of this interesting you are more than welcome to read, fork, etc the code used to produce this post. All related code can be found [here](https://github.com/JeffreyRiggle/wdm). While I do not think this language is remotely useful in practice I had a lot of fun working on it. This effort taught me what I wanted to learn compared to the engima project. If we zoom out a bit it doesn't make sense to write directly to WAT. Producing a WAT output is questionable as [LLVM](https://llvm.org/) supports WASM as a target. You would get a much bigger bang for your buck being able to produce LLVM compatible outputs instead. However if your end goal is just to learn about WASM then it is quite a bit of fun.
+At this point I need to say the obvious part out loud. This language and its approach are largely impractical. There are great tools like [LLVM](https://llvm.org/) that can handle all of this complexity for you and even compiled to more targets. If I was being serious about making a language I would both design it better and compile it down to LLVM's intermediate language to maximize optimizations and targets. However, if I took the time to compile to LLVM I would have learned an interesting lesson but not the lesson I wanted to. In the past I learned how to leverage WASM to run Rust code in the browser. Through this "suboptimal" exercise I learned what I wanted to all along. Letting LLVM do the heavy lifting would have robbed me of that experience all over again.
+
+If you found any of this interesting all related code can be found [here](https://github.com/JeffreyRiggle/wdm).
