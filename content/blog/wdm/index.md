@@ -14,7 +14,7 @@ To properly understand this technology, I needed to interact directly with WASM.
 Now before we get into WDM, we should understand how WASM works. Much like assembly, there are two representations we can work with. The first is the underlying binary representation. These are the `.wasm` files, which are optimized for parse time and file size. The second is a slightly more readable, human-friendly version of the code. These are `.wat` files, and they compile down to `.wasm` files using a program like [wabt](https://github.com/webassembly/wabt). To compare, let’s look at the output of the same simple program using both formats.
 
 Here we have a simple exported function called `add` that adds to variables `$a` and `$b` represented as a `.wat`.
-```wat
+```wasm
 (module
   (func (export "add") (param $a f32) (param $b f32) (result f32)
     local.get $a
@@ -110,7 +110,7 @@ run();
 
 To support this simple case, let’s examine the grammar required.
 
- ```antlr
+ ```g4
 grammar wdm;
 program: expression EOF;
 expression
@@ -217,7 +217,7 @@ If we pass in our function from above, we get the following outputs.
  }
  ```
 
-```wat
+```wasm
 (module
 	(func (export "main") (result i32)
 		i32.const 12
@@ -241,7 +241,7 @@ This is a pretty good start, but we can do better. We still haven’t supported 
 
 Let’s tweak our grammar a bit first.
 
-```antlr
+```g4
 grammar wdm;
 program: expression EOF;
 expression
@@ -295,7 +295,7 @@ export function main() {
 }
 ```
 
-```wat
+```wasm
 (module
 	(func (export "main") (result f32)
 		f32.const 12
@@ -313,7 +313,7 @@ So now we have support for basic arithmetic, but what about those function calls
 
 Our updated grammar now allows function definitions and calls.
 
-```antlr
+```g4
 grammar wdm;
 program: (expression | functiondef)+ EOF;
 functiondef: PUBLICMARKER? NAME '(' PARAMETER? (',' PARAMETER)* ')' DATATYPE '->' expression'\n'+;
@@ -398,7 +398,7 @@ export function five() {
 }
 ```
 
-```wat
+```wasm
 (module
 	(func $internalTest (param $a f32) (result f32)
 		f32.const 12
@@ -443,7 +443,7 @@ export function five() {
 
 Now, if we pay closer attention, we might notice the call semantics of a public function and a private function are different. Notice this code: the public method `subtract` is called as `1`, but the `internalTest` is called with `$internalTest`?
 
-```wat
+```wasm
 (func (export "randomTest") (param $a f32) (result f32)
 		f32.const 10
 		f32.const 5.35
@@ -498,7 +498,7 @@ export function abs(a) {
 }
 ```
 
-```wat
+```wasm
 (module
 	(func (export "abs") (param $a i32) (result i32)
 		local.get $a
@@ -532,7 +532,7 @@ pub floor(v:f) f -> _floor(v)
 
 However, I backed myself into an uncomfortable situation. Since I produce two targets, JavaScript and WAT, the intrinsic support is a bit different between those targets, and things could get a bit messy. Even in this example, JavaScript would have to use [Math.floor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor) while in WASM I would just use [floor](https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/Numeric/floor). Instead of dealing with this complexity, I landed on using one more feature of WASM we haven’t talked about yet. This being import statements. In WASM, you can import external functions at load time to allow external code to be run inside of your WASM runtime. Now I can extend the grammar to include import functions.
 
-```antlr
+```g4
 importDef: IMPORTMARKER NAME '(' PARAMETER? (',' PARAMETER)* ')' DATATYPE '->' '\n'+;
 ```
 
@@ -555,7 +555,7 @@ export function main() {
 }
 ```
 
-```wat
+```wasm
 (module
 	(import "env" "floor" (func $floor (param $a f32) (result f32)))
 	(func (export "main") (result f32)
