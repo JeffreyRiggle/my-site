@@ -524,8 +524,6 @@ pub floor(v:f) f -> ⌊v⌋
 
 However, this would lead to constant grammar updates as the function set expanded: floor, round, ceil, etc. Another approach would be some sort of [intrinstic functions](https://en.wikipedia.org/wiki/Intrinsic_function) like C has. As a result, I could use this code to do the floor instead.
 
-However this would lead to constant grammar changes as the function set expanded: floor, round, ceil, etc. Another approach would be some sort of [intrinstics function](https://en.wikipedia.org/wiki/Intrinsic_function) like C has. As a result I could use this code to do the floor instead.
-
 ```wdm
 pub floor(v:f) f -> _floor(v)
 ```
