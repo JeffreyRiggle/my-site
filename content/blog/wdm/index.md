@@ -1,6 +1,6 @@
 ---
 title: 'Learning WASM via WDM'
-date: '2026-07-01'
+date: '2026-07-07'
 ---
 
 Reflecting on my last blog, I realized that while I have used WASM, I didn’t fully understand WASM. By building my Enigma engine in Rust and running it via WASM, I learned the application of WASM and Rust toolchains supporting the flow. What I didn’t learn was the specifics of what WASM has to offer.
