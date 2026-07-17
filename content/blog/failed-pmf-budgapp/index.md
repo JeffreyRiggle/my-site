@@ -3,25 +3,25 @@ title: 'Failed Product Market fit with a single customer'
 date: '2026-07-12'
 ---
 
-Every once in a rare moon I create something I want to use. Many engineers build projects by scratching an itch. I am not that engineer. Usually my little toy projects are to learn something new. Maybe there is a new framework, or library or langauge. The end product is rarely something I interested in. The project is one of the rare exceptions. In this case I wanted to build an application to budget the way I thought of budgetting.
+Every once in a rare moon I create something I want to use. Many engineers build projects by scratching an itch. I am not that engineer. Usually my little toy projects are to learn something new to me. Maybe the new thing is a domain, framework, library, or langauge. The end product is rarely something I interested in. The project is one of the rare exceptions. In this case I wanted to build an application to budget the way I thought of budgetting.
 
-You see for a while before taking on this project I would manage my budget in excel. However I found that it is easy to mess things up in excel. Also I really hated trying to visualize the data I had created in excel. For the reasons I set out to create an application I called budgapp.
+For a while before taking on this project I would manage my budget in excel. However I found that it is easy to mess things up in excel. Also I hated trying to visualize the data I had created in excel. For the reasons I set out to create an application I called budgapp.
 
 ## Building the application
 
-The build out wasn't too far off from other projects. In this case many familiar technologies came into play: React, Sass, Electron, ipc-bridge. However there had been some new entrants: [Spectron](https://github.com/electron-userland/spectron), [webdriverio](https://webdriver.io/), [lerna](https://lerna.js.org/).
+The build out wasn't too far off from other projects. In this case many familiar technologies came into play: React, Sass, Electron, ipc-bridge. However there had been some new entrants: [Spectron](https://github.com/electron-userland/spectron), [webdriverio](https://webdriver.io/), and [lerna](https://lerna.js.org/).
 
-Much like with the robit application I had a native application using electron and some static web assets for the client. This was also built in the same way as robit where it used ipc-bridge to to the communication across web page and native app, as well as suppoted the native app or standalone website with less features.
+Much like with the robit application I had a native application using electron and some static web assets for the client. This was also built in the same way as robit where it used ipc-bridge to to the communication across web page and native app, as well as supported the native app or standalone website with less features.
 
-By coding standards this was possibly a bit better than my last few projects. I had finally built a public project using TypeScript, well kind of. All of the client code that ran in the browser used TypeScript. I also had high amounts of unit tests and even coverage thresholds for CI. In an effort to continue to up my game I did proper end-to-end testing with page object models to boot.
+By coding standards alone this was a bit better than my last few projects. I had finally built a public project using TypeScript, well kind of. All of the client code that ran in the browser used TypeScript. I also had high amounts of unit tests and even coverage thresholds for CI. In an effort to continue to up my game I did proper end-to-end testing with page object models to boot.
 
 ## Highlighting the key features
 
-To help with the rest of this blog I am going to describe some of the key features. The main building blocks of this application had been the concept of categories, budget and income. 
+To help with the rest of this blog I am going to describe some of the key features. The main building blocks of this application had been categories, budget and income.
 
-Categories had been a way of labelling the budget. An example category might be housing in which you might set aside some budget for paying rent or a mortgage. Some categories had a concept I called rollover. For this case imagine you have a personal spending budget. Let's say this is $150 now you might want something that costs $1500. The approach I took to this problem was you could build up to that by letting the budget rollover. If you didn't spend anything for 10 months your in luck and you could by that cool $1500 item.
+Categories were a way of labelling the budget. An example category might be housing in which you might set aside some budget for paying rent or a mortgage. Some categories had a concept I called rollover. For this case imagine you have a personal spending budget. Let's say this is $150. Now you might want something that costs $1500. The approach I took to this problem was you could build up to that by letting the budget rollover. If you didn't spend anything for 10 months your in luck and you could by that cool $1500 item.
 
-Budget and income were a lot simpler. Budget was all of the transactions you made that cost you money, while income was all transactions that netted you money.
+Budget and income were simpler. Budget was all of the transactions you made that cost you money, while income was all transactions that netted you money.
 
 In addition to this I wanted to be able to compare how I was trending, was some budget rising, or maybe I was underspending in an area? For this I had a historical view that allowed for showing the spend and you could filter down to categories.
 
@@ -33,11 +33,35 @@ This application was doing everything I wanted it to do and solving the problems
 
 ### Bad storage planning
 
-The first one I noticed was making changes to the application was getting harder. One choice I made early on was to store all configuration and data in a single JSON file. This worked well for the initial stages and allowed me to move fast. However eventually migrations needed to occur. As these migrations occurred I had to do painful JSON to JSON structure conversions without a more rigid system. Taking the time to use SQLite and plan some database tables could have saved me a lot of effort here.
+The first one I noticed was making changes to the application was getting harder. One choice I made early on was to store all configuration and data in a single JSON file. This worked well for the initial stages and allowed me to move fast. However eventually migrations needed to occur. As these migrations occurred I had to do painful JSON to JSON structure conversions without a more rigid system. This was made worse by the fact I didn't encode a version in my JSON file. For example one thing that came up was transitioning categories from being fixed to being time based. Originally I encoded my categories close to this data structure.
+
+```json
+{
+    // other properties
+    "categories": [
+        { name: "groceries", amount: 200 },
+        { name: "rent", amount: 1000 }
+    ]
+}
+```
+
+However overtime I realized that I needed these to be date specific which required a migration. Now one shape I thought about was is the following.
+
+```json
+{
+    // other properties
+    "categories": {
+        "groceries": [ { date: "1/1/2025", amount: 200 }, { date: "1/1/2026", amount: 300 } ],
+        "rent": [ { date: "1/1/2025", amount: 1000 } ]
+    }
+}
+```
+
+However that is a difficult migration to make dynamically at runtime. Having a version tag as a JSON property would make that migration significantly easier. In this case instead of dealing with the complexities of that migration I just added a date property and made categories a flat list. Taking the time to use SQLite and plan some database tables could have saved me effort here. Databases are good at schema management and dynamically adding a column later is a trivial thing to do.
 
 ### Currency is challenging
 
-Anyone who has worked with money and software is aware of the challenges with floating point arithmatic. This pain is made worse in JavaScript your only choice for numbers is the [IEEE 754 standard.](https://en.wikipedia.org/wiki/IEEE_754). This comes with the classic challenge of `0.1 + 0.2 = 0.30000000000000004`. Now in many cases this isn't a problem but I prefer my personal finance not to have these sorts of issues. To get around this I decided to store all values as integers representing total value in cents. This worked out well but often led to weird cases where either I wouldn't display something correctly or I would accidently be off by 100x during a write or read.
+Anyone who has worked with money and software is aware of the challenges with floating point arithmatic. This pain is made worse in JavaScript your only choice for numbers is the [IEEE 754 standard.](https://en.wikipedia.org/wiki/IEEE_754). This comes with the classic challenge of `0.1 + 0.2 = 0.30000000000000004`. In many cases this isn't a problem but I prefer my personal finance not to have these sorts of issues. To get around this I decided to store all values as integers representing total value in cents. This worked out well but often led to weird cases where either I wouldn't display something correctly or I would accidently be off by 100x during a write or read.
 
 ### Rollover isn't that straightforward
 
@@ -60,7 +84,7 @@ async function calculateBudgetRollover(category) {
 
     const categoryConfig = await getCategoryConfig(category);
 
-    return budgetByMonth.values().reduce((prev, curr) => {
+    return Object.values(budgetByMonth).reduce((prev, curr) => {
         return prev + (categoryConfig.target - curr);
     }, 0);
 }
@@ -90,7 +114,7 @@ async function calculateBudgetRollover(category) {
         return prev;
     }, {});
 
-    return budgetByMonth.entries().reduce((prev, [key, value]) => {
+    return Object.entries(budgetByMonth).reduce((prev, [key, value]) => {
         return prev + (categoryTargetByDate[key] - value);
     }, 0);
 }
@@ -100,7 +124,7 @@ Perhaps instead you insert rollover items along the way but then you have the ch
 
 ```typescript
 async function calculateBudgetRollover(category) {
-    const budgetItems = await findBudgetItemsByName('<SPECIAL ROLLVOER ID>');
+    const budgetItems = await findBudgetItemsByName('<SPECIAL ROLLOVER ID>');
     return budgetItems.reduce((prev, curr) => prev + curr, 0);
 }
 ```
@@ -117,13 +141,13 @@ With this volume of manual entry you just want the UI to get out of your way. I 
 
 ## Maybe you can agument the experience?
 
-At this point I could take the time to build a different UI, but I was on to other things and I didn't want to take on a huge rebuild of the tool. Instead I decided it would be best to offload some of this work. What if I just did all the manual entry in excel but then stored it in some format that I could read back into the application to get the views I wanted?
+At this point I could have taken the time to build a different UI, but I was on to other things and I didn't want to take on a huge rebuild of the tool. Instead I decided it would be best to offload some of this work. What if I just did all the manual entry in excel but then stored it in some format that I could read back into the application to get the views I wanted?
 
 I got to work and built some logic that took in my `xslx` file and I was up and running. For quite some time I continued on this way. Do the manual entry in excel, load into my app to visualize, rinse, repeat. However as time went on I was starting to wonder why I would even put up with that? Excel is doing most of the work so why do I even have this application at all?
 
 ## The pain not solved
 
-In the end the real pain I wanted to solve was a bulk upload of my transactions with tagging and visulizations. The application I build didn't handle most of this pain and instead gathered dust.
+In the end I found the real pain I wanted to solve was a bulk upload of my transactions with tagging and visulizations. The application I build didn't handle most of this pain and instead gathered dust.
 
 If I would attempt to solve this problem again I would start from the source pain. I thought I understood it but I was wrong. What I really wanted to do was analyze my transaction history offline. Viewing that as the primary problem would have probably caused me to write a program I continued to use to this day.
 
