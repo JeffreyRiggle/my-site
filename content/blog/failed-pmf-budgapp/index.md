@@ -1,6 +1,6 @@
 ---
 title: 'Failed Product Market Fit With a Single Customer'
-date: '2026-07-12'
+date: '2026-08-04'
 ---
 
 Every once in a rare moon I create something I want to use. Many engineers build projects by scratching an itch. I am not that engineer. Usually my little toy projects are to learn something I haven’t used yet. Maybe the new thing is a domain, a framework, a library, or a language. The end product is rarely something I'm interested in. The project is one of the rare exceptions. In this case, I wanted to build an application to budget the way I thought of budgeting.
@@ -13,7 +13,7 @@ The build out wasn't too far off from other projects. In this case many familiar
 
 Much like with the robit application, I had a native application using Electron and some static web assets for the client. This was also built in the same way as Robit. Ipc-bridge managed communication between the web page and native application, in addition to supporting either the native app or standalone website.
 
-By coding standards alone, this was a bit better than my last few projects. I had finally built a public project using TypeScript, well kind of. All of the client code that ran in the browser used TypeScript. I also had high amounts of unit tests and even coverage thresholds for CI. In an effort to up my game, I did proper end-to-end testing with page object models to boot.
+By coding standards alone, this was a bit better than my last few projects. I had finally built a public project using TypeScript, well kind of. All of the client code that ran in the browser used TypeScript. I also had a large body of unit tests and coverage thresholds for CI. In an effort to up my game, I did proper end-to-end testing with page object models to boot.
 
 ## Highlighting the key features
 
