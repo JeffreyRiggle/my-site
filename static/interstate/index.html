@@ -1,0 +1,111 @@
+<html>
+    <head>
+        <title>Interstate Scene | ilusr</title>
+        <style>
+            body {
+                margin: 0;
+            }
+        </style>
+        <link rel="icon" href="/favicon-32x32.png" type="image/png">
+        <script type="text/javascript">
+            addEventListener('load', () => {
+                const canvas = document.getElementById('view');
+                const context = canvas.getContext('2d');
+                const canvasWidth = canvas.width = 800;
+                const canvasHeight = canvas.height = 600;
+
+                let cameraPosition = 0;
+
+                function updateCameraPostion() {
+                    cameraPosition += .01;
+                }
+
+                function runLoop() {
+                    requestAnimationFrame(() => {
+                        updateCameraPostion();
+                        // sky
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+                        context.beginPath();
+                        context.fillStyle = 'blue';
+                        context.rect(0, 0, canvasWidth, canvasHeight);
+                        context.fill();
+
+                        // ground
+                        context.beginPath();
+                        context.fillStyle = 'green';
+                        context.rect(0, canvasHeight / 3, canvasWidth, canvasHeight);
+                        context.fill();
+
+                        const maxLeftX = (canvasWidth / 2) - 10;
+                        const minRightX = (canvasWidth / 2) + 10;
+                        const horizon = canvasHeight / 3;
+                        const roadDistance = canvasHeight - horizon;
+                        const maxRoadWidth = canvasWidth - (canvasWidth / 4);
+                        const currentSegment = Math.floor(cameraPosition);
+                        const cameraOffset = cameraPosition % 1
+                        
+                        for (let i = 1; i <= roadDistance; i++) {;
+                            let bottomZ = i - cameraOffset;
+                            let topZ = i + 1 - cameraOffset;
+                            
+                            let leftX1 = (canvasWidth / 2) - (maxRoadWidth / bottomZ);
+                            let leftX2 = (canvasWidth / 2) - (maxRoadWidth / topZ);
+                            let rightX1 = (canvasWidth / 2) + (maxRoadWidth / bottomZ);
+                            let rightX2 = (canvasWidth / 2) + (maxRoadWidth / topZ);
+
+                            let bottomY = horizon + roadDistance / bottomZ;
+                            let topY = horizon + roadDistance / topZ;
+
+                            // Fill road
+                            context.fillStyle = 'grey';
+                            context.beginPath();
+                            context.moveTo(leftX1, bottomY);
+                            context.lineTo(leftX2, topY);
+                            context.lineTo(rightX2, topY);
+                            context.lineTo(rightX1, bottomY);
+                            context.lineTo(leftX1, bottomY);
+                            context.fill();
+
+                            // Fill left line
+                            context.fillStyle = 'white';
+                            context.beginPath();
+                            context.moveTo(leftX1 + 1, bottomY);
+                            context.lineTo(leftX2 + 1, topY);
+                            context.lineTo(leftX2 + 2, topY);
+                            context.lineTo(leftX1 + 2, bottomY);
+                            context.fill();
+
+                            // Fill right line
+                            context.fillStyle = 'white';
+                            context.beginPath();
+                            context.moveTo(rightX1 - 1, bottomY);
+                            context.lineTo(rightX2 - 1, topY);
+                            context.lineTo(rightX2 - 2, topY);
+                            context.lineTo(rightX1 - 2, bottomY);
+                            context.fill();
+
+                            // optional fill dashed yellow
+                            if ((currentSegment + i) % 2 == 0) continue;
+
+                            context.fillStyle = 'yellow';
+                            context.beginPath();
+                            context.moveTo((canvasWidth / 2) - 1, bottomY);
+                            context.lineTo((canvasWidth / 2) - 1, topY);
+                            context.lineTo((canvasWidth / 2) + 1, topY);
+                            context.lineTo((canvasWidth / 2) + 1, bottomY);
+                            context.lineTo((canvasWidth / 2) - 1, bottomY);
+                            context.fill();
+                        }
+                        
+                        runLoop();
+                    })
+                }
+
+                runLoop();
+            });
+        </script>
+    </head>
+    <body>
+        <canvas id="view"></canvas>
+    </body>
+</html>
