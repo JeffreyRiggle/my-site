@@ -10,9 +10,9 @@
         <script type="text/javascript">
             addEventListener('load', () => {
                 let events = [
-                    { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: 2 },
-                    { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .5 },
-                    { z: 300, event: 'curve', direction: 'right', segments: 50, amplitude: 1 }
+                    { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
+                    { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
+                    { z: 300, event: 'curve', direction: 'right', segments: 50, amplitude: .5 }
                 ];
 
                 const canvas = document.getElementById('view');
@@ -27,22 +27,22 @@
                 const maxRoadWidth = canvasWidth - (canvasWidth / 4);
                 let segmentMiddle = new Array(Math.ceil(roadDistance));
 
+                function getCurve(z) {
+                    let activeEvent = events.find(e => e.z < z && z <= (e.z + e.segments));
+                    
+                    if (!activeEvent) return 0;
+
+                    return activeEvent.direction === 'left' ? -activeEvent.amplitude : activeEvent.amplitude;
+                }
+
                 function fillPositions(currentZ, endZ) {
-                    let lastPosition = canvasWidth / 2;
-                    function findOffset(z) {
-                        let activeEvent = events.find(e => e.z < z && z <= (e.z + e.segments));
+                    let x = canvasMiddle;
+                    let dx = 0;
 
-                        if (activeEvent) {
-                            const segmentOffset = (z - activeEvent.z) * activeEvent.amplitude;
-                            lastPosition = activeEvent.direction === 'left' ? canvasMiddle - segmentOffset : canvasMiddle + segmentOffset; 
-                        }
-
-                        return lastPosition;
-                    }
-
-
-                    for (let i = currentZ; i < endZ; i++) {
-                        segmentMiddle[i - currentZ] = findOffset(i);
+                    for (let i = currentZ; i <= endZ; i++) {
+                        dx += getCurve(i);
+                        x += dx;
+                        segmentMiddle[i - currentZ] = x;
                     }
                 }
 
