@@ -9,15 +9,47 @@
         <link rel="icon" href="/favicon-32x32.png" type="image/png">
         <script type="text/javascript">
             addEventListener('load', () => {
+                let events = [
+                    { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: 2 },
+                    { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .5 },
+                    { z: 300, event: 'curve', direction: 'right', segments: 50, amplitude: 1 }
+                ];
+
                 const canvas = document.getElementById('view');
                 const context = canvas.getContext('2d');
-                const canvasWidth = canvas.width = 800;
-                const canvasHeight = canvas.height = 600;
+                const canvasWidth = canvas.width = window.innerWidth;
+                const canvasHeight = canvas.height = window.innerHeight;
+                const canvasMiddle = canvasWidth / 2;
+                const maxLeftX = (canvasWidth / 2) - 10;
+                const minRightX = (canvasWidth / 2) + 10;
+                const horizon = canvasHeight / 3;
+                const roadDistance = canvasHeight - horizon;
+                const maxRoadWidth = canvasWidth - (canvasWidth / 4);
+                let segmentMiddle = new Array(Math.ceil(roadDistance));
+
+                function fillPositions(currentZ, endZ) {
+                    let lastPosition = canvasWidth / 2;
+                    function findOffset(z) {
+                        let activeEvent = events.find(e => e.z < z && z <= (e.z + e.segments));
+
+                        if (activeEvent) {
+                            const segmentOffset = (z - activeEvent.z) * activeEvent.amplitude;
+                            lastPosition = activeEvent.direction === 'left' ? canvasMiddle - segmentOffset : canvasMiddle + segmentOffset; 
+                        }
+
+                        return lastPosition;
+                    }
+
+
+                    for (let i = currentZ; i < endZ; i++) {
+                        segmentMiddle[i - currentZ] = findOffset(i);
+                    }
+                }
 
                 let cameraPosition = 0;
 
                 function updateCameraPostion() {
-                    cameraPosition += .01;
+                    cameraPosition += .1;
                 }
 
                 function runLoop() {
@@ -36,22 +68,19 @@
                         context.rect(0, canvasHeight / 3, canvasWidth, canvasHeight);
                         context.fill();
 
-                        const maxLeftX = (canvasWidth / 2) - 10;
-                        const minRightX = (canvasWidth / 2) + 10;
-                        const horizon = canvasHeight / 3;
-                        const roadDistance = canvasHeight - horizon;
-                        const maxRoadWidth = canvasWidth - (canvasWidth / 4);
                         const currentSegment = Math.floor(cameraPosition);
+                        fillPositions(currentSegment, currentSegment + roadDistance);
                         const cameraOffset = cameraPosition % 1
                         
                         for (let i = 1; i <= roadDistance; i++) {;
                             let bottomZ = i - cameraOffset;
                             let topZ = i + 1 - cameraOffset;
+                            let middle = segmentMiddle[i];
                             
-                            let leftX1 = (canvasWidth / 2) - (maxRoadWidth / bottomZ);
-                            let leftX2 = (canvasWidth / 2) - (maxRoadWidth / topZ);
-                            let rightX1 = (canvasWidth / 2) + (maxRoadWidth / bottomZ);
-                            let rightX2 = (canvasWidth / 2) + (maxRoadWidth / topZ);
+                            let leftX1 = middle - (maxRoadWidth / bottomZ);
+                            let leftX2 = middle - (maxRoadWidth / topZ);
+                            let rightX1 = middle + (maxRoadWidth / bottomZ);
+                            let rightX2 = middle + (maxRoadWidth / topZ);
 
                             let bottomY = horizon + roadDistance / bottomZ;
                             let topY = horizon + roadDistance / topZ;
@@ -87,13 +116,13 @@
                             // optional fill dashed yellow
                             if ((currentSegment + i) % 2 == 0) continue;
 
-                            context.fillStyle = 'yellow';
+                            context.fillStyle = 'white';
                             context.beginPath();
-                            context.moveTo((canvasWidth / 2) - 1, bottomY);
-                            context.lineTo((canvasWidth / 2) - 1, topY);
-                            context.lineTo((canvasWidth / 2) + 1, topY);
-                            context.lineTo((canvasWidth / 2) + 1, bottomY);
-                            context.lineTo((canvasWidth / 2) - 1, bottomY);
+                            context.moveTo(middle - 1, bottomY);
+                            context.lineTo(middle - 1, topY);
+                            context.lineTo(middle + 1, topY);
+                            context.lineTo(middle + 1, bottomY);
+                            context.lineTo(middle - 1, bottomY);
                             context.fill();
                         }
                         
