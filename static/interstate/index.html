@@ -75,12 +75,13 @@
                         for (let i = 1; i <= roadDistance; i++) {;
                             let bottomZ = i - cameraOffset;
                             let topZ = i + 1 - cameraOffset;
-                            let middle = segmentMiddle[i];
+                            let bottomMiddle = segmentMiddle[i];
+                            let topMiddle = segmentMiddle[i + 1];
                             
-                            let leftX1 = middle - (maxRoadWidth / bottomZ);
-                            let leftX2 = middle - (maxRoadWidth / topZ);
-                            let rightX1 = middle + (maxRoadWidth / bottomZ);
-                            let rightX2 = middle + (maxRoadWidth / topZ);
+                            let leftX1 = bottomMiddle - (maxRoadWidth / bottomZ);
+                            let leftX2 = topMiddle - (maxRoadWidth / topZ);
+                            let rightX1 = bottomMiddle + (maxRoadWidth / bottomZ);
+                            let rightX2 = topMiddle + (maxRoadWidth / topZ);
 
                             let bottomY = horizon + roadDistance / bottomZ;
                             let topY = horizon + roadDistance / topZ;
@@ -118,11 +119,11 @@
 
                             context.fillStyle = 'white';
                             context.beginPath();
-                            context.moveTo(middle - 1, bottomY);
-                            context.lineTo(middle - 1, topY);
-                            context.lineTo(middle + 1, topY);
-                            context.lineTo(middle + 1, bottomY);
-                            context.lineTo(middle - 1, bottomY);
+                            context.moveTo(bottomMiddle - 1, bottomY);
+                            context.lineTo(topMiddle - 1, topY);
+                            context.lineTo(topMiddle + 1, topY);
+                            context.lineTo(bottomMiddle + 1, bottomY);
+                            context.lineTo(bottomMiddle - 1, bottomY);
                             context.fill();
                         }
                         
