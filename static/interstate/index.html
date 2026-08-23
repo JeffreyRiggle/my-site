@@ -10,9 +10,11 @@
         <script type="text/javascript">
             addEventListener('load', () => {
                 let events = [
-                    { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
-                    { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
-                    { z: 300, event: 'curve', direction: 'right', segments: 50, amplitude: .5 }
+                    // { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
+                    // { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
+                    // { z: 300, event: 'curve', direction: 'right', segments: 50, amplitude: .5 },
+                    { z: 100, event: 'hill', direction: 'up', segments: 150, amplitude: 1 },
+                    { z: 400, event: 'hill', direction: 'down', segments: 150, amplitude: 1 }
                 ];
 
                 const canvas = document.getElementById('view');
@@ -25,25 +27,74 @@
                 const horizon = canvasHeight / 3;
                 const roadDistance = canvasHeight - horizon;
                 const maxRoadWidth = canvasWidth - (canvasWidth / 4);
-                let segmentMiddle = new Array(Math.ceil(roadDistance));
+                const segments = Math.ceil(roadDistance);
+                let segmentMiddle = new Array(segments);
+
+                let worldHeight = [0];
+                let worldDy = 0;
+                let lastHeightZ = 0;
+                let segmentHeight = new Array(segments);
 
                 function getCurve(z) {
-                    let activeEvent = events.find(e => e.z < z && z <= (e.z + e.segments));
+                    let activeEvent = events.find(e => e.event === 'curve' && e.z < z && z <= (e.z + e.segments));
                     
                     if (!activeEvent) return 0;
 
                     return activeEvent.direction === 'left' ? -activeEvent.amplitude : activeEvent.amplitude;
                 }
 
+                function getHill(z) {
+                    let activeEvent = events.find(e => e.event === 'hill' && e.z < z && z <= (e.z + e.segments));
+                    
+                    if (!activeEvent) return 0;
+
+                    return activeEvent.direction === 'down' ? -activeEvent.amplitude : activeEvent.amplitude;
+                }
+
+                // This is almost certainly a problem as its a memory leak
+                function fillHeights(endZ) {
+                    for (let z = lastHeightZ + 1; z <= endZ; z++) {
+                        worldDy += getHill(z);
+                        worldHeight[z] = worldHeight[z - 1] + worldDy;
+                        lastHeightZ = z;
+                    }
+                }
+
                 function fillPositions(currentZ, endZ) {
                     let x = canvasMiddle;
                     let dx = 0;
+
+                    let y = 0;
+                    let dy = 0;
 
                     for (let i = currentZ; i <= endZ; i++) {
                         dx += getCurve(i);
                         x += dx;
                         segmentMiddle[i - currentZ] = x;
+
+                        dy += getHill(i);
+                        y += dy;
+                        segmentHeight[i - currentZ] = y;
                     }
+                }
+
+                function projectY(cameraOffset, currentSegment, cameraRoadY) {
+                    const projectedY = new Array(segments + 1);
+                    let terrainTopY = canvasHeight;
+                    for (let i = 1; i <= segments; i++) {
+                        const z = i - cameraOffset;
+                        const worldY = worldHeight[currentSegment + i];
+
+                        projectedY[i] =
+                            horizon +
+                            (roadDistance + cameraRoadY - worldY) / z;
+
+                        terrainTopY = Math.min(
+                            terrainTopY,
+                            projectedY[i]
+                        );
+                    }
+                    return { terrainTopY, projectedY };
                 }
 
                 let cameraPosition = 0;
@@ -55,6 +106,13 @@
                 function runLoop() {
                     requestAnimationFrame(() => {
                         updateCameraPostion();
+                        const currentSegment = Math.floor(cameraPosition);
+                        const cameraOffset = cameraPosition % 1;
+                        fillPositions(currentSegment, currentSegment + roadDistance);
+                        fillHeights(currentSegment + segments);
+                        const cameraRoadY = worldHeight[currentSegment] + (worldHeight[currentSegment + 1] - worldHeight[currentSegment]) * cameraOffset;
+                        const { terrainTopY, projectedY } = projectY(cameraOffset, currentSegment, cameraRoadY);
+
                         // sky
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
                         context.beginPath();
@@ -62,17 +120,17 @@
                         context.rect(0, 0, canvasWidth, canvasHeight);
                         context.fill();
 
-                        // ground
-                        context.beginPath();
                         context.fillStyle = 'green';
-                        context.rect(0, canvasHeight / 3, canvasWidth, canvasHeight);
+                        context.beginPath();
+                        context.fillRect(
+                            0,
+                            terrainTopY,
+                            canvasWidth,
+                            canvasHeight - terrainTopY
+                        );
                         context.fill();
 
-                        const currentSegment = Math.floor(cameraPosition);
-                        fillPositions(currentSegment, currentSegment + roadDistance);
-                        const cameraOffset = cameraPosition % 1
-                        
-                        for (let i = 1; i <= roadDistance; i++) {;
+                        for (let i = segments - 1; i > 0; i--) {
                             let bottomZ = i - cameraOffset;
                             let topZ = i + 1 - cameraOffset;
                             let bottomMiddle = segmentMiddle[i];
@@ -83,8 +141,8 @@
                             let rightX1 = bottomMiddle + (maxRoadWidth / bottomZ);
                             let rightX2 = topMiddle + (maxRoadWidth / topZ);
 
-                            let bottomY = horizon + roadDistance / bottomZ;
-                            let topY = horizon + roadDistance / topZ;
+                            let bottomY = projectedY[i];
+                            let topY = projectedY[i + 1];
 
                             // Fill road
                             context.fillStyle = 'grey';
