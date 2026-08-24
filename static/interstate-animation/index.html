@@ -10,11 +10,12 @@
         <script type="text/javascript">
             addEventListener('load', () => {
                 let events = [
-                    // { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
-                    // { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
-                    // { z: 300, event: 'curve', direction: 'right', segments: 50, amplitude: .5 },
+                    { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
+                    { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
+                    { z: 300, event: 'curve', direction: 'right', segments: 50, amplitude: .5 },
                     { z: 100, event: 'hill', direction: 'up', segments: 150, amplitude: 1 },
-                    { z: 400, event: 'hill', direction: 'down', segments: 150, amplitude: 1 }
+                    { z: 400, event: 'hill', direction: 'down', segments: 150, amplitude: 1 },
+                    { z: 0, event: 'hill', direction: 'up', segments: 150, amplitude: 1 }
                 ];
 
                 const canvas = document.getElementById('view');
@@ -79,11 +80,11 @@
                 }
 
                 function projectY(cameraOffset, currentSegment, cameraRoadY) {
-                    const projectedY = new Array(segments + 1);
+                    const projectedY = new Array(segments);
                     let terrainTopY = canvasHeight;
-                    for (let i = 1; i <= segments; i++) {
-                        const z = i - cameraOffset;
-                        const worldY = worldHeight[currentSegment + i];
+                    for (let i = 0; i < segments; i++) {
+                        const z = (i + 1) - cameraOffset;
+                        const worldY = worldHeight[currentSegment + (i + 1)];
 
                         projectedY[i] =
                             horizon +
@@ -98,6 +99,9 @@
                 }
 
                 let cameraPosition = 0;
+                let lastFameTime = 0;
+                let frameCount = 0;
+                let fps = 0;
 
                 function updateCameraPostion() {
                     cameraPosition += .1;
@@ -133,16 +137,27 @@
                         for (let i = segments - 1; i > 0; i--) {
                             let bottomZ = i - cameraOffset;
                             let topZ = i + 1 - cameraOffset;
-                            let bottomMiddle = segmentMiddle[i];
-                            let topMiddle = segmentMiddle[i + 1];
+                            let bottomMiddle = segmentMiddle[i - 1];
+                            let topMiddle = segmentMiddle[i];
                             
                             let leftX1 = bottomMiddle - (maxRoadWidth / bottomZ);
                             let leftX2 = topMiddle - (maxRoadWidth / topZ);
                             let rightX1 = bottomMiddle + (maxRoadWidth / bottomZ);
                             let rightX2 = topMiddle + (maxRoadWidth / topZ);
 
-                            let bottomY = projectedY[i];
-                            let topY = projectedY[i + 1];
+                            let bottomY = projectedY[i - 1];
+                            let topY = projectedY[i];
+
+                            // Avoid clipping issue near the bottom.
+                            // Since the camera can end up in a weird place
+                            // during movement it can cause the trapezoid not to
+                            // properly render at the bottom of the screen.
+                            if (i === 1) {
+                                const t = (canvasHeight - topY) / (bottomY - topY);
+                                bottomY = canvasHeight;
+                                leftX1 = leftX2 + (leftX1 - leftX2) * t;
+                                rightX1 = rightX2 + (rightX1 - rightX2) * t;
+                            }
 
                             // Fill road
                             context.fillStyle = 'grey';
@@ -185,6 +200,18 @@
                             context.fill();
                         }
                         
+                        frameCount++;
+                        const now = performance.now();
+
+                        if (now - lastFameTime >= 1000) {
+                            fps = Math.round((frameCount * 1000) / (now - lastFameTime));
+                            frameCount = 0;
+                            lastFameTime = now;
+                        }
+
+                        context.fillStyle = 'black';
+                        context.font = "24px 'Courier New', Courier, monospace";
+                        context.fillText(`FPS: ${fps}`, 0, 30);
                         runLoop();
                     })
                 }
