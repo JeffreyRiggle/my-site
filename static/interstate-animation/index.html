@@ -9,8 +9,12 @@
         <link rel="icon" href="/favicon-32x32.png" type="image/png">
         <script type="text/javascript">
             addEventListener('load', () => {
-                const ground1 = document.createElement('img');
-                ground1.src = './ground1.png';
+                const ground = document.createElement('img');
+                ground.src = './grass.png';
+                const fogColor = '#9dcafa';
+
+                const road = document.createElement('img');
+                road.src = './roadv2.png';
                 let events = [
                     // { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
                     // { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
@@ -108,7 +112,7 @@
                 let fps = 0;
 
                 function updateCameraPostion() {
-                    cameraPosition += .1;
+                    cameraPosition += .05;
                 }
 
                 function runLoop() {
@@ -130,7 +134,7 @@
 
                         // Ground
                         context.beginPath();
-                        const groundPattern1 = context.createPattern(ground1, 'repeat');
+                        const groundPattern1 = context.createPattern(ground, 'repeat');
                         const matrix1 = new DOMMatrix().translate(-32 * cameraOffset, 32 * cameraOffset);
                         groundPattern1?.setTransform(matrix1);
                         context.fillStyle = groundPattern1;
@@ -143,7 +147,7 @@
                         context.fill();
 
                         context.beginPath();
-                        const groundPattern2 = context.createPattern(ground1, 'repeat');
+                        const groundPattern2 = context.createPattern(ground, 'repeat');
                         const matrix2 = new DOMMatrix().translate(32 * cameraOffset, 32 * cameraOffset);
                         groundPattern2?.setTransform(matrix2);
                         context.fillStyle = groundPattern2;
@@ -181,7 +185,7 @@
                             }
 
                             // Fill road
-                            context.fillStyle = 'grey';
+                            context.fillStyle = context.createPattern(road, 'repeat');;
                             context.beginPath();
                             context.moveTo(leftX1, bottomY);
                             context.lineTo(leftX2, topY);
@@ -189,6 +193,15 @@
                             context.lineTo(rightX1, bottomY);
                             context.lineTo(leftX1, bottomY);
                             context.fill();
+
+                            // add fog
+                            const fogDensity = 1 / Math.pow(Math.E, (Math.pow(i / segments, 2) * .5));
+                            if (fogDensity < 1) {
+                                context.globalAlpha = 1 - fogDensity;
+                                context.fillStyle = fogColor;
+                                context.fillRect(0, topY, canvasWidth, 1);
+                                context.globalAlpha = 1;
+                            }
 
                             // Fill left line
                             context.fillStyle = 'white';
