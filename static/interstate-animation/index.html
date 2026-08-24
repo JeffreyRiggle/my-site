@@ -9,13 +9,17 @@
         <link rel="icon" href="/favicon-32x32.png" type="image/png">
         <script type="text/javascript">
             addEventListener('load', () => {
+                const ground1 = document.createElement('img');
+                ground1.src = './ground1.png';
                 let events = [
-                    { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
-                    { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
-                    { z: 300, event: 'curve', direction: 'right', segments: 50, amplitude: .5 },
-                    { z: 100, event: 'hill', direction: 'up', segments: 150, amplitude: 1 },
-                    { z: 400, event: 'hill', direction: 'down', segments: 150, amplitude: 1 },
-                    { z: 0, event: 'hill', direction: 'up', segments: 150, amplitude: 1 }
+                    // { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
+                    // { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
+                    // { z: 300, event: 'curve', direction: 'right', segments: 50, amplitude: .5 },
+                    { z: 150, event: 'hill', direction: 'down', segments: 50, amplitude: 1 },
+                    { z: 205, event: 'hill', direction: 'up', segments: 75, amplitude: 1 },
+                    { z: 320, event: 'hill', direction: 'up', segments: 50, amplitude: 2 },
+                    { z: 425, event: 'hill', direction: 'down', segments: 175, amplitude: 2 },
+                    { z: 450, event: 'curve', direction: 'left', segments: 50, amplitude: .2 }
                 ];
 
                 const canvas = document.getElementById('view');
@@ -124,10 +128,27 @@
                         context.rect(0, 0, canvasWidth, canvasHeight);
                         context.fill();
 
-                        context.fillStyle = 'green';
+                        // Ground
                         context.beginPath();
+                        const groundPattern1 = context.createPattern(ground1, 'repeat');
+                        const matrix1 = new DOMMatrix().translate(-32 * cameraOffset, 32 * cameraOffset);
+                        groundPattern1?.setTransform(matrix1);
+                        context.fillStyle = groundPattern1;
                         context.fillRect(
                             0,
+                            terrainTopY,
+                            canvasWidth / 2,
+                            canvasHeight - terrainTopY
+                        );
+                        context.fill();
+
+                        context.beginPath();
+                        const groundPattern2 = context.createPattern(ground1, 'repeat');
+                        const matrix2 = new DOMMatrix().translate(32 * cameraOffset, 32 * cameraOffset);
+                        groundPattern2?.setTransform(matrix2);
+                        context.fillStyle = groundPattern2;
+                        context.fillRect(
+                            canvasWidth / 2,
                             terrainTopY,
                             canvasWidth,
                             canvasHeight - terrainTopY
