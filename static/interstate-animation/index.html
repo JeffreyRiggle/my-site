@@ -94,9 +94,10 @@
                         const z = (i + 1) - cameraOffset;
                         const worldY = worldHeight[currentSegment + (i + 1)];
 
+                        // Get rid of aliasing problem with partial pixel values by using ceil.
                         projectedY[i] =
-                            horizon +
-                            (roadDistance + cameraRoadY - worldY) / z;
+                            Math.ceil(horizon +
+                            (roadDistance + cameraRoadY - worldY) / z);
 
                         terrainTopY = Math.min(
                             terrainTopY,
