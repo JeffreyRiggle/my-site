@@ -15,6 +15,9 @@
 
                 const road = document.createElement('img');
                 road.src = './roadv2.png';
+                const streetLight = document.createElement('img');
+                streetLight.src = './streetlight.png';
+
                 let events = [
                     // { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
                     // { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
@@ -24,6 +27,15 @@
                     { z: 320, event: 'hill', direction: 'up', segments: 50, amplitude: 2 },
                     { z: 425, event: 'hill', direction: 'down', segments: 175, amplitude: 2 },
                     { z: 450, event: 'curve', direction: 'left', segments: 50, amplitude: .2 }
+                ];
+
+                // TODO figure out how I want to specify something is on the left side of the street.
+                // Scale is to compensate for the fact I made the image too small
+                let entities = [
+                    { z: 100, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
+                    { z: 125, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
+                    { z: 150, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
+                    { z: 175, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 }
                 ];
 
                 const canvas = document.getElementById('view');
@@ -195,6 +207,24 @@
                             context.lineTo(leftX1, bottomY);
                             context.fill();
 
+                            const entity = entities.find(e => e.z === Math.floor(i + currentSegment));
+                            if (entity) {
+                                const distance = entity.maxScale / (entity.z - currentSegment);
+                                const entityWidth = distance * entity.width;
+                                const entityHeight = distance * entity.height;
+                                const entityX = rightX1 + entity.xRel;
+                                const entityY = bottomY - entityHeight;
+                                const entityPattern = context.createPattern(entity.sprite, 'repeat');
+                                const patternTransform = new DOMMatrix().translate(entityX, entityY).scale(distance, distance);
+                                entityPattern?.setTransform(patternTransform);
+                                context.fillStyle = entityPattern;
+                                context.beginPath();
+                                context.fillRect(entityX, entityY, entityWidth, entityHeight);
+                                context.fill();
+                            }
+
+                            // TODO there is an odd artifact here. If you are going down a rounded hill
+                            // in the future a line of fog is created on a line that doesn't make sense.
                             // add fog
                             const fogDensity = 1 / Math.pow(Math.E, (Math.pow(i / segments, 2) * .5));
                             if (fogDensity < 1) {
