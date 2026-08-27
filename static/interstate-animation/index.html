@@ -29,13 +29,16 @@
                     { z: 450, event: 'curve', direction: 'left', segments: 50, amplitude: .2 }
                 ];
 
-                // TODO figure out how I want to specify something is on the left side of the street.
                 // Scale is to compensate for the fact I made the image too small
                 let entities = [
                     { z: 100, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
                     { z: 125, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
                     { z: 150, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
-                    { z: 175, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 }
+                    { z: 175, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
+                    { z: 100, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
+                    { z: 125, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
+                    { z: 150, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
+                    { z: 175, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 }
                 ];
 
                 const canvas = document.getElementById('view');
@@ -207,20 +210,25 @@
                             context.lineTo(leftX1, bottomY);
                             context.fill();
 
-                            const entity = entities.find(e => e.z === Math.floor(i + currentSegment));
-                            if (entity) {
-                                const distance = entity.maxScale / (entity.z - currentSegment);
-                                const entityWidth = distance * entity.width;
-                                const entityHeight = distance * entity.height;
-                                const entityX = rightX1 + entity.xRel;
-                                const entityY = bottomY - entityHeight;
-                                const entityPattern = context.createPattern(entity.sprite, 'repeat');
-                                const patternTransform = new DOMMatrix().translate(entityX, entityY).scale(distance, distance);
-                                entityPattern?.setTransform(patternTransform);
-                                context.fillStyle = entityPattern;
-                                context.beginPath();
-                                context.fillRect(entityX, entityY, entityWidth, entityHeight);
-                                context.fill();
+                            const releventEntities = entities.filter(e => e.z === Math.floor(i + currentSegment));
+                            if (releventEntities.length) {
+                                for (let entity of releventEntities) {
+                                    const distance = entity.maxScale / (entity.z - currentSegment);
+                                    const entityWidth = distance * entity.width;
+                                    const entityHeight = distance * entity.height;
+                                    const entityX = entity.isLHS ? leftX1 - entity.xRel - entityWidth : rightX1 + entity.xRel;
+                                    const entityY = bottomY - entityHeight;
+                                    const entityPattern = context.createPattern(entity.sprite, 'repeat');
+                                    let patternTransform = new DOMMatrix().translate(entityX, entityY).scale(distance, distance);
+                                    if (entity.isLHS) {
+                                        patternTransform = patternTransform.flipX();
+                                    }
+                                    entityPattern?.setTransform(patternTransform);
+                                    context.fillStyle = entityPattern;
+                                    context.beginPath();
+                                    context.fillRect(entityX, entityY, entityWidth, entityHeight);
+                                    context.fill();
+                                }
                             }
 
                             // TODO there is an odd artifact here. If you are going down a rounded hill
