@@ -17,6 +17,8 @@
                 road.src = './roadv2.png';
                 const streetLight = document.createElement('img');
                 streetLight.src = './streetlight.png';
+                const tree = document.createElement('img');
+                tree.src = './tree-summer.png';
 
                 let events = [
                     // { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
@@ -38,7 +40,16 @@
                     { z: 100, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
                     { z: 125, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
                     { z: 150, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
-                    { z: 175, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 }
+                    { z: 175, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
+                    { z: 110, sprite: tree, xRel: 15, maxScale: 12, width: 64, height: 127 },
+                    { z: 111, sprite: tree, xRel: 75, maxScale: 12, width: 64, height: 127 },
+                    { z: 110, sprite: tree, xRel: 140, maxScale: 12, width: 64, height: 127 },
+                    { z: 115, sprite: tree, xRel: 17, maxScale: 12, width: 64, height: 127 },
+                    { z: 116, sprite: tree, xRel: 77, maxScale: 12, width: 64, height: 127 },
+                    { z: 115, sprite: tree, xRel: 143, maxScale: 12, width: 64, height: 127 },
+                    { z: 121, sprite: tree, xRel: 15, maxScale: 12, width: 64, height: 127 },
+                    { z: 120, sprite: tree, xRel: 75, maxScale: 12, width: 64, height: 127 },
+                    { z: 121, sprite: tree, xRel: 140, maxScale: 12, width: 64, height: 127 },
                 ];
 
                 const canvas = document.getElementById('view');
@@ -216,7 +227,7 @@
                                     const distance = entity.maxScale / (entity.z - currentSegment);
                                     const entityWidth = distance * entity.width;
                                     const entityHeight = distance * entity.height;
-                                    const entityX = entity.isLHS ? leftX1 - entity.xRel - entityWidth : rightX1 + entity.xRel;
+                                    const entityX = entity.isLHS ? leftX1 - (entity.xRel * distance) - entityWidth : rightX1 + (entity.xRel * distance);
                                     const entityY = bottomY - entityHeight;
                                     const entityPattern = context.createPattern(entity.sprite, 'repeat');
                                     let patternTransform = new DOMMatrix().translate(entityX, entityY).scale(distance, distance);
