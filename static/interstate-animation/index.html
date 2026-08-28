@@ -10,15 +10,16 @@
         <script type="text/javascript">
             addEventListener('load', () => {
                 const ground = document.createElement('img');
-                ground.src = './grass.png';
-                const fogColor = '#9dcafa';
+                ground.src = './red-desert.png';
+                // summer fog #9dcafa
+                const fogColor = '#ffb8ad';
 
                 const road = document.createElement('img');
                 road.src = './roadv2.png';
                 const streetLight = document.createElement('img');
                 streetLight.src = './streetlight.png';
                 const tree = document.createElement('img');
-                tree.src = './tree-summer.png';
+                tree.src = './cactus.png';
 
                 let events = [
                     // { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
@@ -33,14 +34,17 @@
 
                 // Scale is to compensate for the fact I made the image too small
                 let entities = [
+                    // streetlight right
                     { z: 100, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
                     { z: 125, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
                     { z: 150, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
                     { z: 175, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
+                    // streetlight left
                     { z: 100, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
                     { z: 125, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
                     { z: 150, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
                     { z: 175, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
+                    // forest right
                     { z: 110, sprite: tree, xRel: 15, maxScale: 12, width: 64, height: 127 },
                     { z: 111, sprite: tree, xRel: 75, maxScale: 12, width: 64, height: 127 },
                     { z: 110, sprite: tree, xRel: 140, maxScale: 12, width: 64, height: 127 },
@@ -50,6 +54,16 @@
                     { z: 121, sprite: tree, xRel: 15, maxScale: 12, width: 64, height: 127 },
                     { z: 120, sprite: tree, xRel: 75, maxScale: 12, width: 64, height: 127 },
                     { z: 121, sprite: tree, xRel: 140, maxScale: 12, width: 64, height: 127 },
+                    // forest left
+                    { z: 55, sprite: tree, xRel: 15, isLHS: true, maxScale: 12, width: 64, height: 127 },
+                    { z: 56, sprite: tree, xRel: 75, isLHS: true, maxScale: 12, width: 64, height: 127 },
+                    { z: 55, sprite: tree, xRel: 140, isLHS: true, maxScale: 12, width: 64, height: 127 },
+                    { z: 60, sprite: tree, xRel: 17, isLHS: true, maxScale: 12, width: 64, height: 127 },
+                    { z: 61, sprite: tree, xRel: 77, isLHS: true, maxScale: 12, width: 64, height: 127 },
+                    { z: 60, sprite: tree, xRel: 143, isLHS: true, maxScale: 12, width: 64, height: 127 },
+                    { z: 66, sprite: tree, xRel: 15, isLHS: true, maxScale: 12, width: 64, height: 127 },
+                    { z: 65, sprite: tree, xRel: 75, isLHS: true, maxScale: 12, width: 64, height: 127 },
+                    { z: 66, sprite: tree, xRel: 140, isLHS: true, maxScale: 12, width: 64, height: 127 },
                 ];
 
                 const canvas = document.getElementById('view');
@@ -139,7 +153,7 @@
                 let fps = 0;
 
                 function updateCameraPostion() {
-                    cameraPosition += .05;
+                    cameraPosition += .03;
                 }
 
                 function runLoop() {
