@@ -250,8 +250,8 @@
                                         Math.ceil(horizon +
                                             (roadDistance + cameraRoadY - worldY) / entityZ) - entityHeight;
 
-                                    context.save();
                                     if (entity.isLHS) {
+                                        context.save();
                                         context.translate(entityX + entityWidth, entityY);
                                         context.scale(-1, 1);
                                         context.drawImage(
@@ -260,6 +260,7 @@
                                             0,
                                             entityWidth,
                                             entityHeight);
+                                        context.restore();
                                     } else {
                                         context.drawImage(
                                             entity.sprite,
@@ -268,8 +269,6 @@
                                             entityWidth,
                                             entityHeight);
                                     }
-                                    
-                                    context.restore();
                                 }
                             }
 
