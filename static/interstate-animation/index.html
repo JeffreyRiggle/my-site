@@ -10,16 +10,17 @@
         <script type="text/javascript">
             addEventListener('load', () => {
                 const ground = document.createElement('img');
-                ground.src = './red-desert.png';
+                ground.src = './grass.png';
                 // summer fog #9dcafa
-                const fogColor = '#ffb8ad';
+                // desert fog #ffb8ad
+                const fogColor = '#9dcafa';
 
                 const road = document.createElement('img');
                 road.src = './roadv2.png';
                 const streetLight = document.createElement('img');
                 streetLight.src = './streetlight.png';
                 const tree = document.createElement('img');
-                tree.src = './cactus.png';
+                tree.src = './tree-summer.png';
 
                 let events = [
                     // { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
@@ -32,38 +33,38 @@
                     { z: 450, event: 'curve', direction: 'left', segments: 50, amplitude: .2 }
                 ];
 
-                // Scale is to compensate for the fact I made the image too small
+                // Multiply streetlight by 25 and forest by 12 to better size images
                 let entities = [
                     // streetlight right
-                    { z: 100, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
-                    { z: 125, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
-                    { z: 150, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
-                    { z: 175, sprite: streetLight, xRel: 5, maxScale: 25, width: 32, height: 64 },
+                    { z: 100, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
+                    { z: 125, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
+                    { z: 150, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
+                    { z: 175, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
                     // streetlight left
-                    { z: 100, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
-                    { z: 125, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
-                    { z: 150, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
-                    { z: 175, sprite: streetLight, xRel: 5, isLHS: true, maxScale: 25, width: 32, height: 64 },
+                    { z: 100, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
+                    { z: 125, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
+                    { z: 150, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
+                    { z: 175, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
                     // forest right
-                    { z: 110, sprite: tree, xRel: 15, maxScale: 12, width: 64, height: 127 },
-                    { z: 111, sprite: tree, xRel: 75, maxScale: 12, width: 64, height: 127 },
-                    { z: 110, sprite: tree, xRel: 140, maxScale: 12, width: 64, height: 127 },
-                    { z: 115, sprite: tree, xRel: 17, maxScale: 12, width: 64, height: 127 },
-                    { z: 116, sprite: tree, xRel: 77, maxScale: 12, width: 64, height: 127 },
-                    { z: 115, sprite: tree, xRel: 143, maxScale: 12, width: 64, height: 127 },
-                    { z: 121, sprite: tree, xRel: 15, maxScale: 12, width: 64, height: 127 },
-                    { z: 120, sprite: tree, xRel: 75, maxScale: 12, width: 64, height: 127 },
-                    { z: 121, sprite: tree, xRel: 140, maxScale: 12, width: 64, height: 127 },
+                    { z: 110, sprite: tree, xRel: 15 * 12, width: 64 * 12, height: 127 * 12 },
+                    { z: 111, sprite: tree, xRel: 75 * 12, width: 64 * 12, height: 127 * 12 },
+                    { z: 110, sprite: tree, xRel: 140 * 12, width: 64 * 12, height: 127 * 12 },
+                    { z: 115, sprite: tree, xRel: 17 * 12, width: 64 * 12, height: 127 * 12 },
+                    { z: 116, sprite: tree, xRel: 77 * 12, width: 64 * 12, height: 127 * 12 },
+                    { z: 115, sprite: tree, xRel: 143 * 12, width: 64 * 12, height: 127 * 12 },
+                    { z: 121, sprite: tree, xRel: 15 * 12, width: 64 * 12, height: 127 * 12 },
+                    { z: 120, sprite: tree, xRel: 75 * 12, width: 64 * 12, height: 127 * 12 },
+                    { z: 121, sprite: tree, xRel: 140 * 12, width: 64 * 12, height: 127 * 12 },
                     // forest left
-                    { z: 55, sprite: tree, xRel: 15, isLHS: true, maxScale: 12, width: 64, height: 127 },
-                    { z: 56, sprite: tree, xRel: 75, isLHS: true, maxScale: 12, width: 64, height: 127 },
-                    { z: 55, sprite: tree, xRel: 140, isLHS: true, maxScale: 12, width: 64, height: 127 },
-                    { z: 60, sprite: tree, xRel: 17, isLHS: true, maxScale: 12, width: 64, height: 127 },
-                    { z: 61, sprite: tree, xRel: 77, isLHS: true, maxScale: 12, width: 64, height: 127 },
-                    { z: 60, sprite: tree, xRel: 143, isLHS: true, maxScale: 12, width: 64, height: 127 },
-                    { z: 66, sprite: tree, xRel: 15, isLHS: true, maxScale: 12, width: 64, height: 127 },
-                    { z: 65, sprite: tree, xRel: 75, isLHS: true, maxScale: 12, width: 64, height: 127 },
-                    { z: 66, sprite: tree, xRel: 140, isLHS: true, maxScale: 12, width: 64, height: 127 },
+                    { z: 55, sprite: tree, xRel: 15 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
+                    { z: 56, sprite: tree, xRel: 75 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
+                    { z: 55, sprite: tree, xRel: 140 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
+                    { z: 60, sprite: tree, xRel: 17 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
+                    { z: 61, sprite: tree, xRel: 77 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
+                    { z: 60, sprite: tree, xRel: 143 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
+                    { z: 66, sprite: tree, xRel: 15 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
+                    { z: 65, sprite: tree, xRel: 75 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
+                    { z: 66, sprite: tree, xRel: 140 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
                 ];
 
                 const canvas = document.getElementById('view');
@@ -153,7 +154,7 @@
                 let fps = 0;
 
                 function updateCameraPostion() {
-                    cameraPosition += .03;
+                    cameraPosition += .05;
                 }
 
                 function runLoop() {
@@ -237,22 +238,38 @@
 
                             const releventEntities = entities.filter(e => e.z === Math.floor(i + currentSegment));
                             if (releventEntities.length) {
+                                const worldY = worldHeight[currentSegment + (i + 1)];
                                 for (let entity of releventEntities) {
-                                    const distance = entity.maxScale / (entity.z - currentSegment);
-                                    const entityWidth = distance * entity.width;
-                                    const entityHeight = distance * entity.height;
-                                    const entityX = entity.isLHS ? leftX1 - (entity.xRel * distance) - entityWidth : rightX1 + (entity.xRel * distance);
-                                    const entityY = bottomY - entityHeight;
-                                    const entityPattern = context.createPattern(entity.sprite, 'repeat');
-                                    let patternTransform = new DOMMatrix().translate(entityX, entityY).scale(distance, distance);
+                                    const entityZ = entity.z - currentSegment;
+                                    const scale = 1 / entityZ;
+                                    const entityWidth = scale * entity.width;
+                                    const entityHeight = scale * entity.height;
+                                    const entityX = entity.isLHS ? leftX1 - (entity.xRel * scale) - entityWidth :  rightX1 + (entity.xRel * scale);
+
+                                    const entityY =
+                                        Math.ceil(horizon +
+                                            (roadDistance + cameraRoadY - worldY) / entityZ) - entityHeight;
+
+                                    context.save();
                                     if (entity.isLHS) {
-                                        patternTransform = patternTransform.flipX();
+                                        context.translate(entityX + entityWidth, entityY);
+                                        context.scale(-1, 1);
+                                        context.drawImage(
+                                            entity.sprite,
+                                            0,
+                                            0,
+                                            entityWidth,
+                                            entityHeight);
+                                    } else {
+                                        context.drawImage(
+                                            entity.sprite,
+                                            entityX,
+                                            entityY,
+                                            entityWidth,
+                                            entityHeight);
                                     }
-                                    entityPattern?.setTransform(patternTransform);
-                                    context.fillStyle = entityPattern;
-                                    context.beginPath();
-                                    context.fillRect(entityX, entityY, entityWidth, entityHeight);
-                                    context.fill();
+                                    
+                                    context.restore();
                                 }
                             }
 
