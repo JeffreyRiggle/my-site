@@ -79,8 +79,9 @@
                 const minRightX = (canvasWidth / 2) + 10;
                 const horizon = canvasHeight / 3;
                 const roadDistance = canvasHeight - horizon;
-                const maxRoadWidth = canvasWidth - (canvasWidth / 4);
+                const maxRoadWidth = canvasWidth * 2;
                 const segments = Math.ceil(roadDistance);
+                const cameraX = maxRoadWidth * .5;
                 let segmentMiddle = new Array(segments);
 
                 let worldHeight = [0];
@@ -207,8 +208,8 @@
                         for (let i = segments - 1; i > 0; i--) {
                             let bottomZ = i - cameraOffset;
                             let topZ = i + 1 - cameraOffset;
-                            let bottomMiddle = segmentMiddle[i - 1];
-                            let topMiddle = segmentMiddle[i];
+                            let bottomMiddle = segmentMiddle[i - 1] - cameraX / bottomZ;
+                            let topMiddle = segmentMiddle[i] - cameraX / topZ;
                             
                             let leftX1 = bottomMiddle - (maxRoadWidth / bottomZ);
                             let leftX2 = topMiddle - (maxRoadWidth / topZ);
@@ -230,7 +231,8 @@
                             }
 
                             // Fill road
-                            context.fillStyle = context.createPattern(road, 'repeat');;
+                            context.fillStyle = context.createPattern(road, 'repeat');
+
                             context.beginPath();
                             context.moveTo(leftX1, bottomY);
                             context.lineTo(leftX2, topY);
@@ -294,16 +296,16 @@
                             context.fill();
 
                             // optional fill dashed yellow
-                            if ((currentSegment + i) % 2 == 0) continue;
-
-                            context.fillStyle = 'white';
-                            context.beginPath();
-                            context.moveTo(bottomMiddle - 1, bottomY);
-                            context.lineTo(topMiddle - 1, topY);
-                            context.lineTo(topMiddle + 1, topY);
-                            context.lineTo(bottomMiddle + 1, bottomY);
-                            context.lineTo(bottomMiddle - 1, bottomY);
-                            context.fill();
+                            if ((currentSegment + i) % 2 != 0) {
+                                context.fillStyle = 'yellow';
+                                context.beginPath();
+                                context.moveTo(bottomMiddle - 1, bottomY);
+                                context.lineTo(topMiddle - 1, topY);
+                                context.lineTo(topMiddle + 1, topY);
+                                context.lineTo(bottomMiddle + 1, bottomY);
+                                context.lineTo(bottomMiddle - 1, bottomY);
+                                context.fill();
+                            }
 
                             if (topY >= bottomY || topY < terrainTopY) continue;
 
