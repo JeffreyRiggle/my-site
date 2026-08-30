@@ -275,17 +275,6 @@
                                 }
                             }
 
-                            // TODO there is an odd artifact here. If you are going down a rounded hill
-                            // in the future a line of fog is created on a line that doesn't make sense.
-                            // add fog
-                            const fogDensity = 1 / Math.pow(Math.E, (Math.pow(i / segments, 2) * .5));
-                            if (fogDensity < 1) {
-                                context.globalAlpha = 1 - fogDensity;
-                                context.fillStyle = fogColor;
-                                context.fillRect(0, topY, canvasWidth, 1);
-                                context.globalAlpha = 1;
-                            }
-
                             // Fill left line
                             context.fillStyle = 'white';
                             context.beginPath();
@@ -315,6 +304,16 @@
                             context.lineTo(bottomMiddle + 1, bottomY);
                             context.lineTo(bottomMiddle - 1, bottomY);
                             context.fill();
+
+                            if (topY >= bottomY || topY < terrainTopY) continue;
+
+                            const fogDensity = 1 / Math.pow(Math.E, (i / segments) * (i / segments) * 5);
+                            if (fogDensity < 1) {
+                                context.globalAlpha = 1 - fogDensity;
+                                context.fillStyle = fogColor;
+                                context.fillRect(0, topY, canvasWidth, bottomY - topY);
+                                context.globalAlpha = 1;
+                            }
                         }
 
                         context.drawImage(
