@@ -22,6 +22,9 @@
                 const tree = document.createElement('img');
                 tree.src = './tree-summer.png';
 
+                const hud = document.createElement('img');
+                hud.src = './car-hud.png';
+
                 let events = [
                     // { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
                     // { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
@@ -313,7 +316,14 @@
                             context.lineTo(bottomMiddle - 1, bottomY);
                             context.fill();
                         }
-                        
+
+                        context.drawImage(
+                            hud,
+                            0,
+                            0,
+                            canvasWidth,
+                            canvasHeight);
+
                         frameCount++;
                         const now = performance.now();
 
@@ -325,7 +335,9 @@
 
                         context.fillStyle = 'black';
                         context.font = "24px 'Courier New', Courier, monospace";
-                        context.fillText(`FPS: ${fps}`, 0, 30);
+                        // TODO make these numbers work on more screen resolutions
+                        context.fillText(`FPS: ${fps}`, 300, canvasHeight - 175);
+
                         runLoop();
                     })
                 }
