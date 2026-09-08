@@ -31,91 +31,8 @@
                 const largeBuilding = document.createElement('img');
                 largeBuilding.src = './building.png';
 
-                // TODO randomize events
-                let events = [
-                    // { z: 2, event: 'curve', direction: 'left', segments: 100, amplitude: .5 },
-                    // { z: 150, event: 'curve', direction: 'right', segments: 100, amplitude: .25 },
-                    // { z: 300, event: 'curve', direction: 'right', segments: 50, amplitude: .5 },
-                    // { z: 150, event: 'hill', direction: 'down', segments: 50, amplitude: 1 },
-                    // { z: 205, event: 'hill', direction: 'up', segments: 75, amplitude: 1 },
-                    // { z: 320, event: 'hill', direction: 'up', segments: 50, amplitude: 2 },
-                    // { z: 425, event: 'hill', direction: 'down', segments: 175, amplitude: 2 },
-                    // { z: 450, event: 'curve', direction: 'left', segments: 50, amplitude: .2 }
-                ];
-
+                let events = [];
                 let entities = [];
-
-                // Multiply streetlight by 25 and forest by 12 to better size images
-                //entities = [
-                //    // streetlight right
-                //    { z: 100, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
-                //    { z: 125, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
-                //    { z: 150, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
-                //    { z: 175, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
-                //    // streetlight left
-                //    { z: 100, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
-                //    { z: 125, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
-                //    { z: 150, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
-                //    { z: 175, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
-                //    // forest right
-                //    { z: 110, sprite: tree, xRel: 15 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 111, sprite: tree, xRel: 75 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 110, sprite: tree, xRel: 140 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 115, sprite: tree, xRel: 17 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 116, sprite: tree, xRel: 77 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 115, sprite: tree, xRel: 143 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 121, sprite: tree, xRel: 15 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 120, sprite: tree, xRel: 75 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 121, sprite: tree, xRel: 140 * 12, width: 64 * 12, height: 127 * 12 },
-                //    // forest left
-                //    { z: 55, sprite: tree, xRel: 15 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 56, sprite: tree, xRel: 75 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 55, sprite: tree, xRel: 140 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 60, sprite: tree, xRel: 17 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 61, sprite: tree, xRel: 77 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 60, sprite: tree, xRel: 143 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 66, sprite: tree, xRel: 15 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 65, sprite: tree, xRel: 75 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 66, sprite: tree, xRel: 140 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-//
-                //    // streetlight right
-                //    { z: 200, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
-                //    { z: 225, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
-                //    { z: 250, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
-                //    { z: 275, sprite: streetLight, xRel: 5, width: 32 * 25, height: 64 * 25 },
-                //    // streetlight left
-                //    { z: 200, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
-                //    { z: 225, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
-                //    { z: 250, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
-                //    { z: 275, sprite: streetLight, xRel: 5, isLHS: true, width: 32 * 25, height: 64 * 25 },
-                //    // forest right
-                //    { z: 210, sprite: tree, xRel: 15 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 211, sprite: tree, xRel: 75 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 210, sprite: tree, xRel: 140 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 215, sprite: tree, xRel: 17 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 216, sprite: tree, xRel: 77 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 215, sprite: tree, xRel: 143 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 221, sprite: tree, xRel: 15 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 220, sprite: tree, xRel: 75 * 12, width: 64 * 12, height: 127 * 12 },
-                //    { z: 221, sprite: tree, xRel: 140 * 12, width: 64 * 12, height: 127 * 12 },
-                //    // forest left
-                //    { z: 155, sprite: tree, xRel: 15 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 156, sprite: tree, xRel: 75 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 155, sprite: tree, xRel: 140 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 160, sprite: tree, xRel: 17 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 161, sprite: tree, xRel: 77 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 160, sprite: tree, xRel: 143 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 166, sprite: tree, xRel: 15 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 165, sprite: tree, xRel: 75 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 166, sprite: tree, xRel: 140 * 12, isLHS: true, width: 64 * 12, height: 127 * 12 },
-                //    { z: 300, sprite: barn, xRel: 50, isLHS: true, width: 128 * 12, height: 64 * 12 },
-                //    { z: 500, sprite: largeBuilding, xRel: 50, isLHS: true, width: 128 * 12, height: 256 * 12 },
-                //    { z: 505, sprite: largeBuilding, xRel: 45, isLHS: true, width: 128 * 12, height: 256 * 10 },
-                //    { z: 515, sprite: largeBuilding, xRel: 30, isLHS: true, width: 128 * 12, height: 256 * 8 },
-                //    { z: 501, sprite: largeBuilding, xRel: 50, width: 128 * 12, height: 256 * 12 },
-                //    { z: 506, sprite: largeBuilding, xRel: 45, width: 128 * 12, height: 256 * 10 },
-                //    { z: 516, sprite: largeBuilding, xRel: 30, width: 128 * 12, height: 256 * 8 }
-                //];
 
                 const canvas = document.getElementById('view');
                 const context = canvas.getContext('2d');
@@ -138,12 +55,12 @@
 
                 function generateEntities(currZ) {
                     entities = entities.filter(e => e.z > currZ - 50);
-                    const entityClusters = Math.round(Math.random() * 2);
+                    const entityClusters = Math.round(Math.random() * 10);
                     const partition = Math.floor(segments / entityClusters);
 
                     for (let i = 0; i < entityClusters; i++) {
                         const type = Math.round(Math.random() * 3);
-                        const eventZ = currZ + (currZ < 1 ? 0 : segments) + (i * partition) + (Math.round(Math.random() * partition));
+                        const eventZ = Math.round(currZ + (currZ < 1 ? 0 : segments) + (i * partition) + (Math.round(Math.random() * partition)));
 
                         if (type === 0) {
                             // Forest
@@ -155,7 +72,7 @@
                                 entities.push({
                                     z: currZ,
                                     sprite: tree,
-                                    xRel: Math.max(5, Math.round(Math.random() * canvasWidth)),
+                                    xRel: Math.round(Math.max(5, Math.round(Math.random() * canvasWidth))),
                                     isLHS: side,
                                     width: 64 * modifier,
                                     height: 127 * modifier
@@ -170,7 +87,7 @@
                             entities.push({
                                 z: eventZ,
                                 sprite: barn,
-                                xRel: Math.max(5, Math.round(Math.random() * (canvasWidth / 4))),
+                                xRel: Math.round(Math.max(5, Math.round(Math.random() * (canvasWidth / 4)))),
                                 isLHS: Math.random() >= .5,
                                 width: 128 * 12,
                                 height: 64 * 12
@@ -208,7 +125,7 @@
                                 entities.push({
                                     z: currZ,
                                     sprite: largeBuilding,
-                                    xRel: Math.max(5, Math.round(Math.random() * canvasWidth)),
+                                    xRel: Math.round(Math.max(5, Math.round(Math.random() * canvasWidth))),
                                     isLHS: Math.random() >= .5,
                                     width: 64 * modifier,
                                     height: 127 * modifier
@@ -219,6 +136,33 @@
                                 }
                             }
                         }
+                    }
+                }
+
+                function generateEvents(currZ) {
+                    events = events.filter(e => e.z + e.segments > currZ - 50);
+                    const eventType = Math.random() >= .5 ? 'curve' : 'hill';
+                    const eventsToGenerate = eventType === 'curve' ? Math.round(Math.random() * 2) : Math.ceil(Math.random() * 4);
+                    const partition = segments / eventsToGenerate;
+
+                    for (let i = 0; i < eventsToGenerate; i++) {
+                        const segmentLength = Math.max(25, Math.ceil(Math.random() * 100));
+                        
+                        let direction;
+                        if (Math.random() >= .5) {
+                            direction = eventType === 'curve' ? 'left' : 'up'; 
+                        } else {
+                            direction = eventType === 'curve' ? 'right' : 'down';
+                        }
+
+                        const event = {
+                            z: Math.round(currZ + (currZ < 1 ? 0 : segments) + (i * partition)),
+                            event: eventType,
+                            direction,
+                            segments: segmentLength,
+                            amplitude: eventType === 'curve' ? Math.random() * .5 : Math.max(1, Math.random() * 2)
+                        };
+                        events.push(event);
                     }
                 }
 
@@ -289,6 +233,7 @@
                 let lastFameTime = 0;
                 let frameCount = 0;
                 let fps = 0;
+                let lastGenerationSegment;
 
                 function updateCameraPostion() {
                     cameraPosition += .1;
@@ -304,8 +249,10 @@
                         const cameraRoadY = worldHeight[currentSegment] + (worldHeight[currentSegment + 1] - worldHeight[currentSegment]) * cameraOffset;
                         const { terrainTopY, projectedY } = projectY(cameraOffset, currentSegment, cameraRoadY);
 
-                        if (entities.length === 0 || currentSegment % 250 === 0) {
+                        if (currentSegment % 250 === 0 && lastGenerationSegment !== currentSegment) {
+                            lastGenerationSegment = currentSegment;
                             generateEntities(currentSegment);
+                            generateEvents(currentSegment);
                         }
 
                         // sky
