@@ -9,20 +9,21 @@
         <link rel="icon" href="/favicon-32x32.png" type="image/png">
         <script type="text/javascript">
             addEventListener('load', () => {
-                // TODO scrolling background image/sky
                 // TODO randomize environment.
+                const background = document.createElement('img');
+                background.src = './background-desert.png';
                 const ground = document.createElement('img');
-                ground.src = './grass.png';
+                ground.src = './desert.png';
                 // summer fog #9dcafa
                 // desert fog #ffb8ad
-                const fogColor = '#9dcafa';
+                const fogColor = '#ffb8ad';
 
                 const road = document.createElement('img');
                 road.src = './roadv2.png';
                 const streetLight = document.createElement('img');
                 streetLight.src = './streetlight.png';
                 const tree = document.createElement('img');
-                tree.src = './tree-summer.png';
+                tree.src = './cactus.png';
 
                 const hud = document.createElement('img');
                 hud.src = './car-hud.png';
@@ -160,7 +161,7 @@
                             event: eventType,
                             direction,
                             segments: segmentLength,
-                            amplitude: eventType === 'curve' ? Math.random() * .5 : Math.max(1, Math.random() * 2)
+                            amplitude: eventType === 'curve' ? Math.random() * .5 : Math.max(1, Math.random() * 1.5)
                         };
                         events.push(event);
                     }
@@ -239,6 +240,18 @@
                     cameraPosition += .1;
                 }
 
+                // Moving a pattern is crazy expensive so manually do this
+                function drawBackground(offset) {
+                    const width = background.width;
+
+                    offset %= width;
+                    if (offset > 0) offset -= width;
+
+                    for (let x = offset; x < canvasWidth; x += width) {
+                        context.drawImage(background, x, 0);
+                    }
+                }
+
                 function runLoop() {
                     requestAnimationFrame(() => {
                         updateCameraPostion();
@@ -255,12 +268,10 @@
                             generateEvents(currentSegment);
                         }
 
-                        // sky
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
-                        context.beginPath();
-                        context.fillStyle = 'blue';
-                        context.rect(0, 0, canvasWidth, canvasHeight);
-                        context.fill();
+                        // background
+                        const roadCurveOffsetApproximation = segmentMiddle[segmentMiddle.length - 1] - canvasMiddle; 
+                        drawBackground(roadCurveOffsetApproximation * .2);
 
                         // Ground
                         context.beginPath();
@@ -391,6 +402,7 @@
                                 context.fill();
                             }
 
+                            // TODO move this this is causing things to display through hills
                             if (topY >= bottomY || topY < terrainTopY) continue;
 
                             const fogDensity = 1 / Math.pow(Math.E, (i / segments) * (i / segments) * 5);
