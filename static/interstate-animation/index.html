@@ -9,21 +9,36 @@
         <link rel="icon" href="/favicon-32x32.png" type="image/png">
         <script type="text/javascript">
             addEventListener('load', () => {
-                // TODO randomize environment.
+                const environment = Math.ceil(Math.random() * 3);
                 const background = document.createElement('img');
-                background.src = './background-desert.png';
                 const ground = document.createElement('img');
-                ground.src = './desert.png';
-                // summer fog #9dcafa
-                // desert fog #ffb8ad
-                const fogColor = '#ffb8ad';
+                const tree = document.createElement('img');
+                let fogColor;
+                if (environment === 1) {
+                    // summer
+                    background.src = './background-summer.png';
+                    ground.src = './grass.png';
+                    tree.src = './tree-summer.png';
+                    fogColor = '#9dcafa';
+                } else if (environment === 2) {
+                    // winter
+                    background.src = './background-winter.png';
+                    ground.src = './snow.png';
+                    tree.src = './tree-winter.png';
+                    fogColor = '#9dcafa';
+                } else {
+                    // desert
+                    background.src = './background-desert.png';
+                    ground.src = './desert.png';
+                    tree.src = './cactus.png';
+                    fogColor = '#ffb8ad';
+                }
+                
 
                 const road = document.createElement('img');
                 road.src = './roadv2.png';
                 const streetLight = document.createElement('img');
                 streetLight.src = './streetlight.png';
-                const tree = document.createElement('img');
-                tree.src = './cactus.png';
 
                 const hud = document.createElement('img');
                 hud.src = './car-hud.png';
