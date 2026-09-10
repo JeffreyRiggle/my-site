@@ -63,6 +63,8 @@
                 const segments = Math.ceil(roadDistance);
                 const cameraX = maxRoadWidth * .5;
                 let segmentMiddle = new Array(segments);
+                const fpsX = canvasWidth * .2;
+                const fpsY = canvasHeight - (84 * (canvasHeight / 434));
 
                 let worldHeight = [0];
                 let worldDy = 0;
@@ -198,7 +200,7 @@
                     return activeEvent.direction === 'down' ? -activeEvent.amplitude : activeEvent.amplitude;
                 }
 
-                // This is almost certainly a problem as its a memory leak
+                // TODO This is almost certainly a problem as its a memory leak
                 function fillHeights(endZ) {
                     for (let z = lastHeightZ + 1; z <= endZ; z++) {
                         worldDy += getHill(z);
@@ -417,7 +419,9 @@
                                 context.fill();
                             }
 
-                            // TODO move this this is causing things to display through hills
+                            // This causes two display issues
+                            // 1. Fog can display on the ground where it shouldn't if you are comming up on a hill that levels out
+                            // 2. entities can show behind hills
                             if (topY >= bottomY || topY < terrainTopY) continue;
 
                             const fogDensity = 1 / Math.pow(Math.E, (i / segments) * (i / segments) * 5);
@@ -445,10 +449,9 @@
                             lastFameTime = now;
                         }
 
-                        context.fillStyle = 'black';
+                        context.fillStyle = fps >= 60 ? 'green' : fps >=30 ? 'yellow' : 'red';
                         context.font = "24px 'Courier New', Courier, monospace";
-                        // TODO make these numbers work on more screen resolutions
-                        context.fillText(`FPS: ${fps}`, 300, canvasHeight - 175);
+                        context.fillText(fps, fpsX, fpsY);
 
                         runLoop();
                     })
