@@ -229,7 +229,9 @@
 
                 function projectY(cameraOffset, currentSegment, cameraRoadY) {
                     const projectedY = new Array(segments);
+                    const clipY = new Array(segments);
                     let terrainTopY = canvasHeight;
+
                     for (let i = 0; i < segments; i++) {
                         const z = (i + 1) - cameraOffset;
                         const worldY = worldHeight[currentSegment + (i + 1)];
@@ -243,8 +245,10 @@
                             terrainTopY,
                             projectedY[i]
                         );
+
+                        clipY[i] = terrainTopY;
                     }
-                    return { terrainTopY, projectedY };
+                    return { terrainTopY, projectedY, clipY };
                 }
 
                 let cameraPosition = 0;
@@ -277,7 +281,7 @@
                         fillPositions(currentSegment, currentSegment + roadDistance);
                         fillHeights(currentSegment + segments);
                         const cameraRoadY = worldHeight[currentSegment] + (worldHeight[currentSegment + 1] - worldHeight[currentSegment]) * cameraOffset;
-                        const { terrainTopY, projectedY } = projectY(cameraOffset, currentSegment, cameraRoadY);
+                        const { terrainTopY, projectedY, clipY } = projectY(cameraOffset, currentSegment, cameraRoadY);
 
                         if (currentSegment % 250 === 0 && lastGenerationSegment !== currentSegment) {
                             lastGenerationSegment = currentSegment;
@@ -342,17 +346,6 @@
                                 rightX1 = rightX2 + (rightX1 - rightX2) * t;
                             }
 
-                            // Fill road
-                            context.fillStyle = context.createPattern(road, 'repeat');
-
-                            context.beginPath();
-                            context.moveTo(leftX1, bottomY);
-                            context.lineTo(leftX2, topY);
-                            context.lineTo(rightX2, topY);
-                            context.lineTo(rightX1, bottomY);
-                            context.lineTo(leftX1, bottomY);
-                            context.fill();
-
                             const releventEntities = entities.filter(e => e.z === Math.floor(i + currentSegment));
                             if (releventEntities.length) {
                                 const worldY = worldHeight[currentSegment + (i + 1)];
@@ -362,11 +355,13 @@
                                     const entityWidth = scale * entity.width;
                                     const entityHeight = scale * entity.height;
                                     const entityX = entity.isLHS ? leftX1 - (entity.xRel * scale) - entityWidth :  rightX1 + (entity.xRel * scale);
-
+                                    
                                     const entityY =
-                                        Math.ceil(horizon +
-                                            (roadDistance + cameraRoadY - worldY) / entityZ) - entityHeight;
-
+                                    Math.ceil(horizon +
+                                    (roadDistance + cameraRoadY - worldY) / entityZ) - entityHeight;
+                                    
+                                    if (clipY[i] < entityY) continue;
+                                    
                                     if (entity.isLHS) {
                                         context.save();
                                         context.translate(entityX + entityWidth, entityY);
@@ -388,6 +383,19 @@
                                     }
                                 }
                             }
+
+                            if (topY >= bottomY || clipY[i] < topY) continue;
+
+                            // Fill road
+                            context.fillStyle = context.createPattern(road, 'repeat');
+
+                            context.beginPath();
+                            context.moveTo(leftX1, bottomY);
+                            context.lineTo(leftX2, topY);
+                            context.lineTo(rightX2, topY);
+                            context.lineTo(rightX1, bottomY);
+                            context.lineTo(leftX1, bottomY);
+                            context.fill();
 
                             // Fill left line
                             context.fillStyle = 'white';
@@ -419,16 +427,11 @@
                                 context.fill();
                             }
 
-                            // This causes two display issues
-                            // 1. Fog can display on the ground where it shouldn't if you are comming up on a hill that levels out
-                            // 2. entities can show behind hills
-                            if (topY >= bottomY || topY < terrainTopY) continue;
-
                             const fogDensity = 1 / Math.pow(Math.E, (i / segments) * (i / segments) * 5);
                             if (fogDensity < 1) {
                                 context.globalAlpha = 1 - fogDensity;
                                 context.fillStyle = fogColor;
-                                context.fillRect(0, topY, canvasWidth, bottomY - topY);
+                                context.fillRect(0, topY, canvasWidth, bottomY - clipY[i]);
                                 context.globalAlpha = 1;
                             }
                         }
