@@ -350,7 +350,7 @@
                             if (releventEntities.length) {
                                 const worldY = worldHeight[currentSegment + (i + 1)];
                                 for (let entity of releventEntities) {
-                                    const entityZ = entity.z - currentSegment;
+                                    const entityZ = entity.z - currentSegment - cameraOffset;
                                     const scale = 1 / entityZ;
                                     const entityWidth = scale * entity.width;
                                     const entityHeight = scale * entity.height;
