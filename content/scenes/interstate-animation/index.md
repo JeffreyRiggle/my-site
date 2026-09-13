@@ -1,6 +1,6 @@
 ---
 title: 'Interstate Scene'
-date: '2026-08-11'
+date: '2026-09-12'
 ---
 
 <details>
@@ -13,4 +13,5 @@ Basic study of 3d projection using a 2d context. This follows the raster road th
 
 **Topics Researched**
  * 3d projection using raster road projection
+ * Dynamic terrain generation
 </details>
