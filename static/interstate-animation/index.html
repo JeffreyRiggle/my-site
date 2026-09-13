@@ -67,8 +67,8 @@
                 const fpsY = canvasHeight - (84 * (canvasHeight / 434));
 
                 let worldHeight = [0];
+                let lastHeightFill;
                 let worldDy = 0;
-                let lastHeightZ = 0;
                 let segmentHeight = new Array(segments);
 
                 function generateEntities(currZ) {
@@ -200,12 +200,18 @@
                     return activeEvent.direction === 'down' ? -activeEvent.amplitude : activeEvent.amplitude;
                 }
 
-                // TODO This is almost certainly a problem as its a memory leak
-                function fillHeights(endZ) {
-                    for (let z = lastHeightZ + 1; z <= endZ; z++) {
-                        worldDy += getHill(z);
-                        worldHeight[z] = worldHeight[z - 1] + worldDy;
-                        lastHeightZ = z;
+                function fillHeights(currentZ, endZ) {
+                    if (worldHeight.length === 1) {
+                        lastHeightFill = currentZ;
+                        for (let z = currentZ; z <= endZ; z++) {
+                            worldDy += getHill(z);
+                            worldHeight[z - currentZ] = (z === currentZ ? worldHeight.at(-1) : worldHeight[z - currentZ - 1]) + worldDy;
+                        }
+                    } else if (lastHeightFill !== currentZ) {
+                        lastHeightFill = currentZ;
+                        worldHeight.shift();
+                        worldDy += getHill(endZ);
+                        worldHeight.push(worldHeight.at(-1) + worldDy);
                     }
                 }
 
@@ -234,7 +240,7 @@
 
                     for (let i = 0; i < segments; i++) {
                         const z = (i + 1) - cameraOffset;
-                        const worldY = worldHeight[currentSegment + (i + 1)];
+                        const worldY = worldHeight[i + 1];
 
                         // Get rid of aliasing problem with partial pixel values by using ceil.
                         projectedY[i] =
@@ -255,7 +261,7 @@
                 let lastFameTime = 0;
                 let frameCount = 0;
                 let fps = 0;
-                let lastGenerationSegment;
+                let lastGenerationSegment, lastProjectionSegment;
 
                 function updateCameraPostion() {
                     cameraPosition += .1;
@@ -277,17 +283,17 @@
                     requestAnimationFrame(() => {
                         updateCameraPostion();
                         const currentSegment = Math.floor(cameraPosition);
-                        const cameraOffset = cameraPosition % 1;
-                        fillPositions(currentSegment, currentSegment + roadDistance);
-                        fillHeights(currentSegment + segments);
-                        const cameraRoadY = worldHeight[currentSegment] + (worldHeight[currentSegment + 1] - worldHeight[currentSegment]) * cameraOffset;
-                        const { terrainTopY, projectedY, clipY } = projectY(cameraOffset, currentSegment, cameraRoadY);
 
-                        if (currentSegment % 250 === 0 && lastGenerationSegment !== currentSegment) {
+                        if (currentSegment % (segments / 2) === 0 && lastGenerationSegment !== currentSegment) {
                             lastGenerationSegment = currentSegment;
                             generateEntities(currentSegment);
                             generateEvents(currentSegment);
                         }
+                        const cameraOffset = cameraPosition % 1;
+                        fillPositions(currentSegment, currentSegment + roadDistance);
+                        fillHeights(currentSegment, currentSegment + segments);
+                        const cameraRoadY = worldHeight[0] + (worldHeight[1] - worldHeight[0]) * cameraOffset;
+                        const { terrainTopY, projectedY, clipY } = projectY(cameraOffset, currentSegment, cameraRoadY);
 
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
                         // background
@@ -348,7 +354,7 @@
 
                             const releventEntities = entities.filter(e => e.z === Math.floor(i + currentSegment));
                             if (releventEntities.length) {
-                                const worldY = worldHeight[currentSegment + (i + 1)];
+                                const worldY = worldHeight[i + 1];
                                 for (let entity of releventEntities) {
                                     const entityZ = entity.z - currentSegment - cameraOffset;
                                     const scale = 1 / entityZ;
