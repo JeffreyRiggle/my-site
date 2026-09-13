@@ -1,0 +1,476 @@
+<html>
+    <head>
+        <title>Interstate Scene | ilusr</title>
+        <style>
+            body {
+                margin: 0;
+            }
+        </style>
+        <link rel="icon" href="/favicon-32x32.png" type="image/png">
+        <script type="text/javascript">
+            addEventListener('load', () => {
+                const environment = Math.ceil(Math.random() * 3);
+                const background = document.createElement('img');
+                const ground = document.createElement('img');
+                const tree = document.createElement('img');
+                let fogColor;
+                if (environment === 1) {
+                    // summer
+                    background.src = './background-summer.png';
+                    ground.src = './grass.png';
+                    tree.src = './tree-summer.png';
+                    fogColor = '#9dcafa';
+                } else if (environment === 2) {
+                    // winter
+                    background.src = './background-winter.png';
+                    ground.src = './snow.png';
+                    tree.src = './tree-winter.png';
+                    fogColor = '#9dcafa';
+                } else {
+                    // desert
+                    background.src = './background-desert.png';
+                    ground.src = './desert.png';
+                    tree.src = './cactus.png';
+                    fogColor = '#ffb8ad';
+                }
+                
+
+                const road = document.createElement('img');
+                road.src = './roadv2.png';
+                const streetLight = document.createElement('img');
+                streetLight.src = './streetlight.png';
+
+                const hud = document.createElement('img');
+                hud.src = './car-hud.png';
+                const barn = document.createElement('img');
+                barn.src = './barn.png';
+                const largeBuilding = document.createElement('img');
+                largeBuilding.src = './building.png';
+
+                let events = [];
+                let entities = [];
+
+                const canvas = document.getElementById('view');
+                const context = canvas.getContext('2d');
+                const canvasWidth = canvas.width = window.innerWidth;
+                const canvasHeight = canvas.height = window.innerHeight;
+                const canvasMiddle = canvasWidth / 2;
+                const maxLeftX = (canvasWidth / 2) - 10;
+                const minRightX = (canvasWidth / 2) + 10;
+                const horizon = canvasHeight / 3;
+                const roadDistance = canvasHeight - horizon;
+                const maxRoadWidth = canvasWidth * 2;
+                const segments = Math.ceil(roadDistance);
+                const cameraX = maxRoadWidth * .5;
+                let segmentMiddle = new Array(segments);
+                const fpsX = canvasWidth * .2;
+                const fpsY = canvasHeight - (84 * (canvasHeight / 434));
+
+                let worldHeight = [0];
+                let lastHeightFill;
+                let worldDy = 0;
+                let segmentHeight = new Array(segments);
+
+                function generateEntities(currZ) {
+                    entities = entities.filter(e => e.z > currZ - 50);
+                    const entityClusters = Math.round(Math.random() * 10);
+                    const partition = Math.floor(segments / entityClusters);
+
+                    for (let i = 0; i < entityClusters; i++) {
+                        const type = Math.round(Math.random() * 3);
+                        const eventZ = Math.round(currZ + (currZ < 1 ? 0 : segments) + (i * partition) + (Math.round(Math.random() * partition)));
+
+                        if (type === 0) {
+                            // Forest
+                            let currZ = eventZ;
+                            const side = Math.random() >= .5;
+                            const treeCount = Math.max(4, Math.random() * 100);
+                            for (let j = 0; j < treeCount; j++) {
+                                const modifier = (Math.ceil(Math.random() * 12));
+                                entities.push({
+                                    z: currZ,
+                                    sprite: tree,
+                                    xRel: Math.round(Math.max(5, Math.round(Math.random() * canvasWidth))),
+                                    isLHS: side,
+                                    width: 64 * modifier,
+                                    height: 127 * modifier
+                                });
+
+                                if (Math.random() < .25) {
+                                    currZ += Math.ceil(Math.random() * 2);
+                                }
+                            }
+                        } else if (type === 1) {
+                            // Barn
+                            entities.push({
+                                z: eventZ,
+                                sprite: barn,
+                                xRel: Math.round(Math.max(5, Math.round(Math.random() * (canvasWidth / 4)))),
+                                isLHS: Math.random() >= .5,
+                                width: 128 * 12,
+                                height: 64 * 12
+                            });
+                        } else if (type === 2) {
+                            // Lights
+                            const initialZ = eventZ;
+                            const lightsCount = Math.random() * 5;
+                            for (let j = 0; j < lightsCount; j++) {
+                                entities.push({
+                                    z: initialZ + (j * 10),
+                                    sprite: streetLight,
+                                    xRel: 20,
+                                    isLHS: false,
+                                    width: 32 * 25,
+                                    height: 64 * 25
+                                });
+
+                                entities.push({
+                                    z: initialZ + (j * 10),
+                                    sprite: streetLight,
+                                    xRel: 20,
+                                    isLHS: true,
+                                    width: 32 * 25,
+                                    height: 64 * 25
+                                });
+                            }
+                        } else if (type === 3) {
+                            // City
+                            let currZ = eventZ;
+                            const side = Math.random() >= .5;
+                            const buildingCount = Math.max(10, Math.random() * 50);
+                            for (let j = 0; j < buildingCount; j++) {
+                                const modifier = Math.max(10, Math.ceil(Math.random() * 24));
+                                entities.push({
+                                    z: currZ,
+                                    sprite: largeBuilding,
+                                    xRel: Math.round(Math.max(5, Math.round(Math.random() * canvasWidth))),
+                                    isLHS: Math.random() >= .5,
+                                    width: 64 * modifier,
+                                    height: 127 * modifier
+                                });
+
+                                if (Math.random() < .5) {
+                                    currZ += Math.ceil(Math.random() * 2);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                function generateEvents(currZ) {
+                    events = events.filter(e => e.z + e.segments > currZ - 50);
+                    const eventType = Math.random() >= .5 ? 'curve' : 'hill';
+                    const eventsToGenerate = eventType === 'curve' ? Math.round(Math.random() * 2) : Math.ceil(Math.random() * 4);
+                    const partition = segments / eventsToGenerate;
+
+                    for (let i = 0; i < eventsToGenerate; i++) {
+                        const segmentLength = Math.max(25, Math.ceil(Math.random() * 100));
+                        
+                        let direction;
+                        if (Math.random() >= .5) {
+                            direction = eventType === 'curve' ? 'left' : 'up'; 
+                        } else {
+                            direction = eventType === 'curve' ? 'right' : 'down';
+                        }
+
+                        const event = {
+                            z: Math.round(currZ + (currZ < 1 ? 0 : segments) + (i * partition)),
+                            event: eventType,
+                            direction,
+                            segments: segmentLength,
+                            amplitude: eventType === 'curve' ? Math.random() * .5 : Math.max(1, Math.random() * 1.5)
+                        };
+                        events.push(event);
+                    }
+                }
+
+                function getCurve(z) {
+                    let activeEvent = events.find(e => e.event === 'curve' && e.z < z && z <= (e.z + e.segments));
+                    
+                    if (!activeEvent) return 0;
+
+                    return activeEvent.direction === 'left' ? -activeEvent.amplitude : activeEvent.amplitude;
+                }
+
+                function getHill(z) {
+                    let activeEvent = events.find(e => e.event === 'hill' && e.z < z && z <= (e.z + e.segments));
+                    
+                    if (!activeEvent) return 0;
+
+                    return activeEvent.direction === 'down' ? -activeEvent.amplitude : activeEvent.amplitude;
+                }
+
+                function fillHeights(currentZ, endZ) {
+                    if (worldHeight.length === 1) {
+                        lastHeightFill = currentZ;
+                        for (let z = currentZ; z <= endZ; z++) {
+                            worldDy += getHill(z);
+                            worldHeight[z - currentZ] = (z === currentZ ? worldHeight.at(-1) : worldHeight[z - currentZ - 1]) + worldDy;
+                        }
+                    } else if (lastHeightFill !== currentZ) {
+                        lastHeightFill = currentZ;
+                        worldHeight.shift();
+                        worldDy += getHill(endZ);
+                        worldHeight.push(worldHeight.at(-1) + worldDy);
+                    }
+                }
+
+                function fillPositions(currentZ, endZ) {
+                    let x = canvasMiddle;
+                    let dx = 0;
+
+                    let y = 0;
+                    let dy = 0;
+
+                    for (let i = currentZ; i <= endZ; i++) {
+                        dx += getCurve(i);
+                        x += dx;
+                        segmentMiddle[i - currentZ] = x;
+
+                        dy += getHill(i);
+                        y += dy;
+                        segmentHeight[i - currentZ] = y;
+                    }
+                }
+
+                function projectY(cameraOffset, currentSegment, cameraRoadY) {
+                    const projectedY = new Array(segments);
+                    const clipY = new Array(segments);
+                    let terrainTopY = canvasHeight;
+
+                    for (let i = 0; i < segments; i++) {
+                        const z = (i + 1) - cameraOffset;
+                        const worldY = worldHeight[i + 1];
+
+                        // Get rid of aliasing problem with partial pixel values by using ceil.
+                        projectedY[i] =
+                            Math.ceil(horizon +
+                            (roadDistance + cameraRoadY - worldY) / z);
+
+                        terrainTopY = Math.min(
+                            terrainTopY,
+                            projectedY[i]
+                        );
+
+                        clipY[i] = terrainTopY;
+                    }
+                    return { terrainTopY, projectedY, clipY };
+                }
+
+                let cameraPosition = 0;
+                let lastFameTime = 0;
+                let frameCount = 0;
+                let fps = 0;
+                let lastGenerationSegment, lastProjectionSegment;
+
+                function updateCameraPostion() {
+                    cameraPosition += .1;
+                }
+
+                // Moving a pattern is crazy expensive so manually do this
+                function drawBackground(offset) {
+                    const width = background.width;
+
+                    offset %= width;
+                    if (offset > 0) offset -= width;
+
+                    for (let x = offset; x < canvasWidth; x += width) {
+                        context.drawImage(background, x, 0);
+                    }
+                }
+
+                function runLoop() {
+                    requestAnimationFrame(() => {
+                        updateCameraPostion();
+                        const currentSegment = Math.floor(cameraPosition);
+
+                        if (currentSegment % (segments / 2) === 0 && lastGenerationSegment !== currentSegment) {
+                            lastGenerationSegment = currentSegment;
+                            generateEntities(currentSegment);
+                            generateEvents(currentSegment);
+                        }
+                        const cameraOffset = cameraPosition % 1;
+                        fillPositions(currentSegment, currentSegment + roadDistance);
+                        fillHeights(currentSegment, currentSegment + segments);
+                        const cameraRoadY = worldHeight[0] + (worldHeight[1] - worldHeight[0]) * cameraOffset;
+                        const { terrainTopY, projectedY, clipY } = projectY(cameraOffset, currentSegment, cameraRoadY);
+
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+                        // background
+                        const roadCurveOffsetApproximation = segmentMiddle[segmentMiddle.length - 1] - canvasMiddle; 
+                        drawBackground(roadCurveOffsetApproximation * .2);
+
+                        // Ground
+                        context.beginPath();
+                        const groundPattern1 = context.createPattern(ground, 'repeat');
+                        const matrix1 = new DOMMatrix().translate(-32 * cameraOffset, 32 * cameraOffset);
+                        groundPattern1?.setTransform(matrix1);
+                        context.fillStyle = groundPattern1;
+                        context.fillRect(
+                            0,
+                            terrainTopY,
+                            canvasWidth / 2,
+                            canvasHeight - terrainTopY
+                        );
+                        context.fill();
+
+                        context.beginPath();
+                        const groundPattern2 = context.createPattern(ground, 'repeat');
+                        const matrix2 = new DOMMatrix().translate(32 * cameraOffset, 32 * cameraOffset);
+                        groundPattern2?.setTransform(matrix2);
+                        context.fillStyle = groundPattern2;
+                        context.fillRect(
+                            canvasWidth / 2,
+                            terrainTopY,
+                            canvasWidth,
+                            canvasHeight - terrainTopY
+                        );
+                        context.fill();
+
+                        for (let i = segments - 1; i > 0; i--) {
+                            let bottomZ = i - cameraOffset;
+                            let topZ = i + 1 - cameraOffset;
+                            let bottomMiddle = segmentMiddle[i - 1] - cameraX / bottomZ;
+                            let topMiddle = segmentMiddle[i] - cameraX / topZ;
+                            
+                            let leftX1 = bottomMiddle - (maxRoadWidth / bottomZ);
+                            let leftX2 = topMiddle - (maxRoadWidth / topZ);
+                            let rightX1 = bottomMiddle + (maxRoadWidth / bottomZ);
+                            let rightX2 = topMiddle + (maxRoadWidth / topZ);
+
+                            let bottomY = projectedY[i - 1];
+                            let topY = projectedY[i];
+
+                            // Avoid clipping issue near the bottom.
+                            // Since the camera can end up in a weird place
+                            // during movement it can cause the trapezoid not to
+                            // properly render at the bottom of the screen.
+                            if (i === 1) {
+                                const t = (canvasHeight - topY) / (bottomY - topY);
+                                bottomY = canvasHeight;
+                                leftX1 = leftX2 + (leftX1 - leftX2) * t;
+                                rightX1 = rightX2 + (rightX1 - rightX2) * t;
+                            }
+
+                            const releventEntities = entities.filter(e => e.z === Math.floor(i + currentSegment));
+                            if (releventEntities.length) {
+                                const worldY = worldHeight[i + 1];
+                                for (let entity of releventEntities) {
+                                    const entityZ = entity.z - currentSegment - cameraOffset;
+                                    const scale = 1 / entityZ;
+                                    const entityWidth = scale * entity.width;
+                                    const entityHeight = scale * entity.height;
+                                    const entityX = entity.isLHS ? leftX1 - (entity.xRel * scale) - entityWidth :  rightX1 + (entity.xRel * scale);
+                                    
+                                    const entityY =
+                                    Math.ceil(horizon +
+                                    (roadDistance + cameraRoadY - worldY) / entityZ) - entityHeight;
+                                    
+                                    if (clipY[i] < entityY) continue;
+                                    
+                                    if (entity.isLHS) {
+                                        context.save();
+                                        context.translate(entityX + entityWidth, entityY);
+                                        context.scale(-1, 1);
+                                        context.drawImage(
+                                            entity.sprite,
+                                            0,
+                                            0,
+                                            entityWidth,
+                                            entityHeight);
+                                        context.restore();
+                                    } else {
+                                        context.drawImage(
+                                            entity.sprite,
+                                            entityX,
+                                            entityY,
+                                            entityWidth,
+                                            entityHeight);
+                                    }
+                                }
+                            }
+
+                            if (topY >= bottomY || clipY[i] < topY) continue;
+
+                            // Fill road
+                            context.fillStyle = context.createPattern(road, 'repeat');
+
+                            context.beginPath();
+                            context.moveTo(leftX1, bottomY);
+                            context.lineTo(leftX2, topY);
+                            context.lineTo(rightX2, topY);
+                            context.lineTo(rightX1, bottomY);
+                            context.lineTo(leftX1, bottomY);
+                            context.fill();
+
+                            // Fill left line
+                            context.fillStyle = 'white';
+                            context.beginPath();
+                            context.moveTo(leftX1 + 1, bottomY);
+                            context.lineTo(leftX2 + 1, topY);
+                            context.lineTo(leftX2 + 2, topY);
+                            context.lineTo(leftX1 + 2, bottomY);
+                            context.fill();
+
+                            // Fill right line
+                            context.fillStyle = 'white';
+                            context.beginPath();
+                            context.moveTo(rightX1 - 1, bottomY);
+                            context.lineTo(rightX2 - 1, topY);
+                            context.lineTo(rightX2 - 2, topY);
+                            context.lineTo(rightX1 - 2, bottomY);
+                            context.fill();
+
+                            // optional fill dashed yellow
+                            if ((currentSegment + i) % 2 != 0) {
+                                context.fillStyle = 'yellow';
+                                context.beginPath();
+                                context.moveTo(bottomMiddle - 1, bottomY);
+                                context.lineTo(topMiddle - 1, topY);
+                                context.lineTo(topMiddle + 1, topY);
+                                context.lineTo(bottomMiddle + 1, bottomY);
+                                context.lineTo(bottomMiddle - 1, bottomY);
+                                context.fill();
+                            }
+
+                            const fogDensity = 1 / Math.pow(Math.E, (i / segments) * (i / segments) * 5);
+                            if (fogDensity < 1) {
+                                context.globalAlpha = 1 - fogDensity;
+                                context.fillStyle = fogColor;
+                                context.fillRect(0, topY, canvasWidth, bottomY - clipY[i]);
+                                context.globalAlpha = 1;
+                            }
+                        }
+
+                        context.drawImage(
+                            hud,
+                            0,
+                            0,
+                            canvasWidth,
+                            canvasHeight);
+
+                        frameCount++;
+                        const now = performance.now();
+
+                        if (now - lastFameTime >= 1000) {
+                            fps = Math.round((frameCount * 1000) / (now - lastFameTime));
+                            frameCount = 0;
+                            lastFameTime = now;
+                        }
+
+                        context.fillStyle = fps >= 60 ? 'green' : fps >=30 ? 'yellow' : 'red';
+                        context.font = "24px 'Courier New', Courier, monospace";
+                        context.fillText(fps, fpsX, fpsY);
+
+                        runLoop();
+                    })
+                }
+
+                runLoop();
+            });
+        </script>
+    </head>
+    <body>
+        <canvas id="view"></canvas>
+    </body>
+</html>
