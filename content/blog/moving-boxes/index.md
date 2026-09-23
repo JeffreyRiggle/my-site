@@ -143,7 +143,7 @@ At this point, we see our CPU usage jump to around 12% and memory around 22MB. T
 
 The next jump in complexity takes traditional layout using the DOM and CSS out of the equation. We are no longer moving an abstract layout element across the screen. Instead, we leverage animation frames to paint each new frame using a 2D Canvas. This is a fairly common use case for highly interactive UX, such as creating an interactive chart, visualizing a graph, creating a drawing program, or building a game. In this case, it is clearly overkill.
 
-Now we are interacting with the compositor in a new way. Now we draw on a virtual canvas using a 2D context that translates calls into Chromium and [SKIA](](https://skia.org/)) paint operations. These operations include things like drawing rectangles and lines. These operations get recorded and rasterized in the resource backing the canvas element. This rasterization is sent to the compositor, which renders to the screen.
+Now we are interacting with the compositor in a new way. Now we draw on a virtual canvas using a 2D context that translates calls into Chromium and [SKIA](https://skia.org/) paint operations. These operations include things like drawing rectangles and lines. These operations get recorded and rasterized in the resource backing the canvas element. This rasterization is sent to the compositor, which renders to the screen.
 
 This time around, the results were ~15% CPU and ~24MB, almost the same as the last solution.
 
