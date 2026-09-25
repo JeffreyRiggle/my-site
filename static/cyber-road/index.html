@@ -1,0 +1,159 @@
+<html>
+    <head>
+        <title>Digital Road Scene | ilusr</title>
+        <style>
+            body {
+                margin: 0;
+                background-color: black;
+            }
+        </style>
+        <link rel="icon" href="/favicon-32x32.png" type="image/png">
+        <script type="text/javascript">
+            addEventListener('load', () => {
+                let canvas = document.getElementById('canvas');
+                let context = canvas.getContext('2d');
+
+                const canvasWidth = canvas.width = window.innerWidth;
+                const canvasHeight = canvas.height = window.innerHeight;
+                const canvasMiddle = canvasWidth / 2;
+                const horizon = canvasHeight / 3;
+                const roadDistance = canvasHeight - horizon;
+                const maxRoadWidth = canvasWidth;
+                const cameraX = 0;
+                const segments = Math.round(roadDistance);
+                const segmentMiddle = new Array(segments);
+                const segmentHeight = new Array(segments);
+                const worldHeight = [0];
+
+                let cameraPosition = 0;
+                let lastHeightFill = 0;
+                let worldDy = 0;
+
+                // TODO do we need this at all. I suspect we will do do the sinewave
+                function fillPositions(currentZ, endZ) {
+                    let x = canvasMiddle;
+                    let dx = 0;
+
+                    let y = 0;
+                    let dy = 0;
+
+                    for (let i = currentZ; i <= endZ; i++) {
+                        dx += 0;
+                        x += dx;
+                        segmentMiddle[i - currentZ] = x;
+
+                        dy += 0;
+                        y += dy;
+                        segmentHeight[i - currentZ] = y;
+                    }
+                }
+
+                function fillHeights(currentZ, endZ) {
+                    if (worldHeight.length === 1) {
+                        lastHeightFill = currentZ;
+                        for (let z = currentZ; z <= endZ; z++) {
+                            worldDy += 0;
+                            worldHeight[z - currentZ] = (z === currentZ ? worldHeight.at(-1) : worldHeight[z - currentZ - 1]) + worldDy;
+                        }
+                    } else if (lastHeightFill !== currentZ) {
+                        lastHeightFill = currentZ;
+                        worldHeight.shift();
+                        worldDy += 0;
+                        worldHeight.push(worldHeight.at(-1) + worldDy);
+                    }
+                }
+
+                // TODO simplify this
+                function projectY(cameraOffset, currentSegment, cameraRoadY) {
+                    const projectedY = new Array(segments);
+                    const clipY = new Array(segments);
+                    let terrainTopY = canvasHeight;
+
+                    for (let i = 0; i < segments; i++) {
+                        const z = (i + 1) - cameraOffset;
+                        const worldY = worldHeight[i + 1];
+
+                        // Get rid of aliasing problem with partial pixel values by using ceil.
+                        projectedY[i] =
+                            Math.ceil(horizon +
+                            (roadDistance + cameraRoadY - worldY) / z);
+
+                        terrainTopY = Math.min(
+                            terrainTopY,
+                            projectedY[i]
+                        );
+
+                        clipY[i] = terrainTopY;
+                    }
+                    return { terrainTopY, projectedY, clipY };
+                }
+
+                // TODO make this better this time
+                function updateCameraPostion() {
+                    cameraPosition += .1;
+                }
+
+                function run() {
+                    requestAnimationFrame(() => {
+                        updateCameraPostion();
+                        const currentSegment = Math.floor(cameraPosition);
+                        const cameraOffset = cameraPosition % 1;
+                        fillPositions(currentSegment, currentSegment + roadDistance);
+                        fillHeights(currentSegment, currentSegment + segments);
+                        const cameraRoadY = worldHeight[0] + (worldHeight[1] - worldHeight[0]) * cameraOffset;
+                        const { terrainTopY, projectedY, clipY } = projectY(cameraOffset, currentSegment, cameraRoadY);
+
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+                        for (let i = segments - 1; i > 0; i--) {
+                            let bottomZ = i - cameraOffset;
+                            let topZ = i + 1 - cameraOffset;
+                            let bottomMiddle = segmentMiddle[i - 1] - cameraX / bottomZ;
+                            let topMiddle = segmentMiddle[i] - cameraX / topZ;
+                            
+                            let leftX1 = bottomMiddle - (maxRoadWidth / bottomZ);
+                            let leftX2 = topMiddle - (maxRoadWidth / topZ);
+                            let rightX1 = bottomMiddle + (maxRoadWidth / bottomZ);
+                            let rightX2 = topMiddle + (maxRoadWidth / topZ);
+
+                            let bottomY = projectedY[i - 1];
+                            let topY = projectedY[i];
+
+                            // Avoid clipping issue near the bottom.
+                            // Since the camera can end up in a weird place
+                            // during movement it can cause the trapezoid not to
+                            // properly render at the bottom of the screen.
+                            if (i === 1) {
+                                const t = (canvasHeight - topY) / (bottomY - topY);
+                                bottomY = canvasHeight;
+                                leftX1 = leftX2 + (leftX1 - leftX2) * t;
+                                rightX1 = rightX2 + (rightX1 - rightX2) * t;
+                            }
+
+                            context.strokeStyle = 'green';
+                            context.beginPath();
+                            context.moveTo(0, bottomY);
+                            context.lineTo(leftX1, bottomY);
+                            context.lineTo(leftX2, topY);
+                            context.lineTo(0, topY);
+                            context.stroke();
+
+                            context.beginPath();
+                            context.moveTo(canvasWidth, bottomY);
+                            context.lineTo(rightX1, bottomY);
+                            context.lineTo(rightX2, topY);
+                            context.lineTo(canvasWidth, topY);
+                            context.stroke();
+                        }
+
+                        run();
+                    });
+                }
+                run();
+            });
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>
