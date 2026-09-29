@@ -108,13 +108,26 @@
                         (worldHeight[i + 1] - worldHeight[i]) * t;
                 }
 
-                let pulseEntity = { z: 0, length: 20 };
+                let pulses = [];
+                let start, nextPulseGeneration;
 
                 function run() {
-                    requestAnimationFrame(() => {
-                        pulseEntity.z = (pulseEntity.z + .05) % segments;
-                        const pulseStart = pulseEntity.z;
-                        const pulseEnd = pulseEntity.z + pulseEntity.length;
+                    requestAnimationFrame((timestep) => {
+                        if (!start) {
+                            start = timestep;
+                            nextPulseGeneration = start + Math.round(Math.random() * 5000);
+                        }
+
+                        if (nextPulseGeneration <= timestep) {
+                            pulses.push({ z: -5, length: 5 });
+                            nextPulseGeneration = timestep + (Math.ceil(Math.random() * 5) * 1000);
+                        }
+
+                        for (let pulse of pulses) {
+                            pulse.z += .05;
+                        }
+
+                        pulses = pulses.filter(p => p.z < segments);
                         updateCameraPostion();
                         const currentSegment = Math.floor(cameraPosition);
                         const cameraOffset = cameraPosition % 1;
@@ -151,6 +164,7 @@
                             }
 
                             context.strokeStyle = 'green';
+                            context.lineWidth = 1;
                             context.beginPath();
                             context.moveTo(0, bottomY);
                             context.lineTo(leftX1, bottomY);
@@ -180,34 +194,34 @@
                             context.moveTo(rightX2, topY);
                             context.lineTo(canvasWidth, topY);
                             context.stroke();
-
-                            const pulseOverlapStart = Math.max(i, pulseStart);
-                            const pulseOverlapEnd = Math.min(i + 1, pulseEnd);
-
-                            if (pulseOverlapStart >= pulseOverlapEnd) {
-                                continue;
-                            }
-
-                            const pulseBottomLeft = projectPoint(pulseOverlapStart - cameraOffset, -maxRoadWidth, worldYAt(pulseOverlapStart), cameraRoadY);
-                            const pulseTopLeft = projectPoint(pulseOverlapEnd - cameraOffset, -maxRoadWidth, worldYAt(pulseOverlapEnd), cameraRoadY);
-
-                            context.strokeStyle = 'lightgreen';
-                            context.lineWidth = 5;
-                            context.beginPath();
-                            context.moveTo(pulseBottomLeft.x, pulseBottomLeft.y);
-                            context.lineTo(pulseTopLeft.x, pulseTopLeft.y);
-                            context.stroke();
-
-                            const pulseBottomRight = projectPoint(pulseOverlapStart - cameraOffset, maxRoadWidth, worldYAt(pulseOverlapStart), cameraRoadY);
-                            const pulseTopRight = projectPoint(pulseOverlapEnd - cameraOffset, maxRoadWidth, worldYAt(pulseOverlapEnd), cameraRoadY);
-
-                            context.strokeStyle = 'lightgreen';
-                            context.lineWidth = 5;
-                            context.beginPath();
-                            context.moveTo(pulseBottomRight.x, pulseBottomRight.y);
-                            context.lineTo(pulseTopRight.x, pulseTopRight.y);
-                            context.stroke();
                         }
+
+                        for (let pulse of pulses) {
+                                const pulseStart = Math.max(cameraOffset, pulse.z);
+                                const pulseEnd = pulse.z + pulse.length;
+                                const relativePulseStart = pulseStart - cameraOffset;
+                                const relativePulseEnd = pulseEnd - cameraOffset;
+
+                                if (relativePulseEnd <= 0) continue;
+
+                                const pulseBottomLeft = projectPoint(relativePulseStart, -maxRoadWidth, worldYAt(pulseStart), cameraRoadY);
+                                const pulseTopLeft = projectPoint(relativePulseEnd, -maxRoadWidth, worldYAt(pulseEnd), cameraRoadY);
+                                
+                                context.strokeStyle = 'lightgreen';
+                                context.lineWidth = 5;
+                                context.beginPath();
+                                context.moveTo(pulseBottomLeft.x, pulseBottomLeft.y);
+                                context.lineTo(pulseTopLeft.x, pulseTopLeft.y);
+                                context.stroke();
+                                
+                                const pulseBottomRight = projectPoint(relativePulseStart, maxRoadWidth, worldYAt(pulseStart), cameraRoadY);
+                                const pulseTopRight = projectPoint(relativePulseEnd, maxRoadWidth, worldYAt(pulseEnd), cameraRoadY);
+                                
+                                context.beginPath();
+                                context.moveTo(pulseBottomRight.x, pulseBottomRight.y);
+                                context.lineTo(pulseTopRight.x, pulseTopRight.y);
+                                context.stroke();
+                            }
 
                         run();
                     });
