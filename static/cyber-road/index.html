@@ -21,33 +21,16 @@
                 const maxRoadWidth = canvasWidth / 2;
                 const cameraX = 0;
                 const segments = Math.round(roadDistance);
-                const segmentMiddle = new Array(segments);
-                const segmentHeight = new Array(segments);
                 const worldHeight = [0];
 
                 let cameraPosition = 0;
                 let lastHeightFill = 0;
                 let worldDy = 0;
+                let pulses = [];
+                let wave;
+                let lastTimeStep, nextPulseGeneration, waveGeneration;
 
-                // TODO do we need this at all. I suspect we will do do the sinewave
-                function fillPositions(currentZ, endZ) {
-                    let x = canvasMiddle;
-                    let dx = 0;
-
-                    let y = 0;
-                    let dy = 0;
-
-                    for (let i = currentZ; i <= endZ; i++) {
-                        dx += 0;
-                        x += dx;
-                        segmentMiddle[i - currentZ] = x;
-
-                        dy += 0;
-                        y += dy;
-                        segmentHeight[i - currentZ] = y;
-                    }
-                }
-
+                // I think this can be removed since we don't have hills.
                 function fillHeights(currentZ, endZ) {
                     if (worldHeight.length === 1) {
                         lastHeightFill = currentZ;
@@ -108,19 +91,34 @@
                         (worldHeight[i + 1] - worldHeight[i]) * t;
                 }
 
-                let pulses = [];
-                let start, nextPulseGeneration;
-
                 function run() {
                     requestAnimationFrame((timestep) => {
-                        if (!start) {
-                            start = timestep;
-                            nextPulseGeneration = start + Math.round(Math.random() * 5000);
+                        let dt = timestep - (lastTimeStep ?? timestep);
+                        lastTimeStep = timestep;
+
+                        if (dt === 0) {
+                            nextPulseGeneration = timestep + Math.round(Math.random() * 5000);
+                            waveGeneration = timestep + (Math.ceil(Math.random() * 5) * 3000);
                         }
 
                         if (nextPulseGeneration <= timestep) {
                             pulses.push({ z: -5, length: 5 });
                             nextPulseGeneration = timestep + (Math.ceil(Math.random() * 5) * 1000);
+                        }
+
+                        if (waveGeneration <= timestep) {
+                            wave = { frequency: 10, amplitude: 20, acceleration: .01, ttl: 3000 };
+                            waveGeneration = timestep + (Math.ceil(Math.random() * 5) * 3000);
+                        }
+                        
+                        if (wave) {
+                            wave.ttl -= dt;
+
+                            if (wave.ttl <= 0) {
+                                wave = null;
+                            } else {
+                                wave.amplitude += wave.acceleration * dt; 
+                            }
                         }
 
                         for (let pulse of pulses) {
@@ -131,7 +129,6 @@
                         updateCameraPostion();
                         const currentSegment = Math.floor(cameraPosition);
                         const cameraOffset = cameraPosition % 1;
-                        fillPositions(currentSegment, currentSegment + roadDistance);
                         fillHeights(currentSegment, currentSegment + segments);
                         const cameraRoadY = worldHeight[0] + (worldHeight[1] - worldHeight[0]) * cameraOffset;
                         const { terrainTopY, projectedY, clipY } = projectY(cameraOffset, currentSegment, cameraRoadY);
@@ -141,16 +138,34 @@
                         for (let i = segments - 1; i > 0; i--) {
                             let bottomZ = i - cameraOffset;
                             let topZ = i + 1 - cameraOffset;
-                            let bottomMiddle = segmentMiddle[i - 1] - cameraX / bottomZ;
-                            let topMiddle = segmentMiddle[i] - cameraX / topZ;
-                            
-                            let leftX1 = bottomMiddle - (maxRoadWidth / bottomZ);
-                            let leftX2 = topMiddle - (maxRoadWidth / topZ);
-                            let rightX1 = bottomMiddle + (maxRoadWidth / bottomZ);
-                            let rightX2 = topMiddle + (maxRoadWidth / topZ);
 
                             let bottomY = projectedY[i - 1];
                             let topY = projectedY[i];
+                            
+                            let leftX1; 
+                            let leftX2;
+                            let rightX1;
+                            let rightX2;
+                            
+                            if (wave) {
+                                let leftBottomMiddle = canvasMiddle + Math.cos((i - 1) * wave.frequency) * wave.amplitude;
+                                let rightBottomMiddle = canvasMiddle + Math.sin((i - 1) * wave.frequency) * wave.amplitude;
+                                let leftTopMiddle = canvasMiddle + Math.cos(i * wave.frequency) * wave.amplitude;
+                                let rightTopMiddle = canvasMiddle + Math.sin(i * wave.frequency) * wave.amplitude;
+
+                                leftX1 = leftBottomMiddle - (maxRoadWidth / bottomZ);
+                                leftX2 = leftTopMiddle - (maxRoadWidth / topZ);
+                                rightX1 = rightBottomMiddle + (maxRoadWidth / bottomZ);
+                                rightX2 = rightTopMiddle + (maxRoadWidth / topZ);
+                            } else {
+                                let bottomMiddle = canvasMiddle - cameraX / bottomZ;
+                                let topMiddle = canvasMiddle - cameraX / topZ;
+
+                                leftX1 = bottomMiddle - (maxRoadWidth / bottomZ);
+                                leftX2 = topMiddle - (maxRoadWidth / topZ);
+                                rightX1 = bottomMiddle + (maxRoadWidth / bottomZ);
+                                rightX2 = topMiddle + (maxRoadWidth / topZ);
+                            }
 
                             // Avoid clipping issue near the bottom.
                             // Since the camera can end up in a weird place
