@@ -22,6 +22,7 @@
                 const cameraX = 0;
                 const segments = Math.round(roadDistance);
                 const worldHeight = [0];
+                const roadGutterWidth = 8;
 
                 let cameraPosition = 0;
                 let lastHeightFill = 0;
@@ -65,21 +66,6 @@
                 // TODO make this better this time
                 function updateCameraPostion() {
                     cameraPosition += .01;
-                }
-
-                function projectPoint(z, worldX, worldY, cameraRoadY) {
-                    return { 
-                        x: canvasMiddle + (worldX - cameraX) / z,
-                        y: horizon + (roadDistance + cameraRoadY - worldY) / z
-                    };
-                }
-
-                function worldYAt(z) {
-                    const i = Math.floor(z);
-                    const t = z - i;
-
-                    return worldHeight[i] +
-                        (worldHeight[i + 1] - worldHeight[i]) * t;
                 }
 
                 function run() {
@@ -142,45 +128,48 @@
                                 left = roadMiddle - (maxRoadWidth / z);
                                 right = roadMiddle + (maxRoadWidth / z);
                             }
-
+                            
+                            const isPulseLine = pulses.some(p => p.z <= z && p.z + p.length >= z);
                             // TODO I want to find a better way to do this.
                             const onSegment = projectedY.some(y => y === i);
+
+                            if (!isPulseLine) {
+                                context.beginPath();
+                                context.moveTo(!onSegment ? left : 0, i);
+                                context.lineTo(left + roadGutterWidth, i);
+                                context.moveTo(right, i);
+                                context.lineTo(!onSegment ? right + roadGutterWidth : canvasWidth, i);
+                                context.strokeStyle = 'green';
+                                context.stroke();
+                                continue;
+                            }
+                            
                             context.beginPath();
                             context.moveTo(!onSegment ? left : 0, i);
-                            context.lineTo(left + 5, i);
-                            context.moveTo(right, i);
-                            context.lineTo(!onSegment ? right + 5 : canvasWidth, i);
+                            context.lineTo(left, i);
                             context.strokeStyle = 'green';
-                            context.lineWidth = 1;
                             context.stroke();
-                        }
 
-                        for (let pulse of pulses) {
-                                const pulseStart = Math.max(cameraOffset, pulse.z);
-                                const pulseEnd = pulse.z + pulse.length;
-                                const relativePulseStart = pulseStart - cameraOffset;
-                                const relativePulseEnd = pulseEnd - cameraOffset;
+                            context.beginPath();
+                            context.moveTo(left, i);
+                            context.lineTo(left + roadGutterWidth, i);
+                            context.strokeStyle = 'lightgreen';
+                            context.stroke();
 
-                                if (relativePulseEnd <= 0) continue;
+                            context.beginPath();
+                            context.moveTo(right, i);
+                            context.lineTo(right + roadGutterWidth, i);
+                            context.strokeStyle = 'lightgreen';
+                            context.stroke();
 
-                                const pulseBottomLeft = projectPoint(relativePulseStart, -maxRoadWidth, worldYAt(pulseStart), cameraRoadY);
-                                const pulseTopLeft = projectPoint(relativePulseEnd, -maxRoadWidth, worldYAt(pulseEnd), cameraRoadY);
-                                
-                                context.strokeStyle = 'lightgreen';
-                                context.lineWidth = 5;
+                            if (onSegment) {
                                 context.beginPath();
-                                context.moveTo(pulseBottomLeft.x, pulseBottomLeft.y);
-                                context.lineTo(pulseTopLeft.x, pulseTopLeft.y);
-                                context.stroke();
-                                
-                                const pulseBottomRight = projectPoint(relativePulseStart, maxRoadWidth, worldYAt(pulseStart), cameraRoadY);
-                                const pulseTopRight = projectPoint(relativePulseEnd, maxRoadWidth, worldYAt(pulseEnd), cameraRoadY);
-                                
-                                context.beginPath();
-                                context.moveTo(pulseBottomRight.x, pulseBottomRight.y);
-                                context.lineTo(pulseTopRight.x, pulseTopRight.y);
+                                context.moveTo(right + roadGutterWidth, i);
+                                context.lineTo(canvasWidth, i);
+                                context.strokeStyle = 'green';
                                 context.stroke();
                             }
+                        }
 
                         run();
                     });
