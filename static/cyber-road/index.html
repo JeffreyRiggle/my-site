@@ -71,16 +71,16 @@
 
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
 
-                        for (let i = canvasHeight; i > horizon; i--) {
-                            const z = roadDistance / (i - horizon);
-                            const nextZ = i > horizon + 1 ? roadDistance / (i - 1 - horizon) : Infinity;
+                        for (let y = canvasHeight; y > horizon; y--) {
+                            const z = roadDistance / (y - horizon);
+                            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
                             const segment = Math.floor(z);
                             const segmentOffset = z - segment;
                             let left, right;
                             
                             if (wave) {
-                                const leftMiddle = canvasMiddle + Math.cos(i * wave.frequency) * wave.amplitude;
-                                const rightMiddle = canvasMiddle + Math.sin(i * wave.frequency) * wave.amplitude;
+                                const leftMiddle = canvasMiddle + Math.cos(y * wave.frequency) * wave.amplitude;
+                                const rightMiddle = canvasMiddle + Math.sin(y * wave.frequency) * wave.amplitude;
                                 left = leftMiddle - (maxRoadWidth / z);
                                 right = rightMiddle + (maxRoadWidth / z);
                             } else {
@@ -95,37 +95,37 @@
 
                             if (!isPulseLine) {
                                 context.beginPath();
-                                context.moveTo(!onSegment ? left : 0, i);
-                                context.lineTo(left + roadGutterWidth, i);
-                                context.moveTo(right, i);
-                                context.lineTo(!onSegment ? right + roadGutterWidth : canvasWidth, i);
+                                context.moveTo(!onSegment ? left : 0, y);
+                                context.lineTo(left + roadGutterWidth, y);
+                                context.moveTo(right, y);
+                                context.lineTo(!onSegment ? right + roadGutterWidth : canvasWidth, y);
                                 context.strokeStyle = 'green';
                                 context.stroke();
                                 continue;
                             }
                             
                             context.beginPath();
-                            context.moveTo(!onSegment ? left : 0, i);
-                            context.lineTo(left, i);
+                            context.moveTo(!onSegment ? left : 0, y);
+                            context.lineTo(left, y);
                             context.strokeStyle = 'green';
                             context.stroke();
 
                             context.beginPath();
-                            context.moveTo(left, i);
-                            context.lineTo(left + roadGutterWidth, i);
+                            context.moveTo(left, y);
+                            context.lineTo(left + roadGutterWidth, y);
                             context.strokeStyle = 'lightgreen';
                             context.stroke();
 
                             context.beginPath();
-                            context.moveTo(right, i);
-                            context.lineTo(right + roadGutterWidth, i);
+                            context.moveTo(right, y);
+                            context.lineTo(right + roadGutterWidth, y);
                             context.strokeStyle = 'lightgreen';
                             context.stroke();
 
                             if (onSegment) {
                                 context.beginPath();
-                                context.moveTo(right + roadGutterWidth, i);
-                                context.lineTo(canvasWidth, i);
+                                context.moveTo(right + roadGutterWidth, y);
+                                context.lineTo(canvasWidth, y);
                                 context.strokeStyle = 'green';
                                 context.stroke();
                             }
