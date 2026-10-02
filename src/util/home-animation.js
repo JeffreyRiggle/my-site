@@ -6,11 +6,14 @@ let transitionStage = 0;
 let fallPattern;
 let particles = [];
 let isMouseDown = false;
-let canvasWidth, canvasHeight;
+let canvasWidth, canvasHeight, horizon, canvasMiddle, roadDistance, segments, maxRoadWidth;
 let options;
-let waves = [];
-let lastWave;
+let cameraPosition = 0;
+let pulses = [];
+let wave;
+let lastTimeStep, nextPulseGeneration, waveGeneration;
 const chars = '0123456789ABCDEF';
+const roadGutterWidth = 8;
 
 function handleMouseMove(event) {
     if (options) {
@@ -75,6 +78,10 @@ export function startAnimation() {
     canvas.setAttribute('id', 'home-animation');
     canvas.width = canvasWidth = window.innerWidth;
     canvas.height = canvasHeight = window.innerHeight;
+    horizon = canvasHeight / 2;
+    canvasMiddle = maxRoadWidth = canvasWidth / 2;
+    roadDistance = canvasHeight - horizon;
+    segments = Math.round(roadDistance);
     document.body.append(canvas);
     opacity = 1;
     runAnimationLoop(canvas);
@@ -83,8 +90,25 @@ export function startAnimation() {
     canvas.addEventListener('mouseup', handleMouseUp);
 }
 
+function updatePositions(dt) {
+    cameraPosition += .0025 * dt;
+    if (wave) {
+        wave.ttl -= dt;
+                    
+        if (wave.ttl <= 0) {
+            wave = null;
+        } else {
+            wave.amplitude += wave.acceleration * dt; 
+        }
+    }
+                
+    for (let pulse of pulses) {
+        pulse.z += .01 * dt;
+    }
+}
+
 function runAnimationLoop(canvas) {
-    requestAnimationFrame(() => {
+    requestAnimationFrame((timestep) => {
         if (opacity > 0) {
             opacity -= .05;
             document.body.style.setProperty('--home-opacity', opacity);
@@ -107,7 +131,7 @@ function runAnimationLoop(canvas) {
         if (transitionStage < 3) {
             runTransitionLoop(context);
         } else {
-            runMainLoop(context);
+            runMainLoop(context, timestep);
         }
 
         let timeDelta = performance.now() - lastTime;
@@ -132,7 +156,7 @@ function runTransitionLoop(context) {
     }
 }
 
-function runMainLoop(context) {
+function runMainLoop(context, timestep) {
     let newParticles = [];
     for (let particle of particles) {
         particle.opacity -= particle.fade;
@@ -149,52 +173,92 @@ function runMainLoop(context) {
         initOptions();
     }
 
-    if (!lastWave || (performance.now() - lastWave > 2000)) {
-        lastWave = performance.now();
-        waves.push({
-            x: Math.floor(Math.random() * canvasWidth),
-            size: Math.floor(Math.random() * 5) + 1,
-            frequency: .02,
-            amplitude: Math.floor(Math.random() * (canvasWidth / 4)),
-            delta: Math.random() * (Math.random() > .5 ? .1 : -.1),
-            opacity: 0,
-            ttl: 135
-        });
+    let dt = timestep - (lastTimeStep ?? timestep);
+    lastTimeStep = timestep;
+
+    if (dt === 0) {
+        nextPulseGeneration = timestep + Math.round(Math.random() * 5000);
+        waveGeneration = timestep + (Math.ceil(Math.random() * 5) * 3000);
     }
 
-    const originalShadowColor = context.shadowColor;
-    const originalShadowBlur = context.shadowBlur;
-    context.shadowColor = '#004D2A';
-    let newWaves = [];
-    for (let wave of waves) {
-        wave.ttl -= 1;
-        wave.amplitude += wave.delta;
-        if (wave.opacity < 1) {
-            wave.opacity += .02;
+    if (nextPulseGeneration <= timestep) {
+        pulses.push({ z: -5, length: 5 });
+        nextPulseGeneration = timestep + (Math.ceil(Math.random() * 5) * 1000);
+    }
+
+    if (waveGeneration <= timestep) {
+        wave = { frequency: Math.random() * .1, amplitude: Math.ceil(Math.random() * 10), acceleration: Math.random() * .05, ttl: 1000 };
+        waveGeneration = timestep + (Math.ceil(Math.random() * 5) * 3000);
+    }
+
+    updatePositions(dt);
+    pulses = pulses.filter(p => p.z < segments);
+    const cameraOffset = cameraPosition % 1;
+
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    const initialStrokeStyle = context.strokeStyle;
+
+    for (let y = canvasHeight; y > horizon; y--) {
+        const z = roadDistance / (y - horizon);
+        const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
+        let left, right;
+        
+        if (wave) {
+            const leftMiddle = canvasMiddle + Math.cos(y * wave.frequency) * wave.amplitude;
+            const rightMiddle = canvasMiddle + Math.sin(y * wave.frequency) * wave.amplitude;
+            left = leftMiddle - (maxRoadWidth / z);
+            right = rightMiddle + (maxRoadWidth / z);
+        } else {
+            const roadMiddle = canvasMiddle;
+            left = roadMiddle - (maxRoadWidth / z);
+            right = roadMiddle + (maxRoadWidth / z);
         }
         
-        if (wave.ttl > 0) {
-            newWaves.push(wave);
+        const isPulseLine = pulses.some(p => p.z <= z && p.z + p.length >= z);
+        const segmentBoundary = Math.ceil(z + cameraOffset);
+        const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ + cameraOffset;
+
+        if (!isPulseLine) {
+            context.beginPath();
+            context.moveTo(!onSegment ? left : 0, y);
+            context.lineTo(left + roadGutterWidth, y);
+            context.moveTo(right, y);
+            context.lineTo(!onSegment ? right + roadGutterWidth : canvasWidth, y);
+            context.strokeStyle = 'green';
+            context.stroke();
+            continue;
         }
+        
         context.beginPath();
-        context.strokeStyle = `rgba(0, 161, 75, ${wave.opacity})`;
-        context.lineWidth = wave.size;
-        context.shadowBlur = wave.size * 2;
-        const targetHeight = Math.min((135 - wave.ttl) * .05, 1) * canvasHeight;
-        for (let y = 0; y < targetHeight; y++) {
-            const x = wave.x + Math.cos(y * wave.frequency) * wave.amplitude;
-  
-            if (x === 0) {
-              context.moveTo(x, y);
-            } else {
-              context.lineTo(x, y);
-            }
-        }
+        context.moveTo(!onSegment ? left : 0, y);
+        context.lineTo(left, y);
+        context.strokeStyle = 'green';
         context.stroke();
+
+        context.beginPath();
+        context.moveTo(left, y);
+        context.lineTo(left + roadGutterWidth, y);
+        context.strokeStyle = 'lightgreen';
+        context.stroke();
+
+        context.beginPath();
+        context.moveTo(right, y);
+        context.lineTo(right + roadGutterWidth, y);
+        context.strokeStyle = 'lightgreen';
+        context.stroke();
+
+        if (onSegment) {
+            context.beginPath();
+            context.moveTo(right + roadGutterWidth, y);
+            context.lineTo(canvasWidth, y);
+            context.strokeStyle = 'green';
+            context.stroke();
+        }
     }
-    waves = newWaves;
-    context.shadowColor = originalShadowColor;
-    context.shadowBlur = originalShadowBlur;
+    context.strokeStyle = initialStrokeStyle;
+    const originalShadowColor = context.shadowColor;
+    const originalShadowBlur = context.shadowBlur;
+    const originalLineWidth = context.lineWidth;
     
     for (let option of options) {
         let initialStrokeStyle = context.strokeStyle;
@@ -222,6 +286,7 @@ function runMainLoop(context) {
 
         context.shadowColor = originalShadowColor;
         context.shadowBlur = originalShadowBlur;
+        context.lineWidth = originalLineWidth;
     }
 
     for (let particle of particles) {
@@ -243,17 +308,18 @@ function initMobileOptions() {
     const optionWidth = canvasWidth / 2;
     const optionHeight = canvasWidth / 4;
     const optionX = (canvasWidth / 2) - (optionWidth / 2);
+    const padding = 20;
     options = [
-        { x: optionX, y: (canvasHeight * .16) - (optionHeight / 2), width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
-        { x: optionX, y: (canvasHeight * .49) - (optionHeight / 2), width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' },
-        { x: optionX, y: (canvasHeight * .82) - (optionHeight / 2), width: optionWidth, height: optionHeight, text: 'Scenes', ref: 'scenes' }
+        { x: optionX, y: padding, width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
+        { x: optionX, y: (padding * 2) + optionHeight, width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' },
+        { x: optionX, y: (padding * 3) + (optionHeight * 2), width: optionWidth, height: optionHeight, text: 'Scenes', ref: 'scenes' }
     ]
 }
 
 function initDesktopOptions() {
     const optionWidth = canvasWidth / 4;
     const optionHeight = canvasWidth / 8;
-    const optionY = (canvasHeight / 2) - (optionHeight / 2);
+    const optionY = (canvasHeight / 4) - (optionHeight / 2);
     options = [
         { x: (canvasWidth * .16) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Projects', ref: 'projects' },
         { x: (canvasWidth * .49) - (optionWidth / 2), y: optionY, width: optionWidth, height: optionHeight, text: 'Blogs', ref: 'blogs' },

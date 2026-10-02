@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Digital Road Scene | ilusr</title>
+        <title>Simple Raster Road Scene | ilusr</title>
         <style>
             body {
                 margin: 0;
@@ -19,7 +19,6 @@
                 const horizon = canvasHeight / 2;
                 const roadDistance = canvasHeight - horizon;
                 const maxRoadWidth = canvasWidth / 2;
-                const cameraX = 0;
                 const segments = Math.round(roadDistance);
                 const roadGutterWidth = 8;
 
@@ -74,8 +73,6 @@
                         for (let y = canvasHeight; y > horizon; y--) {
                             const z = roadDistance / (y - horizon);
                             const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
-                            const segment = Math.floor(z);
-                            const segmentOffset = z - segment;
                             let left, right;
                             
                             if (wave) {
@@ -84,7 +81,7 @@
                                 left = leftMiddle - (maxRoadWidth / z);
                                 right = rightMiddle + (maxRoadWidth / z);
                             } else {
-                                const roadMiddle = canvasMiddle - cameraX / z;
+                                const roadMiddle = canvasMiddle;
                                 left = roadMiddle - (maxRoadWidth / z);
                                 right = roadMiddle + (maxRoadWidth / z);
                             }
