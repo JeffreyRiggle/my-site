@@ -1,0 +1,141 @@
+<html>
+    <head>
+        <title>Simple Raster Road Scene | ilusr</title>
+        <style>
+            body {
+                margin: 0;
+                background-color: black;
+            }
+        </style>
+        <link rel="icon" href="/favicon-32x32.png" type="image/png">
+        <script type="text/javascript">
+            addEventListener('load', () => {
+                let canvas = document.getElementById('canvas');
+                let context = canvas.getContext('2d');
+
+                const canvasWidth = canvas.width = window.innerWidth;
+                const canvasHeight = canvas.height = window.innerHeight;
+                const canvasMiddle = canvasWidth / 2;
+                const horizon = canvasHeight / 2;
+                const roadDistance = canvasHeight - horizon;
+                const maxRoadWidth = canvasWidth / 2;
+                const segments = Math.round(roadDistance);
+                const roadGutterWidth = 8;
+
+                let cameraPosition = 0;
+                let pulses = [];
+                let wave;
+                let lastTimeStep, nextPulseGeneration, waveGeneration;
+
+                function updatePositions(dt) {
+                    cameraPosition += .0025 * dt;
+                    if (wave) {
+                        wave.ttl -= dt;
+
+                        if (wave.ttl <= 0) {
+                            wave = null;
+                        } else {
+                            wave.amplitude += wave.acceleration * dt; 
+                        }
+                    }
+
+                    for (let pulse of pulses) {
+                        pulse.z += .01 * dt;
+                    }
+                }
+
+                function run() {
+                    requestAnimationFrame((timestep) => {
+                        let dt = timestep - (lastTimeStep ?? timestep);
+                        lastTimeStep = timestep;
+
+                        if (dt === 0) {
+                            nextPulseGeneration = timestep + Math.round(Math.random() * 5000);
+                            waveGeneration = timestep + (Math.ceil(Math.random() * 5) * 3000);
+                        }
+
+                        if (nextPulseGeneration <= timestep) {
+                            pulses.push({ z: -5, length: 5 });
+                            nextPulseGeneration = timestep + (Math.ceil(Math.random() * 5) * 1000);
+                        }
+
+                        if (waveGeneration <= timestep) {
+                            wave = { frequency: Math.random() * .1, amplitude: Math.ceil(Math.random() * 10), acceleration: Math.random() * .05, ttl: 1000 };
+                            waveGeneration = timestep + (Math.ceil(Math.random() * 5) * 3000);
+                        }
+
+                        updatePositions(dt);
+                        pulses = pulses.filter(p => p.z < segments);
+                        const cameraOffset = cameraPosition % 1;
+
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+                        for (let y = canvasHeight; y > horizon; y--) {
+                            const z = roadDistance / (y - horizon);
+                            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
+                            let left, right;
+                            
+                            if (wave) {
+                                const leftMiddle = canvasMiddle + Math.cos(y * wave.frequency) * wave.amplitude;
+                                const rightMiddle = canvasMiddle + Math.sin(y * wave.frequency) * wave.amplitude;
+                                left = leftMiddle - (maxRoadWidth / z);
+                                right = rightMiddle + (maxRoadWidth / z);
+                            } else {
+                                const roadMiddle = canvasMiddle;
+                                left = roadMiddle - (maxRoadWidth / z);
+                                right = roadMiddle + (maxRoadWidth / z);
+                            }
+                            
+                            const isPulseLine = pulses.some(p => p.z <= z && p.z + p.length >= z);
+                            const segmentBoundary = Math.ceil(z + cameraOffset);
+                            const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ + cameraOffset;
+
+                            if (!isPulseLine) {
+                                context.beginPath();
+                                context.moveTo(!onSegment ? left : 0, y);
+                                context.lineTo(left + roadGutterWidth, y);
+                                context.moveTo(right, y);
+                                context.lineTo(!onSegment ? right + roadGutterWidth : canvasWidth, y);
+                                context.strokeStyle = 'green';
+                                context.stroke();
+                                continue;
+                            }
+                            
+                            context.beginPath();
+                            context.moveTo(!onSegment ? left : 0, y);
+                            context.lineTo(left, y);
+                            context.strokeStyle = 'green';
+                            context.stroke();
+
+                            context.beginPath();
+                            context.moveTo(left, y);
+                            context.lineTo(left + roadGutterWidth, y);
+                            context.strokeStyle = 'lightgreen';
+                            context.stroke();
+
+                            context.beginPath();
+                            context.moveTo(right, y);
+                            context.lineTo(right + roadGutterWidth, y);
+                            context.strokeStyle = 'lightgreen';
+                            context.stroke();
+
+                            if (onSegment) {
+                                context.beginPath();
+                                context.moveTo(right + roadGutterWidth, y);
+                                context.lineTo(canvasWidth, y);
+                                context.strokeStyle = 'green';
+                                context.stroke();
+                            }
+                        }
+
+                        run();
+                    });
+                }
+                run();
+            });
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>
