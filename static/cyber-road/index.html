@@ -47,10 +47,8 @@
                 }
 
                 // TODO simplify this
-                function projectY(cameraOffset, currentSegment, cameraRoadY) {
+                function projectY(cameraOffset, cameraRoadY) {
                     const projectedY = new Array(segments);
-                    const clipY = new Array(segments);
-                    let terrainTopY = canvasHeight;
 
                     for (let i = 0; i < segments; i++) {
                         const z = (i + 1) - cameraOffset;
@@ -60,15 +58,8 @@
                         projectedY[i] =
                             Math.ceil(horizon +
                             (roadDistance + cameraRoadY - worldY) / z);
-
-                        terrainTopY = Math.min(
-                            terrainTopY,
-                            projectedY[i]
-                        );
-
-                        clipY[i] = terrainTopY;
                     }
-                    return { terrainTopY, projectedY, clipY };
+                    return projectedY;
                 }
 
                 // TODO make this better this time
@@ -131,7 +122,7 @@
                         const cameraOffset = cameraPosition % 1;
                         fillHeights(currentSegment, currentSegment + segments);
                         const cameraRoadY = worldHeight[0] + (worldHeight[1] - worldHeight[0]) * cameraOffset;
-                        const { terrainTopY, projectedY, clipY } = projectY(cameraOffset, currentSegment, cameraRoadY);
+                        const projectedY = projectY(cameraOffset, cameraRoadY);
 
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
 
