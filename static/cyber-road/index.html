@@ -28,19 +28,6 @@
                 let wave;
                 let lastTimeStep, nextPulseGeneration, waveGeneration;
 
-                // TODO simplify this
-                function projectY(cameraOffset) {
-                    const projectedY = new Array(segments);
-
-                    for (let i = 0; i < segments; i++) {
-                        const z = (i + 1) - cameraOffset;
-
-                        // Get rid of aliasing problem with partial pixel values by using ceil.
-                        projectedY[i] = Math.ceil(horizon + roadDistance / z);
-                    }
-                    return projectedY;
-                }
-
                 function updatePositions(dt) {
                     cameraPosition += .0025 * dt;
                     if (wave) {
@@ -80,14 +67,13 @@
 
                         updatePositions(dt);
                         pulses = pulses.filter(p => p.z < segments);
-                        const currentSegment = Math.floor(cameraPosition);
                         const cameraOffset = cameraPosition % 1;
-                        const projectedY = projectY(cameraOffset);
 
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
 
                         for (let i = canvasHeight; i > horizon; i--) {
                             const z = roadDistance / (i - horizon);
+                            const nextZ = i > horizon + 1 ? roadDistance / (i - 1 - horizon) : Infinity;
                             const segment = Math.floor(z);
                             const segmentOffset = z - segment;
                             let left, right;
@@ -104,8 +90,8 @@
                             }
                             
                             const isPulseLine = pulses.some(p => p.z <= z && p.z + p.length >= z);
-                            // TODO I want to find a better way to do this.
-                            const onSegment = projectedY.some(y => y === i);
+                            const segmentBoundary = Math.ceil(z + cameraOffset);
+                            const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ + cameraOffset;
 
                             if (!isPulseLine) {
                                 context.beginPath();
