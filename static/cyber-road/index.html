@@ -63,9 +63,21 @@
                     return projectedY;
                 }
 
-                // TODO make this better this time
-                function updateCameraPostion() {
-                    cameraPosition += .01;
+                function updatePositions(dt) {
+                    cameraPosition += .0025 * dt;
+                    if (wave) {
+                        wave.ttl -= dt;
+
+                        if (wave.ttl <= 0) {
+                            wave = null;
+                        } else {
+                            wave.amplitude += wave.acceleration * dt; 
+                        }
+                    }
+
+                    for (let pulse of pulses) {
+                        pulse.z += .01 * dt;
+                    }
                 }
 
                 function run() {
@@ -87,23 +99,9 @@
                             wave = { frequency: Math.random() * .1, amplitude: Math.ceil(Math.random() * 10), acceleration: Math.random() * .05, ttl: 1000 };
                             waveGeneration = timestep + (Math.ceil(Math.random() * 5) * 3000);
                         }
-                        
-                        if (wave) {
-                            wave.ttl -= dt;
 
-                            if (wave.ttl <= 0) {
-                                wave = null;
-                            } else {
-                                wave.amplitude += wave.acceleration * dt; 
-                            }
-                        }
-
-                        for (let pulse of pulses) {
-                            pulse.z += .05;
-                        }
-
+                        updatePositions(dt);
                         pulses = pulses.filter(p => p.z < segments);
-                        updateCameraPostion();
                         const currentSegment = Math.floor(cameraPosition);
                         const cameraOffset = cameraPosition % 1;
                         fillHeights(currentSegment, currentSegment + segments);
