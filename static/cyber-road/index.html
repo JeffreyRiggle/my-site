@@ -21,44 +21,22 @@
                 const maxRoadWidth = canvasWidth / 2;
                 const cameraX = 0;
                 const segments = Math.round(roadDistance);
-                const worldHeight = [0];
                 const roadGutterWidth = 8;
 
                 let cameraPosition = 0;
-                let lastHeightFill = 0;
-                let worldDy = 0;
                 let pulses = [];
                 let wave;
                 let lastTimeStep, nextPulseGeneration, waveGeneration;
 
-                // I think this can be removed since we don't have hills.
-                function fillHeights(currentZ, endZ) {
-                    if (worldHeight.length === 1) {
-                        lastHeightFill = currentZ;
-                        for (let z = currentZ; z <= endZ; z++) {
-                            worldDy += 0;
-                            worldHeight[z - currentZ] = (z === currentZ ? worldHeight.at(-1) : worldHeight[z - currentZ - 1]) + worldDy;
-                        }
-                    } else if (lastHeightFill !== currentZ) {
-                        lastHeightFill = currentZ;
-                        worldHeight.shift();
-                        worldDy += 0;
-                        worldHeight.push(worldHeight.at(-1) + worldDy);
-                    }
-                }
-
                 // TODO simplify this
-                function projectY(cameraOffset, cameraRoadY) {
+                function projectY(cameraOffset) {
                     const projectedY = new Array(segments);
 
                     for (let i = 0; i < segments; i++) {
                         const z = (i + 1) - cameraOffset;
-                        const worldY = worldHeight[i + 1];
 
                         // Get rid of aliasing problem with partial pixel values by using ceil.
-                        projectedY[i] =
-                            Math.ceil(horizon +
-                            (roadDistance + cameraRoadY - worldY) / z);
+                        projectedY[i] = Math.ceil(horizon + roadDistance / z);
                     }
                     return projectedY;
                 }
@@ -104,9 +82,7 @@
                         pulses = pulses.filter(p => p.z < segments);
                         const currentSegment = Math.floor(cameraPosition);
                         const cameraOffset = cameraPosition % 1;
-                        fillHeights(currentSegment, currentSegment + segments);
-                        const cameraRoadY = worldHeight[0] + (worldHeight[1] - worldHeight[0]) * cameraOffset;
-                        const projectedY = projectY(cameraOffset, cameraRoadY);
+                        const projectedY = projectY(cameraOffset);
 
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
 
