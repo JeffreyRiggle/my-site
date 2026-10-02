@@ -98,7 +98,7 @@
                         }
 
                         if (waveGeneration <= timestep) {
-                            wave = { frequency: 10, amplitude: 20, acceleration: .01, ttl: 3000 };
+                            wave = { frequency: Math.random() * .1, amplitude: Math.ceil(Math.random() * 10), acceleration: Math.random() * .05, ttl: 1000 };
                             waveGeneration = timestep + (Math.ceil(Math.random() * 5) * 3000);
                         }
                         
@@ -126,79 +126,32 @@
 
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
 
-                        for (let i = segments - 1; i > 0; i--) {
-                            let bottomZ = i - cameraOffset;
-                            let topZ = i + 1 - cameraOffset;
-
-                            let bottomY = projectedY[i - 1];
-                            let topY = projectedY[i];
-                            
-                            let leftX1; 
-                            let leftX2;
-                            let rightX1;
-                            let rightX2;
+                        for (let i = canvasHeight; i > horizon; i--) {
+                            const z = roadDistance / (i - horizon);
+                            const segment = Math.floor(z);
+                            const segmentOffset = z - segment;
+                            let left, right;
                             
                             if (wave) {
-                                let leftBottomMiddle = canvasMiddle + Math.cos((i - 1) * wave.frequency) * wave.amplitude;
-                                let rightBottomMiddle = canvasMiddle + Math.sin((i - 1) * wave.frequency) * wave.amplitude;
-                                let leftTopMiddle = canvasMiddle + Math.cos(i * wave.frequency) * wave.amplitude;
-                                let rightTopMiddle = canvasMiddle + Math.sin(i * wave.frequency) * wave.amplitude;
-
-                                leftX1 = leftBottomMiddle - (maxRoadWidth / bottomZ);
-                                leftX2 = leftTopMiddle - (maxRoadWidth / topZ);
-                                rightX1 = rightBottomMiddle + (maxRoadWidth / bottomZ);
-                                rightX2 = rightTopMiddle + (maxRoadWidth / topZ);
+                                const leftMiddle = canvasMiddle + Math.cos(i * wave.frequency) * wave.amplitude;
+                                const rightMiddle = canvasMiddle + Math.sin(i * wave.frequency) * wave.amplitude;
+                                left = leftMiddle - (maxRoadWidth / z);
+                                right = rightMiddle + (maxRoadWidth / z);
                             } else {
-                                let bottomMiddle = canvasMiddle - cameraX / bottomZ;
-                                let topMiddle = canvasMiddle - cameraX / topZ;
-
-                                leftX1 = bottomMiddle - (maxRoadWidth / bottomZ);
-                                leftX2 = topMiddle - (maxRoadWidth / topZ);
-                                rightX1 = bottomMiddle + (maxRoadWidth / bottomZ);
-                                rightX2 = topMiddle + (maxRoadWidth / topZ);
+                                const roadMiddle = canvasMiddle - cameraX / z;
+                                left = roadMiddle - (maxRoadWidth / z);
+                                right = roadMiddle + (maxRoadWidth / z);
                             }
 
-                            // Avoid clipping issue near the bottom.
-                            // Since the camera can end up in a weird place
-                            // during movement it can cause the trapezoid not to
-                            // properly render at the bottom of the screen.
-                            if (i === 1) {
-                                const t = (canvasHeight - topY) / (bottomY - topY);
-                                bottomY = canvasHeight;
-                                leftX1 = leftX2 + (leftX1 - leftX2) * t;
-                                rightX1 = rightX2 + (rightX1 - rightX2) * t;
-                            }
-
+                            // TODO I want to find a better way to do this.
+                            const onSegment = projectedY.some(y => y === i);
+                            context.beginPath();
+                            context.moveTo(!onSegment ? left : 0, i);
+                            context.lineTo(left + 5, i);
+                            context.moveTo(right, i);
+                            context.lineTo(!onSegment ? right + 5 : canvasWidth, i);
                             context.strokeStyle = 'green';
                             context.lineWidth = 1;
-                            context.beginPath();
-                            context.moveTo(0, bottomY);
-                            context.lineTo(leftX1, bottomY);
-                            context.stroke();
-                            context.lineWidth = 5;
-                            context.beginPath();
-                            context.moveTo(leftX1, bottomY)
-                            context.lineTo(leftX2, topY);
-                            context.stroke();
-                            context.lineWidth = 1;
-                            context.beginPath();
-                            context.moveTo(leftX2, topY)
-                            context.lineTo(0, topY);
-                            context.stroke();
-
-                            context.beginPath();
-                            context.moveTo(canvasWidth, bottomY);
-                            context.lineTo(rightX1, bottomY);
-                            context.stroke();
-                            context.lineWidth = 5;
-                            context.beginPath();
-                            context.moveTo(rightX1, bottomY);
-                            context.lineTo(rightX2, topY);
-                            context.stroke();
-                            context.lineWidth = 1;
-                            context.beginPath();
-                            context.moveTo(rightX2, topY);
-                            context.lineTo(canvasWidth, topY);
                             context.stroke();
                         }
 
