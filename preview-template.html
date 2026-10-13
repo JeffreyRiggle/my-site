@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <style>
+            body {
+                margin: 0;
+                display: grid;
+                place-items: center;
+                width: 600px;
+                height: 400px;
+            }
+            button {
+                padding:8px;
+                color:green;
+                background-color:black;
+                margin:auto auto;
+                border:none;
+            }
+        </style>
+        <script>
+            function onClick() { 
+                document.querySelector('button').remove();
+                const ifr = document.createElement('iframe');
+                ifr.width='600px';
+                ifr.height='400px';
+                ifr.style.border='none';
+                ifr.srcdoc = '{{INNER_CONTENT}}';
+                document.body.appendChild(ifr);
+            }
+        </script>
+    </head>
+    <body>
+        <button onclick='onClick()'>Play</button>
+    </body>
+</html>

@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <style>
+            body {
+                margin: 0;
+                background-color: black;
+            }
+        </style>
+        <script type="text/javascript">
+            addEventListener('load', () => {
+                let canvas = document.getElementById('canvas');
+                let context = canvas.getContext('2d');
+
+                const canvasWidth = canvas.width = window.innerWidth;
+                const canvasHeight = canvas.height = window.innerHeight;
+                const canvasMiddle = roadMiddle = maxRoadWidth = canvasWidth / 2;
+                const horizon = canvasHeight / 2;
+                const roadDistance = canvasHeight - horizon;
+                const roadGutterWidth = 8;
+                const distanceFromCameraToScreen = 1;
+
+                function run() {
+                    requestAnimationFrame(() => {
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+                    
+                        for (let y = canvasHeight; y > horizon; y--) {
+                            const z = roadDistance / (y - horizon) * distanceFromCameraToScreen;
+                            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
+                            const left = roadMiddle - (maxRoadWidth / z);
+                            const right = roadMiddle + (maxRoadWidth / z);
+                        
+                            context.beginPath();
+                            context.moveTo(left, y);
+                            context.lineTo(left + roadGutterWidth, y);
+                            context.strokeStyle = 'lightgreen';
+                            context.stroke();
+                        
+                            context.beginPath();
+                            context.moveTo(right, y);
+                            context.lineTo(right + roadGutterWidth, y);
+                            context.strokeStyle = 'lightgreen';
+                            context.stroke();
+                        }
+                    
+                        // Disable since there is no motion and I care about your CPU
+                        // run();
+                    });
+                }
+                run();
+            });
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>
