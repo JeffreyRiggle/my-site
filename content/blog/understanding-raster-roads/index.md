@@ -26,7 +26,7 @@ The effect of distance can be created by making objects appear further away from
 const y = cameraHeight * distanceFromCameraToScreen / distanceFromCameraToObject;
 
 // However we want to render line by line going along y so lets compute the distance instead
-let distanceFromCameraToObject = y / cameraHeight * distanceFromCameraToScreen;
+let distanceFromCameraToObject = cameraHeight * distanceFromCameraToScreen / y;
 
 // oops I lied, one last alteration since we don't want anything above a horizon
 distanceFromCameraToObject = (y - horizon) / cameraHeight * distanceFromCameraToScreen;
@@ -101,7 +101,7 @@ addEventListener('load', () => {
 
             for (let y = canvasHeight; y > horizon; y--) {
                 const z = roadDistance / (y - horizon) * distanceFromCameraToScreen;
-                const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
+                const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) * distanceFromCameraToScreen : Infinity;
                 const roadMiddle = canvasMiddle;
                 const left = roadMiddle - (maxRoadWidth / z);
                 const right = roadMiddle + (maxRoadWidth / z);
@@ -143,10 +143,139 @@ addEventListener('load', () => {
 });
 ```
 
-<iframe height="400" width="600" style="border:none" srcdoc="<html> <head> <style> body { margin: 0; display: grid; place-items: center; width: 600px; height: 400px; } button { padding:8px; color:green; background-color:black; margin:auto auto; border:none; } </style> <script> function onClick() { document.querySelector('button').remove(); const ifr = document.createElement('iframe'); ifr.width='600px'; ifr.height='400px'; ifr.style.border='none'; ifr.srcdoc = '<html> <head> <style> body { margin: 0; background-color: black; } </style> <script type=\'text/javascript\'> addEventListener(\'load\', () => { let canvas = document.getElementById(\'canvas\'); let context = canvas.getContext(\'2d\'); const canvasWidth = canvas.width = window.innerWidth; const canvasHeight = canvas.height = window.innerHeight; const canvasMiddle = canvasWidth / 2; const horizon = canvasHeight / 2; const roadDistance = canvasHeight - horizon; const maxRoadWidth = canvasWidth / 2; const segments = Math.round(roadDistance); const roadGutterWidth = 8; function run() { requestAnimationFrame(() => { context.clearRect(0, 0, canvasWidth, canvasHeight); for (let y = canvasHeight; y > horizon; y--) { const z = roadDistance / (y - horizon); const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity; const roadMiddle = canvasMiddle; const left = roadMiddle - (maxRoadWidth / z); const right = roadMiddle + (maxRoadWidth / z); const segmentBoundary = Math.ceil(z); const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ; context.beginPath(); context.moveTo(!onSegment ? left : 0, y); context.lineTo(left, y); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(left, y); context.lineTo(left + roadGutterWidth, y); context.strokeStyle = \'lightgreen\'; context.stroke(); context.beginPath(); context.moveTo(right, y); context.lineTo(right + roadGutterWidth, y); context.strokeStyle = \'lightgreen\'; context.stroke(); if (onSegment) { context.beginPath(); context.moveTo(right + roadGutterWidth, y); context.lineTo(canvasWidth, y); context.strokeStyle = \'green\'; context.stroke(); } } }); } run(); }); <\/script> </head> <body> <canvas id=\'canvas\'></canvas> </body></html>'; document.body.appendChild(ifr); } </script> </head> <body> <button onclick='onClick()'>Play</button> </body></html>"></iframe>
+<iframe height="400" width="600" style="border:none" srcdoc="<html> <head> <style> body { margin: 0; display: grid; place-items: center; width: 600px; height: 400px; } button { padding:8px; color:green; background-color:black; margin:auto auto; border:none; } </style> <script> function onClick() { document.querySelector('button').remove(); const ifr = document.createElement('iframe'); ifr.width='600px'; ifr.height='400px'; ifr.style.border='none'; ifr.srcdoc = '<html> <head> <style> body { margin: 0; background-color: black; } </style> <script type=\'text/javascript\'> addEventListener(\'load\', () => { let canvas = document.getElementById(\'canvas\'); let context = canvas.getContext(\'2d\'); const canvasWidth = canvas.width = window.innerWidth; const canvasHeight = canvas.height = window.innerHeight; const canvasMiddle = canvasWidth / 2; const horizon = canvasHeight / 2; const roadDistance = canvasHeight - horizon; const maxRoadWidth = canvasWidth / 2; const segments = Math.round(roadDistance); const roadGutterWidth = 8; const distanceFromCameraToScreen = 1; function run() { requestAnimationFrame(() => { context.clearRect(0, 0, canvasWidth, canvasHeight); for (let y = canvasHeight; y > horizon; y--) { const z = roadDistance / (y - horizon) * distanceFromCameraToScreen; const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) * distanceFromCameraToScreen : Infinity; const roadMiddle = canvasMiddle; const left = roadMiddle - (maxRoadWidth / z); const right = roadMiddle + (maxRoadWidth / z); const segmentBoundary = Math.ceil(z); const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ; context.beginPath(); context.moveTo(!onSegment ? left : 0, y); context.lineTo(left, y); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(left, y); context.lineTo(left + roadGutterWidth, y); context.strokeStyle = \'lightgreen\'; context.stroke(); context.beginPath(); context.moveTo(right, y); context.lineTo(right + roadGutterWidth, y); context.strokeStyle = \'lightgreen\'; context.stroke(); if (onSegment) { context.beginPath(); context.moveTo(right + roadGutterWidth, y); context.lineTo(canvasWidth, y); context.strokeStyle = \'green\'; context.stroke(); } } }); } run(); }); <\/script> </head> <body> <canvas id=\'canvas\'></canvas> </body></html>'; document.body.appendChild(ifr); } </script> </head> <body> <button onclick='onClick()'>Play</button> </body></html>"></iframe>
 
 ## Let there be motion
 
-At this point we have a passable road with the illusion of depth but no motion. To get that going we are going to need to start using a camera. As you move the camera across the screen you need to move the segments as well. If you just jumped one full segment per frame there would be no noticable movement. Because of this we need to make sure the camera only move a fraction of the distance between z values and adjust our scan lines accordingly.
+At this point we have a passable road with the illusion of depth but no motion. To get that going we are going to need to start using that camera. As you move the camera across the screen you need to adjust how the segments are drawn. If the camera moved one full segment per frame there would be no noticable movement. Because of this we need to make sure the camera only move a fraction of the distance between z values and adjust our scan lines accordingly.
 
-TODO
+To make the camera move we just have to adjust the camera position on each render frame. However not all computers have the same processing power and not all monitors have the same refresh rate. So, if we want a consistent experience we need to account for time. There are a few ways of doing this but I have found the easiest way to do this in the browser is with a variable frame rate and a delta time modifier.
+
+```javascript
+let distanceFromCameraToScreen = 0;
+let lastTime;
+
+function run() {
+    requestAnimationFrame((time) => {
+        const dt = time - (lastTime ?? time);
+        distanceFromCameraToScreen += .0025 * dt; // .0025 is a completely arbirary number because I liked how it looked
+        lastTime = time;
+        
+        // truncated
+    });
+}
+```
+
+Now if we just plug this change into the existing code things might not look as you expect. This will cause the view to appear to zoom out and give the impression of lifting off of the road. Eventually the segments will start to compress to nothing as well since our segements are bounded at the road distance. So lets tackle this one problem at a time. First Let's stop moving up and start moving forward. To do this we are going to change our equations just a bit.
+
+```javascript
+let distanceFromCameraToScreen = 0;
+let lastTime;
+
+function run() {
+    requestAnimationFrame((time) => {
+        const dt = time - (lastTime ?? time);
+        distanceFromCameraToScreen += .05 * dt; // speeding things up because you could be fooled into thinking this is fine
+        lastTime = time;
+        
+        // truncated
+        for (let y = canvasHeight; y > horizon; y--) {
+            const z = roadDistance / (y - horizon);
+            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
+            const roadMiddle = canvasMiddle;
+            const left = roadMiddle - (maxRoadWidth / z);
+            const right = roadMiddle + (maxRoadWidth / z);
+            
+            const segmentBoundary = Math.ceil(z + distanceFromCameraToScreen);
+            const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ + distanceFromCameraToScreen;
+            
+            // truncated draw logic
+        }
+    });
+}
+```
+
+Now if you watched this animation for long enough you would notice that eventually the segments start disappearing until we are left with what looks like our first road. This is happening again because we have bounded segments. To deal with this we could grow our segments over time but instead we are going to play a little trick with the camera. Instead of moving over all segments we are just going to adjust our position within the first lines by using some modulo math.
+
+```javascript
+function run() {
+    requestAnimationFrame((time) => {
+        let dt = time - (lastTime ?? time);
+        lastTime = time;
+
+        distanceFromCameraToScreen += (dt * .0025);
+        const cameraOffset = distanceFromCameraToScreen % 1; // Only move a fraction of a z at any given time
+        // truncated
+
+        for (let y = canvasHeight; y > horizon; y--) {
+            const z = roadDistance / (y - horizon);
+            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
+            const roadMiddle = canvasMiddle;
+            const left = roadMiddle - (maxRoadWidth / z);
+            const right = roadMiddle + (maxRoadWidth / z);
+            
+            const segmentBoundary = Math.ceil(z + cameraOffset);
+            const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ + cameraOffset;
+            
+            // truncated
+        }
+    });
+}
+```
+
+Put all of this together and we get this effect.
+
+<iframe height="400" width="600" style="border:none" srcdoc="<html> <head> <style> body { margin: 0; display: grid; place-items: center; width: 600px; height: 400px; } button { padding:8px; color:green; background-color:black; margin:auto auto; border:none; } </style> <script> function onClick() { document.querySelector('button').remove(); const ifr = document.createElement('iframe'); ifr.width='600px'; ifr.height='400px'; ifr.style.border='none'; ifr.srcdoc = '<html> <head> <style> body { margin: 0; background-color: black; } </style> <script type=\'text/javascript\'> addEventListener(\'load\', () => { let canvas = document.getElementById(\'canvas\'); let context = canvas.getContext(\'2d\'); const canvasWidth = canvas.width = window.innerWidth; const canvasHeight = canvas.height = window.innerHeight; const canvasMiddle = canvasWidth / 2; const horizon = canvasHeight / 2; const roadDistance = canvasHeight - horizon; const maxRoadWidth = canvasWidth / 2; const segments = Math.round(roadDistance); const roadGutterWidth = 8; let distanceFromCameraToScreen = 0; let lastTime; function run() { requestAnimationFrame((time) => { let dt = time - (lastTime ?? time); lastTime = time; context.clearRect(0, 0, canvasWidth, canvasHeight); distanceFromCameraToScreen += (dt * .0025); const cameraOffset = distanceFromCameraToScreen % 1; for (let y = canvasHeight; y > horizon; y--) { const z = roadDistance / (y - horizon); const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity; const roadMiddle = canvasMiddle; const left = roadMiddle - (maxRoadWidth / z); const right = roadMiddle + (maxRoadWidth / z); const segmentBoundary = Math.ceil(z + cameraOffset); const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ + cameraOffset; context.beginPath(); context.moveTo(!onSegment ? left : 0, y); context.lineTo(left, y); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(left, y); context.lineTo(left + roadGutterWidth, y); context.strokeStyle = \'lightgreen\'; context.stroke(); context.beginPath(); context.moveTo(right, y); context.lineTo(right + roadGutterWidth, y); context.strokeStyle = \'lightgreen\'; context.stroke(); if (onSegment) { context.beginPath(); context.moveTo(right + roadGutterWidth, y); context.lineTo(canvasWidth, y); context.strokeStyle = \'green\'; context.stroke(); } } run(); }); } run(); }); <\/script> </head> <body> <canvas id=\'canvas\'></canvas> </body></html>'; document.body.appendChild(ifr); } </script> </head> <body> <button onclick='onClick()'>Play</button> </body></html>"></iframe>
+
+## Getting curvy
+
+Now that we have motion wouldn't it be neat if we could make the road move left and right creating the effect of driving through a turn? Let's take a moment and observe something about how we are rendering each left and right position.
+
+```javascript
+const left = roadMiddle - (maxRoadWidth / z);
+const right = roadMiddle + (maxRoadWidth / z);
+```
+
+Notice how we are positioning the left and right as relative positions of the middle of the road? What if the middle of the road didn't happen to be the middle of the screen but another position? If we moved this value lower the scan line would appear to shift left and higher right.
+
+To make this appear correct we will have to integrate the position over each scan line to create a natural looking curve.
+
+```javascript
+const curveAmount = .005;
+
+let roadMiddle = canvasMiddle;
+let deltaX = 0;
+for (let y = canvasHeight; y > horizon; y--) {
+    deltaX += curveAmount;
+    roadMiddle += deltaX;
+}
+```
+
+Using this we should get the effect of a road that curves to the left. If your intuition was that the road would curve right remember we are drawing back to front not front to back. If we used a `-.005` it would be curving to the right.
+
+This is neat but now the motion code results in moving along a curve forever. To address this in our simple test we can slowely decrease the `curveAmount` over time until we hit zero.
+
+Adding something trivial like this to the code would do the trick
+
+```javascript
+if (curveAmount != 0) {
+    curveAmount += .0000002 * dt;
+}
+if (curveAmount > 0) {
+    curveAmount = 0;
+}
+
+let roadMiddle = canvasMiddle;
+let deltaX = 0;
+for (let y = canvasHeight; y > horizon; y--) {
+    deltaX += curveAmount;
+    roadMiddle += deltaX;
+}
+```
+
+Bring it all together and we get this.
+
+<iframe height="400" width="600" style="border:none" srcdoc="<html> <head> <style> body { margin: 0; display: grid; place-items: center; width: 600px; height: 400px; } button { padding:8px; color:green; background-color:black; margin:auto auto; border:none; } </style> <script> function onClick() { document.querySelector('button').remove(); const ifr = document.createElement('iframe'); ifr.width='600px'; ifr.height='400px'; ifr.style.border='none'; ifr.srcdoc = '<html> <head> <style> body { margin: 0; background-color: black; } </style> <script type=\'text/javascript\'> addEventListener(\'load\', () => { let canvas = document.getElementById(\'canvas\'); let context = canvas.getContext(\'2d\'); const canvasWidth = canvas.width = window.innerWidth; const canvasHeight = canvas.height = window.innerHeight; const canvasMiddle = canvasWidth / 2; const horizon = canvasHeight / 2; const roadDistance = canvasHeight - horizon; const maxRoadWidth = canvasWidth / 2; const segments = Math.round(roadDistance); const roadGutterWidth = 8; let distanceFromCameraToScreen = 0; let lastTime; let curveAmount = -.004; function run() { requestAnimationFrame((time) => { let dt = time - (lastTime ?? time); lastTime = time; context.clearRect(0, 0, canvasWidth, canvasHeight); distanceFromCameraToScreen += (dt * .0025); if (curveAmount != 0) { curveAmount += .0000002 * dt; } if (curveAmount > 0) { curveAmount = 0; } const cameraOffset = distanceFromCameraToScreen % 1; let roadMiddle = canvasMiddle; let dx = 0; for (let y = canvasHeight; y > horizon; y--) { const z = roadDistance / (y - horizon); const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity; dx += curveAmount; roadMiddle += dx; const left = roadMiddle - (maxRoadWidth / z); const right = roadMiddle + (maxRoadWidth / z); const segmentBoundary = Math.ceil(z + cameraOffset); const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ + cameraOffset; context.beginPath(); context.moveTo(!onSegment ? left : 0, y); context.lineTo(left, y); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(left, y); context.lineTo(left + roadGutterWidth, y); context.strokeStyle = \'lightgreen\'; context.stroke(); context.beginPath(); context.moveTo(right, y); context.lineTo(right + roadGutterWidth, y); context.strokeStyle = \'lightgreen\'; context.stroke(); if (onSegment) { context.beginPath(); context.moveTo(right + roadGutterWidth, y); context.lineTo(canvasWidth, y); context.strokeStyle = \'green\'; context.stroke(); } } run(); }); } run(); }); <\/script> </head> <body> <canvas id=\'canvas\'></canvas> </body></html>'; document.body.appendChild(ifr); } </script> </head> <body> <button onclick='onClick()'>Play</button> </body></html>"></iframe>
+
+## What about hills?
+

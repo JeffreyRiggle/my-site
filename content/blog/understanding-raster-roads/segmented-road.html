@@ -19,15 +19,15 @@
                 const maxRoadWidth = canvasWidth / 2;
                 const segments = Math.round(roadDistance);
                 const roadGutterWidth = 8;
+                const distanceFromCameraToScreen = 1;
 
                 function run() {
                     requestAnimationFrame(() => {
-
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
 
                         for (let y = canvasHeight; y > horizon; y--) {
-                            const z = roadDistance / (y - horizon);
-                            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
+                            const z = roadDistance / (y - horizon) * distanceFromCameraToScreen;
+                            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) * distanceFromCameraToScreen : Infinity;
                             const roadMiddle = canvasMiddle;
                             const left = roadMiddle - (maxRoadWidth / z);
                             const right = roadMiddle + (maxRoadWidth / z);
