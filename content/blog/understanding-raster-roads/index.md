@@ -277,5 +277,93 @@ Bring it all together and we get this.
 
 <iframe height="400" width="600" style="border:none" srcdoc="<html> <head> <style> body { margin: 0; display: grid; place-items: center; width: 600px; height: 400px; } button { padding:8px; color:green; background-color:black; margin:auto auto; border:none; } </style> <script> function onClick() { document.querySelector('button').remove(); const ifr = document.createElement('iframe'); ifr.width='600px'; ifr.height='400px'; ifr.style.border='none'; ifr.srcdoc = '<html> <head> <style> body { margin: 0; background-color: black; } </style> <script type=\'text/javascript\'> addEventListener(\'load\', () => { let canvas = document.getElementById(\'canvas\'); let context = canvas.getContext(\'2d\'); const canvasWidth = canvas.width = window.innerWidth; const canvasHeight = canvas.height = window.innerHeight; const canvasMiddle = canvasWidth / 2; const horizon = canvasHeight / 2; const roadDistance = canvasHeight - horizon; const maxRoadWidth = canvasWidth / 2; const segments = Math.round(roadDistance); const roadGutterWidth = 8; let distanceFromCameraToScreen = 0; let lastTime; let curveAmount = -.004; function run() { requestAnimationFrame((time) => { let dt = time - (lastTime ?? time); lastTime = time; context.clearRect(0, 0, canvasWidth, canvasHeight); distanceFromCameraToScreen += (dt * .0025); if (curveAmount != 0) { curveAmount += .0000002 * dt; } if (curveAmount > 0) { curveAmount = 0; } const cameraOffset = distanceFromCameraToScreen % 1; let roadMiddle = canvasMiddle; let dx = 0; for (let y = canvasHeight; y > horizon; y--) { const z = roadDistance / (y - horizon); const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity; dx += curveAmount; roadMiddle += dx; const left = roadMiddle - (maxRoadWidth / z); const right = roadMiddle + (maxRoadWidth / z); const segmentBoundary = Math.ceil(z + cameraOffset); const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ + cameraOffset; context.beginPath(); context.moveTo(!onSegment ? left : 0, y); context.lineTo(left, y); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(left, y); context.lineTo(left + roadGutterWidth, y); context.strokeStyle = \'lightgreen\'; context.stroke(); context.beginPath(); context.moveTo(right, y); context.lineTo(right + roadGutterWidth, y); context.strokeStyle = \'lightgreen\'; context.stroke(); if (onSegment) { context.beginPath(); context.moveTo(right + roadGutterWidth, y); context.lineTo(canvasWidth, y); context.strokeStyle = \'green\'; context.stroke(); } } run(); }); } run(); }); <\/script> </head> <body> <canvas id=\'canvas\'></canvas> </body></html>'; document.body.appendChild(ifr); } </script> </head> <body> <button onclick='onClick()'>Play</button> </body></html>"></iframe>
 
-## What about hills?
+## Changing render strategy
 
+Up until this point we have been rendering a road using scan lines. This has worked out well for us, but once we get to hills it becomes easier to start working with polygons. To add hills and keep the math sane it is easier to walk one segment at a time. Now we could see each of these segments as a polygon. However because of our rendering strategy we will instead draw it as individual lines resulting two shapes that resemable a polygon while not being one.
+
+![Visualization of draw strategy](poly-explain.png)
+
+To make this work we are first going to have to stop iterating over every position of y and instead start iterating over each segment. This is a fairly trival change on the for loop.
+
+```diff
+- for (let y = canvasHeight; y > horizon; y--) {
++ for (let segment = segments; segment > 0; segment--) {
+```
+
+Now we have to change up the projection math a bit. Instead of just finding a left and a right for each y we now need to find a top y, top left x, top right x, bottom y, bottom left x, and bottom right x. Putthing that all together we get something like this.
+
+```javascript
+const topZ = segment + 1 - cameraOffset;
+const bottomZ = segment - cameraOffset;
+
+const topY = horizon + (roadDistance + distanceFromCameraToScreen) / topZ;
+const bottomY = horizon + (roadDistance + distanceFromCameraToScreen) / bottomZ;
+    
+const topLeft = roadMiddle - (maxRoadWidth / topZ);
+const topRight = roadMiddle + (maxRoadWidth / topZ);
+    
+const bottomLeft = roadMiddle - (maxRoadWidth / bottomZ);
+const bottomRight = roadMiddle + (maxRoadWidth / bottomZ);
+
+const topGutterWidth = roadGutterWidth / topZ;
+const bottomGutterWidth = roadGutterWidth / bottomZ;
+```
+
+Finally we need to draw those individual segment pieces which will update our line drawing code to be a bit more verbose.
+
+```javascript
+context.beginPath();
+context.moveTo(0, topY);
+context.lineTo(topLeft - topGutterWidth, topY);
+context.strokeStyle = 'green';
+context.stroke();
+
+context.beginPath();
+context.moveTo(topLeft - topGutterWidth, topY);
+context.lineTo(topLeft, topY);
+context.lineTo(bottomLeft, bottomY);
+context.lineTo(bottomLeft - bottomGutterWidth, bottomY);
+context.closePath();
+context.fillStyle = 'lightgreen';
+context.fill();
+
+context.beginPath();
+context.moveTo(bottomLeft - (roadGutterWidth / 2), bottomY);
+context.lineTo(0, bottomY);
+context.strokeStyle = 'green';
+context.stroke();
+
+// right side
+context.beginPath();
+context.moveTo(canvasWidth, topY);
+context.lineTo(topRight + (roadGutterWidth / 2), topY);
+context.strokeStyle = 'green';
+context.stroke();
+
+context.beginPath();
+context.moveTo(topRight - topGutterWidth, topY);
+context.lineTo(topRight, topY);
+context.lineTo(bottomRight, bottomY);
+context.lineTo(bottomRight - bottomGutterWidth, bottomY);
+context.closePath();
+context.fillStyle = 'lightgreen';
+context.fill();
+
+context.beginPath();
+context.moveTo(bottomRight + (roadGutterWidth / 2), bottomY);
+context.lineTo(canvasWidth, bottomY);
+context.strokeStyle = 'green';
+context.stroke();
+```
+
+Now I could have added some functions and made this a bit easier to understand but I want to show the end result with as little overhead as possible to show the exact code required to make this work without any abstraction.
+
+For those that are eagle-eyed observers you will notice that this logic fixes a bug we had up until this point. Up until this point we had the gutter be a constant 8px regradless of projection. As I was revisiting this and breaking down the problem into steps I found something I had missed in prior attempts at this.
+
+With all of this we can put this together and get something familiar that we have already seen, a moving road.
+
+<iframe height="400" width="600" style="border:none" srcdoc="<html> <head> <style> body { margin: 0; display: grid; place-items: center; width: 600px; height: 400px; } button { padding:8px; color:green; background-color:black; margin:auto auto; border:none; } </style> <script> function onClick() { document.querySelector('button').remove(); const ifr = document.createElement('iframe'); ifr.width='600px'; ifr.height='400px'; ifr.style.border='none'; ifr.srcdoc = '<html> <head> <style> body { margin: 0; background-color: black; } </style> <script type=\'text/javascript\'> addEventListener(\'load\', () => { let canvas = document.getElementById(\'canvas\'); let context = canvas.getContext(\'2d\'); const canvasWidth = canvas.width = window.innerWidth; const canvasHeight = canvas.height = window.innerHeight; const canvasMiddle = canvasWidth / 2; const horizon = canvasHeight / 2; const roadDistance = canvasHeight - horizon; const maxRoadWidth = canvasWidth / 2; const segments = Math.round(roadDistance); const roadGutterWidth = 8; let distanceFromCameraToScreen = 0; let lastTime; function run() { requestAnimationFrame((time) => { let dt = time - (lastTime ?? time); lastTime = time; context.clearRect(0, 0, canvasWidth, canvasHeight); distanceFromCameraToScreen += (dt * .0025); const cameraOffset = distanceFromCameraToScreen % 1; let roadMiddle = canvasMiddle; for (let segment = segments; segment > 0; segment--) { const topZ = segment + 1 - cameraOffset; const bottomZ = segment - cameraOffset; const topY = horizon + (roadDistance + cameraOffset) / topZ; const bottomY = horizon + (roadDistance + cameraOffset) / bottomZ; const topLeft = roadMiddle - (maxRoadWidth / topZ); const topRight = roadMiddle + (maxRoadWidth / topZ); const bottomLeft = roadMiddle - (maxRoadWidth / bottomZ); const bottomRight = roadMiddle + (maxRoadWidth / bottomZ); const topGutterWidth = roadGutterWidth / topZ; const bottomGutterWidth = roadGutterWidth / bottomZ; context.beginPath(); context.moveTo(0, topY); context.lineTo(topLeft - topGutterWidth, topY); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(topLeft - topGutterWidth, topY); context.lineTo(topLeft, topY); context.lineTo(bottomLeft, bottomY); context.lineTo(bottomLeft - bottomGutterWidth, bottomY); context.closePath(); context.fillStyle = \'lightgreen\'; context.fill(); context.beginPath(); context.moveTo(bottomLeft - (roadGutterWidth / 2), bottomY); context.lineTo(0, bottomY); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(canvasWidth, topY); context.lineTo(topRight + (roadGutterWidth / 2), topY); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(topRight - topGutterWidth, topY); context.lineTo(topRight, topY); context.lineTo(bottomRight, bottomY); context.lineTo(bottomRight - bottomGutterWidth, bottomY); context.closePath(); context.fillStyle = \'lightgreen\'; context.fill(); context.beginPath(); context.moveTo(bottomRight + (roadGutterWidth / 2), bottomY); context.lineTo(canvasWidth, bottomY); context.strokeStyle = \'green\'; context.stroke(); } run(); }); } run(); }); <\/script> </head> <body> <canvas id=\'canvas\'></canvas> </body></html>'; document.body.appendChild(ifr); } </script> </head> <body> <button onclick='onClick()'>Play</button> </body></html>"></iframe>
+
+## Adding those hills
+
+Now that we have changed our rendering strategy we can get around to adding in those hills.
