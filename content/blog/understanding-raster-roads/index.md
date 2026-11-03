@@ -281,6 +281,8 @@ Bring it all together and we get this.
 
 Up until this point we have been rendering a road using scan lines. This has worked out well for us, but once we get to hills it becomes easier to start working with polygons. To add hills and keep the math sane it is easier to walk one segment at a time. Now we could see each of these segments as a polygon. However because of our rendering strategy we will instead draw it as individual lines resulting two shapes that resemable a polygon while not being one.
 
+To reduce the complexity a bit we are going to walk back some of the complexity. Let's straighten out this road again and focus on the fundamentals from a new perspective.
+
 ![Visualization of draw strategy](poly-explain.png)
 
 To make this work we are first going to have to stop iterating over every position of y and instead start iterating over each segment. This is a fairly trival change on the for loop.
@@ -366,4 +368,53 @@ With all of this we can put this together and get something familiar that we hav
 
 ## Adding those hills
 
-Now that we have changed our rendering strategy we can get around to adding in those hills.
+Now that we have changed our rendering strategy we can get around to adding in those hills. Up until this point our equations have assumed the world is flat and that the camera is at a stable y position. Getting hills to work just requires us to compute world y values and incorporate those into our y positioning logic.
+
+First let's generate those world y values, we will take a trivial approach to this much like we did with curves.
+
+```javascript
+// Setup arbitrary hill location
+const hillStart = 25;
+const hillEnd = 100;
+// Have hill go up, use a negative number to go down.
+const hillAmount = .2;
+const worldHeights = new Array(segments);
+
+// Truncated
+let dy = worldHeights[Math.floor(distanceFromCameraToScreen)] ?? 1;
+// fill world heights
+for (let i = 0; i < worldHeights.length; i++) {
+    const worldPosition = i + Math.floor(distanceFromCameraToScreen);
+    if (worldPosition >= hillStart && worldPosition <= hillEnd) {
+        dy += hillAmount;
+    }
+
+    worldHeights[i] = dy;
+}
+
+// Place camera on top of current segment
+const cameraY = worldHeights[0] + (worldHeights[1] - worldHeights[0]) * cameraOffset + 1;
+```
+
+With that in place we just need to touch up our projection logic.
+
+```javascript
+const topY = horizon - horizon * (worldHeights[segment] - cameraY) / topZ;
+const bottomY = horizon - horizon * (worldHeights[segment - 1] - cameraY) / bottomZ;
+```
+
+<iframe height="400" width="600" style="border:none" srcdoc="<html> <head> <style> body { margin: 0; display: grid; place-items: center; width: 600px; height: 400px; } button { padding:8px; color:green; background-color:black; margin:auto auto; border:none; } </style> <script> function onClick() { document.querySelector('button').remove(); const ifr = document.createElement('iframe'); ifr.width='600px'; ifr.height='400px'; ifr.style.border='none'; ifr.srcdoc = '<html> <head> <style> body { margin: 0; background-color: black; } </style> <script type=\'text/javascript\'> addEventListener(\'load\', () => { let canvas = document.getElementById(\'canvas\'); let context = canvas.getContext(\'2d\'); const canvasWidth = canvas.width = window.innerWidth; const canvasHeight = canvas.height = window.innerHeight; const canvasMiddle = canvasWidth / 2; const horizon = canvasHeight / 2; const roadDistance = canvasHeight - horizon; const maxRoadWidth = canvasWidth / 2; const segments = Math.round(roadDistance); const roadGutterWidth = 8; let distanceFromCameraToScreen = 0; let lastTime; const hillStart = 25; const hillEnd = 100; const hillAmount = .2; const worldHeights = new Array(segments); function run() { requestAnimationFrame((time) => { let dt = time - (lastTime ?? time); lastTime = time; context.clearRect(0, 0, canvasWidth, canvasHeight); distanceFromCameraToScreen += (dt * .0025); const cameraOffset = distanceFromCameraToScreen % 1; let roadMiddle = canvasMiddle; let dy = worldHeights[Math.floor(distanceFromCameraToScreen)] ?? 1; for (let i = 0; i < worldHeights.length; i++) { const worldPosition = i + Math.floor(distanceFromCameraToScreen); if (worldPosition >= hillStart && worldPosition <= hillEnd) { dy += hillAmount; } worldHeights[i] = dy; } const cameraY = worldHeights[0] + (worldHeights[1] - worldHeights[0]) * cameraOffset + 1; for (let segment = segments - 1; segment > 1; segment--) { const topZ = segment - cameraOffset; const bottomZ = segment - 1 - cameraOffset; const topY = horizon - horizon * (worldHeights[segment] - cameraY) / topZ; const bottomY = horizon - horizon * (worldHeights[segment - 1] - cameraY) / bottomZ; const topLeft = roadMiddle - (maxRoadWidth / topZ); const topRight = roadMiddle + (maxRoadWidth / topZ); const bottomLeft = roadMiddle - (maxRoadWidth / bottomZ); const bottomRight = roadMiddle + (maxRoadWidth / bottomZ); const topGutterWidth = roadGutterWidth / topZ; const bottomGutterWidth = roadGutterWidth / bottomZ; context.beginPath(); context.moveTo(0, topY); context.lineTo(topLeft - topGutterWidth, topY); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(topLeft - topGutterWidth, topY); context.lineTo(topLeft, topY); context.lineTo(bottomLeft, bottomY); context.lineTo(bottomLeft - bottomGutterWidth, bottomY); context.closePath(); context.fillStyle = \'lightgreen\'; context.fill(); context.beginPath(); context.moveTo(bottomLeft - (roadGutterWidth / 2), bottomY); context.lineTo(0, bottomY); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(canvasWidth, topY); context.lineTo(topRight + (roadGutterWidth / 2), topY); context.strokeStyle = \'green\'; context.stroke(); context.beginPath(); context.moveTo(topRight - topGutterWidth, topY); context.lineTo(topRight, topY); context.lineTo(bottomRight, bottomY); context.lineTo(bottomRight - bottomGutterWidth, bottomY); context.closePath(); context.fillStyle = \'lightgreen\'; context.fill(); context.beginPath(); context.moveTo(bottomRight + (roadGutterWidth / 2), bottomY); context.lineTo(canvasWidth, bottomY); context.strokeStyle = \'green\'; context.stroke(); } run(); }); } run(); }); <\/script> </head> <body> <canvas id=\'canvas\'></canvas> </body></html>'; document.body.appendChild(ifr); } </script> </head> <body> <button onclick='onClick()'>Play</button> </body></html>"></iframe>
+
+This is a great start but if you pay close attention there is a problem on the horizon, there is no horizon. Road segments behind the hill are rendering and it doesn't look quite right.
+
+To address this we can alter our world projection function to find all points of acclusion. If the segment is behind the acclusion we just skip rendering it.
+
+TODO do it
+
+## Rolling hills
+
+TODO talk about rolling hills and the importance of an effect like fog
+
+## Conclusion
+
+IDK yet
