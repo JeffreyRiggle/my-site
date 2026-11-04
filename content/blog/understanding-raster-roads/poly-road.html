@@ -33,7 +33,7 @@
                         const cameraOffset = distanceFromCameraToScreen % 1;
                         let roadMiddle = canvasMiddle;
 
-                        for (let segment = segments; segment > 0; segment--) {
+                        for (let segment = 1; segment < segments; segment++) {
                             const topZ = segment + 1 - cameraOffset;
                             const bottomZ = segment - cameraOffset;
 

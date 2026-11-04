@@ -26,7 +26,6 @@
                 const hillAmount = .2;
                 const worldHeights = new Array(segments);
 
-                // TODO this isn't working because the cameraY isn't moving
                 function run() {
                     requestAnimationFrame((time) => {
                         let dt = time - (lastTime ?? time);
@@ -51,7 +50,7 @@
 
                         const cameraY = worldHeights[0] + (worldHeights[1] - worldHeights[0]) * cameraOffset + 1;
 
-                        for (let segment = segments - 1; segment > 1; segment--) {
+                        for (let segment = 2; segment < segments; segment++) {
                             const topZ = segment - cameraOffset;
                             const bottomZ = segment - 1 - cameraOffset;
 
@@ -67,6 +66,7 @@
                             const topGutterWidth = roadGutterWidth / topZ;
                             const bottomGutterWidth = roadGutterWidth / bottomZ;
 
+                            // left side
                             context.beginPath();
                             context.moveTo(0, topY);
                             context.lineTo(topLeft - topGutterWidth, topY);
