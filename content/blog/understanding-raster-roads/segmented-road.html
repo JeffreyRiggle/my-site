@@ -19,21 +19,27 @@
                 const maxRoadWidth = canvasWidth / 2;
                 const segments = Math.round(roadDistance);
                 const roadGutterWidth = 8;
-                const distanceFromCameraToScreen = 1;
+                let distanceFromCameraToScreen = 0;
+                let lastTime;
 
                 function run() {
-                    requestAnimationFrame(() => {
+                    requestAnimationFrame((time) => {
+                        let dt = time - (lastTime ?? time);
+                        lastTime = time;
+
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
+                        distanceFromCameraToScreen += (dt * .0025);
+                        const cameraOffset = distanceFromCameraToScreen % 1;
 
                         for (let y = canvasHeight; y > horizon; y--) {
-                            const z = roadDistance / (y - horizon) * distanceFromCameraToScreen;
-                            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) * distanceFromCameraToScreen : Infinity;
+                            const z = roadDistance / (y - horizon);
+                            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
                             const roadMiddle = canvasMiddle;
                             const left = roadMiddle - (maxRoadWidth / z);
                             const right = roadMiddle + (maxRoadWidth / z);
                             
-                            const segmentBoundary = Math.ceil(z);
-                            const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ;
+                            const segmentBoundary = Math.ceil(z + cameraOffset);
+                            const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ + cameraOffset;
                             
                             context.beginPath();
                             context.moveTo(!onSegment ? left : 0, y);
@@ -62,8 +68,7 @@
                             }
                         }
 
-                        // Disable since there is no motion and I care about your CPU
-                        // run();
+                        run();
                     });
                 }
                 run();

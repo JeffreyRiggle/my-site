@@ -25,7 +25,6 @@
                     
                         for (let y = canvasHeight; y > horizon; y--) {
                             const z = roadDistance / (y - horizon) * distanceFromCameraToScreen;
-                            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
                             const left = roadMiddle - (maxRoadWidth / z);
                             const right = roadMiddle + (maxRoadWidth / z);
                         
