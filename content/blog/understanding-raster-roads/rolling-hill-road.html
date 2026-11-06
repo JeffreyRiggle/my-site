@@ -22,7 +22,7 @@
                 let distanceFromCameraToScreen = 0;
                 let lastTime;
                 const hills = [{ start: 25, end: 100, amount: -.2}, { start: 125, end: 300, amount: .2 }];
-                const worldHeights = new Array(segments);
+                const segmentHeights = new Array(segments);
 
                 function run() {
                     requestAnimationFrame((time) => {
@@ -30,35 +30,37 @@
                         lastTime = time;
 
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
+                        context.save();
                         distanceFromCameraToScreen += (dt * .0025);
                         
                         const cameraOffset = distanceFromCameraToScreen % 1;
                         let roadMiddle = canvasMiddle;
 
-                        let dy = worldHeights[Math.floor(distanceFromCameraToScreen)] ?? 1;
+                        let dy = 1;
                         // fill world heights
-                        for (let i = 0; i < worldHeights.length; i++) {
+                        for (let i = 0; i < segmentHeights.length; i++) {
                             const worldPosition = i + Math.floor(distanceFromCameraToScreen);
                             const onHill = hills.find(h => worldPosition >= h.start && worldPosition <= h.end);
                             if (onHill) {
                                 dy += onHill.amount;
                             }
 
-                            worldHeights[i] = dy;
+                            segmentHeights[i] = dy;
                         }
 
-                        const cameraY = worldHeights[0] + (worldHeights[1] - worldHeights[0]) * cameraOffset + 1;
+                        const cameraY = segmentHeights[0] + (segmentHeights[1] - segmentHeights[0]) * cameraOffset + 1;
                         let clipY = canvasHeight;
                         for (let segment = 2; segment < segments; segment++) {
                             
                             const topZ = segment - cameraOffset;
                             const bottomZ = segment - 1 - cameraOffset;
                             
-                            const topY = horizon - horizon * (worldHeights[segment] - cameraY) / topZ;
-                            const bottomY = horizon - horizon * (worldHeights[segment - 1] - cameraY) / bottomZ;
+                            const topY = horizon - horizon * (segmentHeights[segment] - cameraY) / topZ;
+                            const bottomY = horizon - horizon * (segmentHeights[segment - 1] - cameraY) / bottomZ;
                             
-                            if (Math.min(topY, bottomY) >= clipY)  continue;
-                            clipY = Math.min(clipY, topY, bottomY);
+                            const segmentTop = Math.min(topY, bottomY); 
+                            if (segmentTop >= clipY)  continue;
+                            clipY = Math.min(clipY, segmentTop);
                             
                             const topLeft = roadMiddle - (maxRoadWidth / topZ);
                             const topRight = roadMiddle + (maxRoadWidth / topZ);
@@ -119,8 +121,13 @@
                                 context.fillRect(0, topY, canvasWidth, bottomY - clipY);
                                 context.globalAlpha = 1;
                             }
+
+                            context.beginPath();
+                            context.rect(0, 0, canvasWidth, Math.max(0, clipY));
+                            context.clip();
                         }
 
+                        context.restore();
                         run();
                     });
                 }
