@@ -15,31 +15,26 @@
                 const canvasHeight = canvas.height = window.innerHeight;
                 const canvasMiddle = canvasWidth / 2;
                 const horizon = canvasHeight / 2;
-                const roadDistance = canvasHeight - horizon;
+                const projectionScale = canvasHeight - horizon;
                 const maxRoadWidth = canvasWidth / 2;
-                const segments = Math.round(roadDistance);
+                const segments = Math.round(projectionScale);
                 const roadGutterWidth = 8;
-                let distanceFromCameraToScreen = 0;
-                let lastTime;
+                const cameraZ = 1;
+                const cameraHeight = 1;
 
                 function run() {
-                    requestAnimationFrame((time) => {
-                        let dt = time - (lastTime ?? time);
-                        lastTime = time;
-
+                    requestAnimationFrame(() => {
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
-                        distanceFromCameraToScreen += (dt * .0025);
-                        const cameraOffset = distanceFromCameraToScreen % 1;
 
                         for (let y = canvasHeight; y > horizon; y--) {
-                            const z = roadDistance / (y - horizon);
-                            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
+                            const z = (projectionScale * cameraHeight) / (y - horizon);
+                            const nextZ = y > horizon + 1 ? (projectionScale * cameraHeight) / (y - 1 - horizon) : Infinity;
                             const roadMiddle = canvasMiddle;
                             const left = roadMiddle - (maxRoadWidth / z);
                             const right = roadMiddle + (maxRoadWidth / z);
                             
-                            const segmentBoundary = Math.ceil(z + cameraOffset);
-                            const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ + cameraOffset;
+                            const segmentBoundary = Math.ceil(z);
+                            const onSegment = segmentBoundary <= segments && segmentBoundary < nextZ;
                             
                             context.beginPath();
                             context.moveTo(!onSegment ? left : 0, y);
@@ -68,7 +63,7 @@
                             }
                         }
 
-                        run();
+                        //run();
                     });
                 }
                 run();

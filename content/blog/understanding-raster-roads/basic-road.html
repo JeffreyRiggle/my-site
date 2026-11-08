@@ -15,16 +15,17 @@
                 const canvasHeight = canvas.height = window.innerHeight;
                 const canvasMiddle = roadMiddle = maxRoadWidth = canvasWidth / 2;
                 const horizon = canvasHeight / 2;
-                const roadDistance = canvasHeight - horizon;
+                const projectionScale = canvasHeight - horizon;
                 const roadGutterWidth = 8;
-                const distanceFromCameraToScreen = 1;
+                const cameraZ = 1;
+                const cameraHeight = 1;
 
                 function run() {
                     requestAnimationFrame(() => {
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
                     
                         for (let y = canvasHeight; y > horizon; y--) {
-                            const z = roadDistance / (y - horizon) * distanceFromCameraToScreen;
+                            const z = (projectionScale * cameraHeight) / (y - horizon);
                             const left = roadMiddle - (maxRoadWidth / z);
                             const right = roadMiddle + (maxRoadWidth / z);
                         

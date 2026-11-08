@@ -15,11 +15,12 @@
                 const canvasHeight = canvas.height = window.innerHeight;
                 const canvasMiddle = canvasWidth / 2;
                 const horizon = canvasHeight / 2;
-                const roadDistance = canvasHeight - horizon;
+                const projectionScale = canvasHeight - horizon;
                 const maxRoadWidth = canvasWidth / 2;
-                const segments = Math.round(roadDistance);
+                const segments = Math.round(projectionScale);
                 const roadGutterWidth = 8;
-                let distanceFromCameraToScreen = 0;
+                let cameraZ = 0;
+                const cameraHeight = 1;
                 let lastTime;
 
                 function run() {
@@ -28,12 +29,12 @@
                         lastTime = time;
 
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
-                        distanceFromCameraToScreen += (dt * .0025);
-                        const cameraOffset = distanceFromCameraToScreen % 1;
+                        cameraZ += (dt * .0025);
+                        const cameraOffset = cameraZ % 1;
 
                         for (let y = canvasHeight; y > horizon; y--) {
-                            const z = roadDistance / (y - horizon);
-                            const nextZ = y > horizon + 1 ? roadDistance / (y - 1 - horizon) : Infinity;
+                            const z = (projectionScale * cameraHeight) / (y - horizon);
+                            const nextZ = y > horizon + 1 ? (projectionScale * cameraHeight) / (y - 1 - horizon) : Infinity;
                             const roadMiddle = canvasMiddle;
                             const left = roadMiddle - (maxRoadWidth / z);
                             const right = roadMiddle + (maxRoadWidth / z);
