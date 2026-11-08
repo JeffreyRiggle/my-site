@@ -1,6 +1,6 @@
 ---
 title: 'Understanding Pseudo-3D Roads'
-date: '2026-10-02'
+date: '2026-11-07'
 ---
 
 > "Not hearing is not as good as hearing, hearing is not as good as seeing, seeing is not as good as knowing, knowing is not as good as acting; true learning continues until it is put into action."
