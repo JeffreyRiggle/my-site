@@ -173,7 +173,7 @@ At this point, a minor digression. The first time I wrote this blog I had my pro
 
 Even without this mistake, a problem remains. If you watch this animation for long enough, the segments would start disappearing, leaving us with nothing more than what looks like our first road. This is happening because we have bounded segments. To deal with this, we could grow our segments over time, or we could play a little trick with the camera. Instead of moving over all segments, we will adjust our position within the first lines by using some modulo math.
 
-![Visualization of camera trick](./camera-trick.png)
+![Visualization of camera trick](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/understanding-raster-roads/camera-trick.png)
 
 ```javascript
 function run() {
@@ -211,7 +211,7 @@ Notice how we position the left and right relative to the middle of the road? Wh
 
 To pull this off, we can integrate the position over each scan line to create a natural-looking curve. This accumulates across each scan line, creating a progressively more curved road.
 
-![Road middle integration visualization](./integrate-road-middle.png)
+![Road middle integration visualization](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/understanding-raster-roads/integrate-road-middle.png)
 
 ```javascript
 const curveAmount = -.004;
@@ -254,7 +254,7 @@ Up until this point, we have been rendering a road using scan lines. This has wo
 
 First, to keep this focused, we are going to walk back some of the complexity. Let's straighten out this road again so we can focus on the fundamentals from a new perspective.
 
-![Visualization of draw strategy](./poly-explain.png)
+![Visualization of draw strategy](https://raw.githubusercontent.com/JeffreyRiggle/my-site/master/content/blog/understanding-raster-roads/poly-explain.png)
 
 Next, we have to stop iterating over every position of y and instead start iterating over each segment. This is a fairly trivial change on the for loop.
 
