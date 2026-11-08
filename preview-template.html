@@ -1,13 +1,33 @@
+<!-- TODO I want a responsive design that doesn't appear to bad on mobile -->
 <html>
     <head>
         <style>
+            :root {
+                --screen-width: 300px;
+                --screen-height: 200px;
+            }
             body {
                 margin: 0;
                 display: grid;
                 place-items: center;
-                width: 600px;
-                height: 400px;
+                width: var(--screen-width);
+                height: var(--screen-height);
             }
+            @media(min-width: 800px) {
+                :root {
+                    --screen-width: 600px;
+                    --screen-height: 400px;
+                }
+            }
+
+            @media(min-width: 1000px) {
+                :root {
+                    --screen-width: 800px;
+                    --screen-height: 600px;
+                }
+
+            }
+
             button {
                 padding:8px;
                 color:green;
@@ -17,11 +37,12 @@
             }
         </style>
         <script>
-            function onClick() { 
+            function onClick() {
+                const computedStyles = getComputedStyle(document.documentElement);
                 document.querySelector('button').remove();
                 const ifr = document.createElement('iframe');
-                ifr.width='600px';
-                ifr.height='400px';
+                ifr.width = computedStyles.getPropertyValue('--screen-width');
+                ifr.height = computedStyles.getPropertyValue('--screen-height');
                 ifr.style.border='none';
                 ifr.srcdoc = '{{INNER_CONTENT}}';
                 document.body.appendChild(ifr);

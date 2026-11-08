@@ -16,7 +16,7 @@ fs.readFile(process.argv[3], 'utf-8', (err, loadableData) => {
                                     .replace(/['"]/g, '\\\'')
                                     .replace('</script>', '<\\/script>');
             const previewContent = templateData.replace(/[\r\n\t]/g, '').replace(/\s+/g, ' ').replace('"', '\'').replace('{{INNER_CONTENT}}', loadContent);
-            const fileContent = `<iframe height="400" width="600" style="border:none" srcdoc="${previewContent}"></iframe>`;
+            const fileContent = `<iframe height="600" width="100%" style="border:none" srcdoc="${previewContent}"></iframe>`;
 
             fs.writeFile(process.argv[4], fileContent, 'utf-8', (err, data) => {
                 console.log('File created');
