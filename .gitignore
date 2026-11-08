@@ -70,3 +70,6 @@ yarn-error.log
 
 # Secrets
 token
+
+# Generated stuff
+embedding-gen/
