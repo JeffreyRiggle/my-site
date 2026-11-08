@@ -12,7 +12,7 @@ Personally action is realized by writing. My only goal here is learning. While I
 
 Recently I have been trying to understand 3D projection in a 2D space. This is an idea that has been around for quite some time and has been used in many games over the years. Most modern games use engines, frameworks, or libraries that hide the intricacies of the solution. I wanted to peak behind the curtain.
 
-The common techniques I have seen so far are perspective projection, rasterization, and ray tracing. This blog is mostly concerned with perspective projection  as well as a sprinkle of rasterization. Over time we will build increasing layers of complexity on a projected road. At many points throughout this blog I will have interactive demos that you can run by hitting the play button. With that aside let's dive in.
+The common techniques I have seen so far are perspective projection, rasterization, and ray tracing. This blog is mostly concerned with perspective projection  as well as rasterization. Over time we will build increasing layers of complexity on a projected road. At many points throughout this blog I will have interactive demos that you can run by hitting the play button. With that aside let's dive in.
 
 ## Scan line Rendering
 
@@ -22,7 +22,14 @@ Now the only problem is how do we get the correct x value for each y? For this w
 
 The effect of distance can be created by making objects appear further away from the screen by changing their y position. Using the law of similar triangles we can determine by how much to move the position of the object along the y-axis. To do this we need to introduce a camera and use the following equation.
 
-Now to put this all together we can create a simple animation loop. In this loop we walk all values of y from the bottom of the screen to the horizon and we project our left and right points using the `projectionScale` the relative position of `y` and the fixed camera position `cameraZ`. Fine you caught me they are not points they are 8px horizontal lines to make the road more defined.
+```javascript
+const y = horizon + (projectedScale * cameraHeight) / z;
+
+// OR if we want to solve for z
+const z = (projectionScale * cameraHeight) / (y - horizon)
+```
+
+Now to put this all together we can create a simple animation loop. In this loop we walk all values of y from the bottom of the screen to the horizon and we project our left and right points using the `projectionScale`, the relative position of `y`, a fixed `cameraHeight`, and a fixed camera position `cameraZ`. Fine you caught me they are not points they are 8px horizontal lines to make the road more defined.
 
 ```javascript
 addEventListener('load', () => {
@@ -75,7 +82,7 @@ I want to reiterate that we are walking each line of y one pixel at a time. Depe
 
 Now let's imagine we are looking at the road from the perspective of the inside of a car. Notice how it would be impossible to tell if we are moving? This is because there is no variation in the road nor any projected objects. To see motion on lets add some texture to the road. The easiest way to do this is to draw horizonal lines on either side of the road as visual makers. These effectively create road segments that the camera could progress through.
 
-To make this work we now need to compute if a position of y would fall on a segment boundary. If it does we will extend our horizonal line to the far left and right edges of the screen. However we need to decide where these segment boundaries are. The easiest way I have found to do this is to draw an edge is by considering your current and next z values. If your current line is below the next line by more than one integer value then its time to draw a segment.
+To make this work we now need to compute if a position of y would fall on a segment boundary. If it does we will extend our horizonal line to the far left and right edges of the screen. However we need to decide where these segment boundaries are. The easiest way I have found to do this is to draw an edge is by considering your current and next z values. If your current line is below the next line based on the ceiling of the z value its time to draw a segment.
 
 ```javascript
 addEventListener('load', () => {
@@ -197,7 +204,7 @@ const right = roadMiddle + (maxRoadWidth / z);
 
 Notice how we are positioning the left and right as relative positions of the middle of the road? What if the middle of the road didn't happen to be the middle of the screen but another position? If we moved this value lower the scan line would appear to shift left and higher right.
 
-To make this appear correct we will have to integrate the position over each scan line to create a natural looking curve.
+To produce this kind of effect we can integrate the position over each scan line to create a natural looking curve. This uses accumulation over each scan line to create a progressivly more curved road.
 
 ![Road middle integration visualization](./integrate-road-middle.png)
 
@@ -330,9 +337,9 @@ With all of this we can put this together and get something familiar, a moving r
 
 ## Adding those hills
 
-Now that we have changed our rendering strategy we can get around to adding in those hills. Up until this point our equations have assumed the world is flat and that the camera is at a stable y position. Getting hills to work just requires us to compute world y values and incorporate those into our y positioning logic.
+Now that we have changed our rendering strategy we can get around to adding in those hills. Up until this point our equations have assumed the world is flat and that the camera is at a stable y position. Getting hills to work just requires us to camera relative y values and incorporate those into our y positioning logic.
 
-First let's generate those world y values, we will take a trivial approach to this much like we did with curves.
+First let's generate those camera relative y values, we will take a trivial approach to this much like we did with curves.
 
 ```javascript
 // Setup arbitrary hill location
@@ -464,4 +471,4 @@ You put this all together and you get a pretty neat visual effect. Admittedly th
 
 ## Conclusion
 
-If you made it this far thank you for reading my attempt to refine my own learning on this subject. As far as I can tell this is a baby step into understanding how 3D rendering works in practice done on a 2D canvas. Topics like rotation of polygons and ray tracing would be logical follow ons which I may investigate at some future point. Admittedly these set of topics is well out of my typical skill set and I might have misrepresented some concepts but I sure had fun doing it.
+Through a series of eight interations we have taken what could hardly be recongized as a road and turned it into a passible road projection. Along the way we learned the projection math that made it work, as well as made a few humorous mistakes along the way. However this is not a comprehesive study. There are many topics we left unexplored ranging from sprites to proper geometric projection without shortcuts. Writing this was incredibly rewarding as it gave me a chance to focus on the specific techniques and ensure I had understood them correctly.
