@@ -115,11 +115,11 @@
                             context.strokeStyle = 'green';
                             context.stroke();
 
-                            const fogDensity = 1 / Math.pow(Math.E, (segment / segments) * (segment / segments) * 5);
-                            if (fogDensity < 1) {
-                                context.globalAlpha = 1 - fogDensity;
+                            const fogTransmittance = Math.exp(-5 * (segment / segments) ** 2);
+                            if (fogTransmittance < 1) {
+                                context.globalAlpha = 1 - fogTransmittance;
                                 context.fillStyle = '#C9B8E8';
-                                context.fillRect(0, topY, canvasWidth, bottomY - clipY);
+                                context.fillRect(0, segmentTop, canvasWidth, Math.abs(bottomY - topY));
                                 context.globalAlpha = 1;
                             }
 
