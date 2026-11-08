@@ -1,5 +1,5 @@
 ---
-title: 'Faking 3d roads'
+title: 'Understanding Pseudo-3D Roads'
 date: '2026-10-02'
 ---
 
@@ -22,7 +22,7 @@ Now the only problem is how do we get the correct x value for each y? For this w
 
 The effect of distance can be created by making objects appear further away from the screen by changing their y position. Using the law of similar triangles we can determine by how much to move the position of the object along the y-axis. To do this we need to introduce a camera and use the following equation.
 
-Now to put this all together we can create a simple animation loop. In this loop we walk all values of y from the bottom of the screen to the horizon and we project our left and right points using the `roadDistance` the relative position of `y` and the fixed camera position `distanceFromCameraToScreen`. Fine you caught me they are not points they are 8px horizontal lines to make the road more defined.
+Now to put this all together we can create a simple animation loop. In this loop we walk all values of y from the bottom of the screen to the horizon and we project our left and right points using the `projectionScale` the relative position of `y` and the fixed camera position `cameraZ`. Fine you caught me they are not points they are 8px horizontal lines to make the road more defined.
 
 ```javascript
 addEventListener('load', () => {
@@ -33,7 +33,7 @@ addEventListener('load', () => {
     const canvasHeight = canvas.height = window.innerHeight;
     const canvasMiddle = roadMiddle = maxRoadWidth = canvasWidth / 2;
     const horizon = canvasHeight / 2;
-    const roadDistance = canvasHeight - horizon;
+    const projectionScale = canvasHeight - horizon;
     const roadGutterWidth = 8;
     const cameraZ = 1;
     const cameraHeight = 1;
@@ -80,7 +80,7 @@ To make this work we now need to compute if a position of y would fall on a segm
 ```javascript
 addEventListener('load', () => {
     // Truncated
-    const segments = Math.round(roadDistance);
+    const segments = Math.round(projectionScale);
 
     function run() {
         // Truncated
