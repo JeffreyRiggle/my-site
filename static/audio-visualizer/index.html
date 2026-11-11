@@ -1,0 +1,252 @@
+<html>
+    <head>
+        <title>Audio Visualizer Scene | ilusr</title>
+        <style>
+            body {
+                margin: 0;
+                background-color: black;
+            }
+            audio {
+                display: none;
+            }
+
+            .audio-control {
+                background-color: grey;
+                width: 100%;
+                height: 48px;
+            }
+        </style>
+        <link rel="icon" href="/favicon-32x32.png" type="image/png">
+        <script type="text/javascript">
+            let play;
+            let last;
+            let next;
+            let updateVisual;
+            const neonPurple = [176, 38, 255];
+            const neonGreen = [57, 255, 20];
+            const neonRed = [255, 49, 49];
+
+            addEventListener('load', () => {
+                const audioElement = document.getElementById('playback');
+                const audioContext = new AudioContext();
+                const audioAnalyzer = audioContext.createAnalyser();
+                const audioSource = audioContext.createMediaElementSource(audioElement);
+                const frequency = 128;
+                
+                audioSource.connect(audioAnalyzer);
+                audioAnalyzer.connect(audioContext.destination);
+                
+                audioAnalyzer.fftSize = frequency;
+                const audiobufferLength = audioAnalyzer.fftSize;
+                const audioBuffer = new Uint8Array(audiobufferLength);
+                const previousAudioBuffer = new Uint8Array(audiobufferLength);
+                const playButton = document.getElementById('play-button');
+                let playing = false;
+                let animation = 'bar';
+                let particles = [];
+
+                play = async function() {
+                    if (playing) {
+                        await audioElement.pause();
+                        await audioContext.suspend();
+                        playButton.innerText = '>'
+                    } else {
+                        await audioElement.play();
+                        await audioContext.resume();
+                        playButton.innerText = '||'
+                    }
+
+                    playing = !playing;
+                }
+
+                last = async function() {
+                }
+
+                next = async function() {
+                }
+
+                updateVisual = function(event) {
+                    animation = event.target.value;
+                }
+
+                const canvas = document.getElementById('view');
+                const context = canvas.getContext('2d');
+                const canvasWidth = canvas.width = window.innerWidth;
+                const canvasHeight = canvas.height = window.innerHeight - 60;
+                const sampleWidth = canvasWidth / audiobufferLength;
+                const maxBars = 25;
+                const barHeight = (canvasHeight / 2) / maxBars;
+                let lastTime = 0;
+                let maxValue = 0;
+                let minValue = Infinity;
+
+                function lerp(a, b, t) {
+                    return a + (b - a) * t;
+                }
+
+                function lineAnimation() {
+                    for (let x = 0; x < canvasWidth; x++) {
+                        const position = x / frequency;
+                        const bufferValue = audioBuffer[Math.floor(position)];
+                        maxValue = Math.max(maxValue, bufferValue);
+                        minValue = Math.min(minValue, bufferValue);
+                        const y = (bufferValue / 255) * canvasHeight;
+                        const yRelativePercent = y / canvasHeight;
+                        const diff = previousAudioBuffer[Math.floor(position)] - bufferValue;
+                        const diffPercent = Math.abs((diff % 32) / 32);
+                        const endY = lerp(y + 2, y + 32, diffPercent);
+                        const rgb = [Math.round(lerp(neonPurple[0], neonGreen[0], yRelativePercent)), Math.round(lerp(neonPurple[1], neonGreen[1], yRelativePercent)), Math.round(lerp(neonPurple[2], neonGreen[2], yRelativePercent))];
+                        const color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+
+                        if (diffPercent > .5 && (x % 4) === 1) {
+                            particles.push({
+                                x,
+                                y,
+                                width: 2,
+                                height: 2,
+                                rgb,
+                                alpha: 1,
+                                acceleration: diffPercent * Math.random() * .1,
+                                direction: diff > 0 ? 1 : -1
+                            });
+                        }
+
+                        context.beginPath();
+                        context.strokeStyle = color;
+                        context.moveTo(x, y);
+                        context.lineTo(x, endY);
+                        context.stroke();
+                    }
+                }
+
+                // TODO make cool particle effect
+                // This also has bugs I need to figure out
+                function barAnimation() {
+                    const laneWidth = canvasWidth / (audiobufferLength / 2);
+                    for (let lane = 0; lane < (audiobufferLength / 2); lane++) {
+                        const bufferValue = audioBuffer[lane];
+                        const x = lane * laneWidth;
+                        maxValue = Math.max(maxValue, bufferValue);
+                        minValue = Math.min(minValue, bufferValue);
+
+                        const stackedBars = Math.round(maxBars * bufferValue / 255);
+
+                        for (let bar = 0; bar < stackedBars; bar++) {
+                            const y = canvasHeight - (bar * barHeight);
+                            const barRelative = bar / maxBars;
+                            const rgb = [Math.round(lerp(neonGreen[0], neonRed[0], barRelative)), Math.round(lerp(neonGreen[1], neonRed[1], barRelative)), Math.round(lerp(neonGreen[2], neonRed[2], barRelative))];
+                            const color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+
+                            context.beginPath();
+                            context.fillStyle = color;
+                            context.rect(x, y, laneWidth, barHeight / 2)
+                            context.fill();
+                        }
+                    }
+                }
+
+                function waveAnimation() {
+                    let previousPoint = [0, canvasHeight / 2];
+                    for (let x = 0; x < canvasWidth; x++) {
+                        const position = x / frequency;
+                        const lowerBufferValue = audioBuffer[Math.floor(position)];
+                        const upperBufferValue = audioBuffer[Math.ceil(position)];
+                        maxValue = Math.max(maxValue, lowerBufferValue, upperBufferValue);
+                        minValue = Math.min(minValue, lowerBufferValue, upperBufferValue);
+                        const target = lerp(lowerBufferValue, upperBufferValue, position % 1);
+                        const y = (target / 128) * (canvasHeight / 2);
+                        const diff = previousAudioBuffer[Math.floor(position)] - lowerBufferValue;
+                        const diffPercent = Math.abs((diff % 64) / 64);
+                        const rgb = [Math.round(lerp(neonGreen[0], neonPurple[0], diffPercent)), Math.round(lerp(neonGreen[1], neonPurple[1], diffPercent)), Math.round(lerp(neonGreen[2], neonPurple[2], diffPercent))];
+                        const color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+
+                        context.beginPath();
+                        context.strokeStyle = color;
+                        context.moveTo(previousPoint[0], previousPoint[1]);
+                        context.lineTo(x, y + 2);
+                        context.stroke();
+
+                        if (diffPercent > .5 && (x % 4) === 1) {
+                            particles.push({
+                                x,
+                                y,
+                                width: 1,
+                                height: 1,
+                                rgb,
+                                alpha: 1,
+                                acceleration: diffPercent * Math.random() * .1,
+                                direction: x % 4 > 1 ? 1 : -1
+                            });
+                        }
+
+                        previousPoint = [x, y + 4];
+                    }
+                }
+
+                function runLoop() {
+                    requestAnimationFrame((timestamp) => {
+                        const dt = timestamp - lastTime;
+                        const shouldUpdate = dt > 33.3;
+                        if (shouldUpdate) {
+                            previousAudioBuffer.set(audioBuffer);
+
+                            if (animation === 'line' || animation === 'bar') {
+                                audioAnalyzer.getByteFrequencyData(audioBuffer);
+                            } else {
+                                audioAnalyzer.getByteTimeDomainData(audioBuffer);
+                            } 
+                            lastTime = timestamp;
+                        }
+
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+                        if (animation === 'line') {
+                            lineAnimation();
+                        } else if (animation === 'wave') {
+                            waveAnimation();
+                        } else if (animation === 'bar') {
+                            barAnimation();
+                        }
+                        // TODO circle and sunfire
+
+                        for (let particle of particles) {
+                            particle.alpha -= .01;
+                            particle.y += particle.acceleration * dt * particle.direction;
+
+                            context.beginPath();
+                            context.strokeStyle = `rgba(${particle.rgb[0]}, ${particle.rgb[1]}, ${particle.rgb[2]}, ${particle.alpha})`;
+                            context.moveTo(particle.x, particle.y);
+                            context.lineTo(particle.x + particle.width, particle.y + particle.height);
+                            context.stroke();
+                        }
+
+                        particles = particles.filter(p => p.alpha > 0);
+
+                        context.fillStyle = 'red';
+                        context.font = '48px serif';
+                        context.fillText(`Max Value seen ${maxValue}, min value seen ${minValue}, FBC ${audioAnalyzer.frequencyBinCount}`, 120, 150);
+                        runLoop();
+                    })
+                }
+
+                runLoop();
+            });
+        </script>
+    </head>
+    <body>
+        <canvas id="view"></canvas>
+        <div class="audio-control">
+            <select onchange="updateVisual(event)">
+                <option value="bar">Bar</option>
+                <option value="wave">Wave</option>
+                <option value="line">Line</option>
+                <option value="circle">Circle</option>
+                <option value="sunfire">SunFire</option>
+            </select>
+            <button onclick="last()">Last</button>
+            <button id="play-button" onclick="play()">></button>
+            <button onclick="next()">Next</button>
+        </div>
+        <audio id="playback" src="./world_nap.mp3"></audio>
+    </body>
+</html>
