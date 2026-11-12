@@ -15,6 +15,14 @@
                 width: 100%;
                 height: 48px;
             }
+
+            .author-info {
+                font-size: 24px;
+                color: #04D9FF;
+                position: absolute;
+                top: 10;
+                left: 50;
+            }
         </style>
         <link rel="icon" href="/favicon-32x32.png" type="image/png">
         <script type="text/javascript">
@@ -25,6 +33,18 @@
             const neonPurple = [176, 38, 255];
             const neonGreen = [57, 255, 20];
             const neonRed = [255, 49, 49];
+            const neonBlue = [4, 217, 255]
+            const songs = [{
+                url: './Future-Grunge.ogg',
+                song: 'Future Grunge',
+                author: 'Eric Matyas',
+                site: 'https://soundimage.org/'
+            }, {
+                url: './world_nap.mp3',
+                song: 'World Nap',
+                author: 'Ozzed',
+                site: 'https://ozzed.net/music/cor-metallicum.shtml'
+            }]
 
             addEventListener('load', () => {
                 const audioElement = document.getElementById('playback');
@@ -37,13 +57,14 @@
                 audioAnalyzer.connect(audioContext.destination);
                 
                 audioAnalyzer.fftSize = frequency;
-                const audiobufferLength = audioAnalyzer.fftSize;
+                const audiobufferLength = audioAnalyzer.frequencyBinCount;
                 const audioBuffer = new Uint8Array(audiobufferLength);
                 const previousAudioBuffer = new Uint8Array(audiobufferLength);
                 const playButton = document.getElementById('play-button');
                 let playing = false;
                 let animation = 'bar';
                 let particles = [];
+                let maxLane = [];
 
                 play = async function() {
                     if (playing) {
@@ -86,7 +107,7 @@
 
                 function lineAnimation() {
                     for (let x = 0; x < canvasWidth; x++) {
-                        const position = x / frequency;
+                        const position = x / audiobufferLength;
                         const bufferValue = audioBuffer[Math.floor(position)];
                         maxValue = Math.max(maxValue, bufferValue);
                         minValue = Math.min(minValue, bufferValue);
@@ -120,16 +141,40 @@
                 }
 
                 // TODO make cool particle effect
-                // This also has bugs I need to figure out
                 function barAnimation() {
-                    const laneWidth = canvasWidth / (audiobufferLength / 2);
-                    for (let lane = 0; lane < (audiobufferLength / 2); lane++) {
+                    const laneWidth = canvasWidth / audiobufferLength;
+                    for (let lane = 0; lane < audiobufferLength; lane++) {
                         const bufferValue = audioBuffer[lane];
                         const x = lane * laneWidth;
                         maxValue = Math.max(maxValue, bufferValue);
                         minValue = Math.min(minValue, bufferValue);
 
                         const stackedBars = Math.round(maxBars * bufferValue / 255);
+                        let highestPoint = maxLane[lane];
+
+                        if (!highestPoint || highestPoint.bars < stackedBars || highestPoint.particle.alpha <= 0) {
+                            if (highestPoint?.particle) {
+                                highestPoint.particle.alpha = 0;
+                            }
+                            const barRelative = stackedBars / maxBars;
+                            const particle = {
+                                x,
+                                y: canvasHeight - (stackedBars * barHeight),
+                                width: laneWidth,
+                                height: barHeight / 4,
+                                rgb: [
+                                    Math.round(lerp(neonBlue[0], neonPurple[0], barRelative)),
+                                    Math.round(lerp(neonBlue[1], neonPurple[1], barRelative)),
+                                    Math.round(lerp(neonBlue[2], neonPurple[2], barRelative))
+                                ],
+                                alpha: 1,
+                                acceleration: .01,
+                                direction: 1
+                            };
+                            highestPoint = { bars: stackedBars, particle };
+                            particles.push(particle); 
+                            maxLane[lane] = highestPoint;
+                        }
 
                         for (let bar = 0; bar < stackedBars; bar++) {
                             const y = canvasHeight - (bar * barHeight);
@@ -148,7 +193,7 @@
                 function waveAnimation() {
                     let previousPoint = [0, canvasHeight / 2];
                     for (let x = 0; x < canvasWidth; x++) {
-                        const position = x / frequency;
+                        const position = x / audiobufferLength;
                         const lowerBufferValue = audioBuffer[Math.floor(position)];
                         const upperBufferValue = audioBuffer[Math.ceil(position)];
                         maxValue = Math.max(maxValue, lowerBufferValue, upperBufferValue);
@@ -214,17 +259,12 @@
                             particle.y += particle.acceleration * dt * particle.direction;
 
                             context.beginPath();
-                            context.strokeStyle = `rgba(${particle.rgb[0]}, ${particle.rgb[1]}, ${particle.rgb[2]}, ${particle.alpha})`;
-                            context.moveTo(particle.x, particle.y);
-                            context.lineTo(particle.x + particle.width, particle.y + particle.height);
-                            context.stroke();
+                            context.fillStyle = `rgba(${particle.rgb[0]}, ${particle.rgb[1]}, ${particle.rgb[2]}, ${particle.alpha})`;
+                            context.rect(particle.x, particle.y, particle.width, particle.height);
+                            context.fill();
                         }
 
                         particles = particles.filter(p => p.alpha > 0);
-
-                        context.fillStyle = 'red';
-                        context.font = '48px serif';
-                        context.fillText(`Max Value seen ${maxValue}, min value seen ${minValue}, FBC ${audioAnalyzer.frequencyBinCount}`, 120, 150);
                         runLoop();
                     })
                 }
@@ -235,18 +275,22 @@
     </head>
     <body>
         <canvas id="view"></canvas>
+        <div class="author-info">
+            <span id="song-name">Future Grunge</span> - <span id="author">Eric Matyas</span>
+            <a href="https://soundimage.org/">https://soundimage.org/</a>
+        </div>
         <div class="audio-control">
             <select onchange="updateVisual(event)">
                 <option value="bar">Bar</option>
                 <option value="wave">Wave</option>
                 <option value="line">Line</option>
                 <option value="circle">Circle</option>
-                <option value="sunfire">SunFire</option>
+                <option value="sunburst">SunBurst</option>
             </select>
             <button onclick="last()">Last</button>
             <button id="play-button" onclick="play()">></button>
             <button onclick="next()">Next</button>
         </div>
-        <audio id="playback" src="./world_nap.mp3"></audio>
+        <audio id="playback" src="./Future-Grunge.ogg"></audio>
     </body>
 </html>
