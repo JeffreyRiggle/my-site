@@ -75,7 +75,7 @@
                 const audioBuffer = new Uint8Array(audiobufferLength);
                 const previousAudioBuffer = new Uint8Array(audiobufferLength);
                 let playing = false;
-                let animation = 'bar';
+                let animation = 'sunburst';
                 let particles = [];
                 let maxLane = [];
 
@@ -189,7 +189,7 @@
                                 height: 2,
                                 rgb,
                                 alpha: 1,
-                                acceleration: diffPercent * Math.random() * .1,
+                                acceleration: [0, diffPercent * Math.random() * .1],
                                 direction: diff > 0 ? 1 : -1
                             });
                         }
@@ -202,7 +202,6 @@
                     }
                 }
 
-                // TODO make cool particle effect
                 function barAnimation() {
                     const laneWidth = canvasWidth / audiobufferLength;
                     for (let lane = 0; lane < audiobufferLength; lane++) {
@@ -230,7 +229,7 @@
                                     Math.round(lerp(neonBlue[2], neonPurple[2], barRelative))
                                 ],
                                 alpha: 1,
-                                acceleration: .01,
+                                acceleration: [0, .01],
                                 direction: 1
                             };
                             highestPoint = { bars: stackedBars, particle };
@@ -281,13 +280,80 @@
                                 height: 1,
                                 rgb,
                                 alpha: 1,
-                                acceleration: diffPercent * Math.random() * .1,
+                                acceleration: [0, diffPercent * Math.random() * .1],
                                 direction: x % 4 > 1 ? 1 : -1
                             });
                         }
 
                         previousPoint = [x, y + 4];
                     }
+                }
+
+                function sunburstAnimation() {
+                    const maxAngle = 2 * Math.PI;
+                    const minRadius = canvasWidth / 16;
+                    const maxRadius = canvasWidth / 4;
+                    const angleIncrement = maxAngle / audiobufferLength;
+                    context.save();
+
+                    let totalValue = 0;
+                    for (let ray = 0; ray < audiobufferLength; ray++) {
+                        const bufferValue = audioBuffer[ray];
+                        totalValue += bufferValue;
+                        const angle = ray * angleIncrement;
+                        const targetRadius = maxRadius * (bufferValue / 255);
+
+                        if (targetRadius < minRadius) continue;
+
+                        const innerX = canvasWidth / 2 + Math.cos(angle) * minRadius;
+                        const outerX = canvasWidth / 2 + Math.cos(angle) * targetRadius;
+                        
+                        const innerY = canvasHeight / 2 + Math.sin(angle) * minRadius;
+                        const outerY = canvasHeight / 2 + Math.sin(angle) * targetRadius;
+                        const diff = previousAudioBuffer[ray] - bufferValue;
+                        const diffPercent = Math.abs((diff % 32) / 32);
+                        
+                        maxValue = Math.max(maxValue, bufferValue);
+                        minValue = Math.min(minValue, bufferValue);
+
+                        const relativeRadius = targetRadius / maxRadius;
+                        const rgb = [
+                            Math.round(lerp(neonGreen[0], neonPurple[0], relativeRadius)),
+                            Math.round(lerp(neonGreen[1], neonPurple[1], relativeRadius)),
+                            Math.round(lerp(neonGreen[2], neonPurple[2], relativeRadius))
+                        ];
+                        const color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+                        const acceleration = diffPercent * Math.random() * .1;
+
+                        if (diffPercent > .5) {
+                            particles.push({
+                                x: outerX,
+                                y: outerY,
+                                width: 2,
+                                height: 2,
+                                rgb,
+                                alpha: 1,
+                                acceleration: [acceleration, acceleration],
+                                direction: outerX - innerX > 0 ? 1 : -1
+                            });
+                        }
+
+                        context.beginPath();
+                        context.strokeStyle = color;
+                        context.lineWidth = 5;
+                        context.moveTo(innerX, innerY);
+                        context.lineTo(outerX, outerY);
+                        context.stroke();
+                    }
+
+                    const averageValue = totalValue / audiobufferLength;
+                    const maxPercent = averageValue / 255;
+                    context.beginPath();
+                    context.filter = `blur(${lerp(50, 0, maxPercent)}px)`;
+                    context.fillStyle = `rgba(${neonBlue[0]}, ${neonBlue[1]}, ${neonBlue[2]}, .5)`;
+                    context.arc(canvasWidth / 2, canvasHeight / 2, canvasWidth / 18, 0, 2 * Math.PI);
+                    context.fill();
+                    context.restore();
                 }
 
                 function runLoop() {
@@ -297,7 +363,7 @@
                         if (shouldUpdate) {
                             previousAudioBuffer.set(audioBuffer);
 
-                            if (animation === 'line' || animation === 'bar') {
+                            if (animation !== 'wave') {
                                 audioAnalyzer.getByteFrequencyData(audioBuffer);
                             } else {
                                 audioAnalyzer.getByteTimeDomainData(audioBuffer);
@@ -313,12 +379,14 @@
                             waveAnimation();
                         } else if (animation === 'bar') {
                             barAnimation();
+                        } else if (animation === 'sunburst') {
+                            sunburstAnimation();
                         }
-                        // TODO circle and sunfire
 
                         for (let particle of particles) {
                             particle.alpha -= .01;
-                            particle.y += particle.acceleration * dt * particle.direction;
+                            particle.y += particle.acceleration[1] * dt * particle.direction;
+                            particle.x += particle.acceleration[0] * dt * particle.direction;
 
                             context.beginPath();
                             context.fillStyle = `rgba(${particle.rgb[0]}, ${particle.rgb[1]}, ${particle.rgb[2]}, ${particle.alpha})`;
@@ -343,11 +411,10 @@
         </div>
         <div class="audio-control">
             <select onchange="updateVisual(event)">
+                <option value="sunburst">SunBurst</option>
                 <option value="bar">Bar</option>
                 <option value="wave">Wave</option>
                 <option value="line">Line</option>
-                <option value="circle">Circle</option>
-                <option value="sunburst">SunBurst</option>
             </select>
             <button id="previous-button" onclick="last()">Last</button>
             <button id="play-button" onclick="play()">></button>
