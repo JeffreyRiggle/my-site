@@ -30,6 +30,7 @@
             let last;
             let next;
             let updateVisual;
+            let angleOffset = 0;
             const neonPurple = [176, 38, 255];
             const neonGreen = [57, 255, 20];
             const neonRed = [255, 49, 49];
@@ -289,7 +290,7 @@
                     }
                 }
 
-                function sunburstAnimation() {
+                function sunburstAnimation(dt) {
                     const maxAngle = 2 * Math.PI;
                     const minRadius = canvasWidth / 16;
                     const maxRadius = canvasWidth / 4;
@@ -300,7 +301,7 @@
                     for (let ray = 0; ray < audiobufferLength; ray++) {
                         const bufferValue = audioBuffer[ray];
                         totalValue += bufferValue;
-                        const angle = ray * angleIncrement;
+                        const angle = (ray * angleIncrement) + angleOffset;
                         const targetRadius = maxRadius * (bufferValue / 255);
 
                         if (targetRadius < minRadius) continue;
@@ -323,18 +324,19 @@
                             Math.round(lerp(neonGreen[2], neonPurple[2], relativeRadius))
                         ];
                         const color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-                        const acceleration = diffPercent * Math.random() * .1;
+                        const acceleration = Math.random() * .1;
 
-                        if (diffPercent > .5) {
+                        const genParticles = diff > .3 ? Math.round(diffPercent * 3) : 0;
+                        for (let i = 0; i < genParticles; i++) {
                             particles.push({
-                                x: outerX,
-                                y: outerY,
+                                x: outerX + (i * 2),
+                                y: outerY + (i * 2),
                                 width: 2,
                                 height: 2,
                                 rgb,
                                 alpha: 1,
-                                acceleration: [acceleration, acceleration],
-                                direction: outerX - innerX > 0 ? 1 : -1
+                                acceleration: [acceleration * Math.cos(angle), acceleration * Math.sin(angle)],
+                                direction: 1
                             });
                         }
 
@@ -348,6 +350,7 @@
 
                     const averageValue = totalValue / audiobufferLength;
                     const maxPercent = averageValue / 255;
+                    angleOffset = (angleOffset + (((Math.PI / 2) * (dt / 1000)) * maxPercent)) % (Math.PI * 2);
                     context.beginPath();
                     context.filter = `blur(${lerp(50, 0, maxPercent)}px)`;
                     context.fillStyle = `rgba(${neonBlue[0]}, ${neonBlue[1]}, ${neonBlue[2]}, .5)`;
@@ -380,7 +383,7 @@
                         } else if (animation === 'bar') {
                             barAnimation();
                         } else if (animation === 'sunburst') {
-                            sunburstAnimation();
+                            sunburstAnimation(dt);
                         }
 
                         for (let particle of particles) {
