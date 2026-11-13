@@ -75,10 +75,16 @@
                 song: 'World Nap',
                 author: 'Ozzed',
                 site: 'https://ozzed.net/music/cor-metallicum.shtml'
-            }]
+            }];
+            
+            const animations = [ 
+                { name: 'sunburst', frequency: 256 },
+                { name: 'line', frequency: 128 },
+                { name: 'wave', frequency: 64 },
+                { name: 'bar', frequency: 32 }
+            ];
 
             addEventListener('load', () => {
-                const animations = ['sunburst', 'line', 'wave', 'bar'];
                 const audioElement = document.getElementById('playback');
                 const nextElement = document.getElementById('next-button');
                 const previousElement = document.getElementById('previous-button');
@@ -97,15 +103,19 @@
                 const audioContext = new AudioContext();
                 const audioAnalyzer = audioContext.createAnalyser();
                 const audioSource = audioContext.createMediaElementSource(audioElement);
-                const frequency = 128;
+                const maxBufferSize = 512;
+                let currentBufferUsage;
                 
                 audioSource.connect(audioAnalyzer);
                 audioAnalyzer.connect(audioContext.destination);
                 
-                audioAnalyzer.fftSize = frequency;
-                const audiobufferLength = audioAnalyzer.frequencyBinCount;
-                const audioBuffer = new Uint8Array(audiobufferLength);
-                const previousAudioBuffer = new Uint8Array(audiobufferLength);
+                function updateFrequency(freq) {
+                    audioAnalyzer.fftSize = freq;
+                    currentBufferUsage = audioAnalyzer.frequencyBinCount;
+                }
+                
+                const audioBuffer = new Uint8Array(maxBufferSize);
+                const previousAudioBuffer = new Uint8Array(maxBufferSize);
                 let playing = false;
                 let selectedAnimation = 0;
                 let particles = [];
@@ -181,17 +191,17 @@
                 }
 
                 updateVisual = function(offset) {
-                    selectedAnimation = (selectedAnimation + 1) % 4;
-
-                    if (selectedAnimation)
-                    selectedAnimationImg.src = `./${animations[selectedAnimation]}.png`;
+                    selectedAnimation = (selectedAnimation + offset) % 4;
+                    const updatedAnimation = animations[selectedAnimation];
+                    selectedAnimationImg.src = `./${updatedAnimation.name}.png`;
+                    updateFrequency(updatedAnimation.frequency);
                 }
 
                 const canvas = document.getElementById('view');
                 const context = canvas.getContext('2d');
                 const canvasWidth = canvas.width = window.innerWidth;
                 const canvasHeight = canvas.height = window.innerHeight - 60;
-                const sampleWidth = canvasWidth / audiobufferLength;
+                const sampleWidth = canvasWidth / currentBufferUsage;
                 const maxBars = 25;
                 const barHeight = (canvasHeight / 2) / maxBars;
                 let lastTime = 0;
@@ -204,7 +214,7 @@
 
                 function lineAnimation() {
                     for (let x = 0; x < canvasWidth; x++) {
-                        const position = x / audiobufferLength;
+                        const position = x / currentBufferUsage;
                         const bufferValue = audioBuffer[Math.floor(position)];
                         maxValue = Math.max(maxValue, bufferValue);
                         minValue = Math.min(minValue, bufferValue);
@@ -238,8 +248,8 @@
                 }
 
                 function barAnimation() {
-                    const laneWidth = canvasWidth / audiobufferLength;
-                    for (let lane = 0; lane < audiobufferLength; lane++) {
+                    const laneWidth = canvasWidth / currentBufferUsage;
+                    for (let lane = 0; lane < currentBufferUsage; lane++) {
                         const bufferValue = audioBuffer[lane];
                         const x = lane * laneWidth;
                         maxValue = Math.max(maxValue, bufferValue);
@@ -289,7 +299,7 @@
                 function waveAnimation() {
                     let previousPoint = [0, canvasHeight / 2];
                     for (let x = 0; x < canvasWidth; x++) {
-                        const position = x / audiobufferLength;
+                        const position = x / currentBufferUsage;
                         const lowerBufferValue = audioBuffer[Math.floor(position)];
                         const upperBufferValue = audioBuffer[Math.ceil(position)];
                         maxValue = Math.max(maxValue, lowerBufferValue, upperBufferValue);
@@ -328,11 +338,11 @@
                     const maxAngle = 2 * Math.PI;
                     const minRadius = canvasWidth / 16;
                     const maxRadius = canvasWidth / 4;
-                    const angleIncrement = maxAngle / audiobufferLength;
+                    const angleIncrement = maxAngle / currentBufferUsage;
                     context.save();
 
                     let totalValue = 0;
-                    for (let ray = 0; ray < audiobufferLength; ray++) {
+                    for (let ray = 0; ray < currentBufferUsage; ray++) {
                         const bufferValue = audioBuffer[ray];
                         totalValue += bufferValue;
                         const angle = (ray * angleIncrement) + angleOffset;
@@ -382,7 +392,7 @@
                         context.stroke();
                     }
 
-                    const averageValue = totalValue / audiobufferLength;
+                    const averageValue = totalValue / currentBufferUsage;
                     const maxPercent = averageValue / 255;
                     if (playing) {
                         angleOffset = (angleOffset + (((Math.PI / 2) * (dt / 1000)) * maxPercent)) % (Math.PI * 2);
@@ -395,11 +405,13 @@
                     context.restore();
                 }
 
+                updateVisual(0);
+
                 function runLoop() {
                     requestAnimationFrame((timestamp) => {
                         const dt = timestamp - lastTime;
                         const shouldUpdate = dt > 33.3;
-                        const animationName = animations[selectedAnimation];
+                        const animationName = animations[selectedAnimation].name;
                         if (shouldUpdate) {
                             previousAudioBuffer.set(audioBuffer);
 
@@ -428,13 +440,13 @@
                                 particle.alpha -= .01;
                                 particle.y += particle.acceleration[1] * dt * particle.direction;
                                 particle.x += particle.acceleration[0] * dt * particle.direction;
-                            
+
                                 context.beginPath();
                                 context.fillStyle = `rgba(${particle.rgb[0]}, ${particle.rgb[1]}, ${particle.rgb[2]}, ${particle.alpha})`;
                                 context.rect(particle.x, particle.y, particle.width, particle.height);
                                 context.fill();
                             }
-                        
+
                             particles = particles.filter(p => p.alpha > 0);
                         }
                         
