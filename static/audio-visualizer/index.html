@@ -11,9 +11,11 @@
             }
 
             .audio-control {
-                background-color: grey;
+                display: flex;
+                background-color: #2f3131;
                 width: 100%;
                 height: 48px;
+                justify-content: center;
             }
 
             .author-info {
@@ -22,6 +24,30 @@
                 position: absolute;
                 top: 10;
                 left: 50;
+            }
+
+            button {
+                background: none;
+                border: none;
+                outline: none;
+            }
+            
+            .viz-selector {
+                display: flex;
+                flex-direction: row;
+                flex: 0;
+            }
+
+            .viz-options {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .play-control {
+                display: flex;
+                flex: 1;
+                direction: row;
+                justify-content: center;
             }
         </style>
         <link rel="icon" href="/favicon-32x32.png" type="image/png">
@@ -49,13 +75,15 @@
             }]
 
             addEventListener('load', () => {
+                const animations = ['sunburst', 'line', 'wave', 'bar'];
                 const audioElement = document.getElementById('playback');
                 const nextElement = document.getElementById('next-button');
                 const previousElement = document.getElementById('previous-button');
                 const songTitleElement = document.getElementById('song-name');
                 const authorElement = document.getElementById('author');
                 const songLinkElement = document.getElementById('song-link');
-                const playButton = document.getElementById('play-button');
+                const actionImage = document.getElementById('action-img');
+                const selectedAnimationImg = document.getElementById('select-animation-image');
 
                 audioElement.addEventListener('ended', async () => {
                     if (currentSong < songs.length) {
@@ -76,7 +104,7 @@
                 const audioBuffer = new Uint8Array(audiobufferLength);
                 const previousAudioBuffer = new Uint8Array(audiobufferLength);
                 let playing = false;
-                let animation = 'sunburst';
+                let selectedAnimation = 0;
                 let particles = [];
                 let maxLane = [];
 
@@ -111,10 +139,10 @@
                 play = async function() {
                     if (playing) {
                         await stopAudio();
-                        playButton.innerText = '>'
+                        actionImage.src = './play.png';
                     } else {
                         await startAudio();
-                        playButton.innerText = '||'
+                        actionImage.src = './pause.png';
                     }
 
                     playing = !playing;
@@ -149,8 +177,9 @@
                     playing = true;
                 }
 
-                updateVisual = function(event) {
-                    animation = event.target.value;
+                updateVisual = function(offset) {
+                    selectedAnimation += offset;
+                    selectedAnimationImg.src = `./${animations[selectedAnimation]}.png`;
                 }
 
                 const canvas = document.getElementById('view');
@@ -363,10 +392,11 @@
                     requestAnimationFrame((timestamp) => {
                         const dt = timestamp - lastTime;
                         const shouldUpdate = dt > 33.3;
+                        const animationName = animations[selectedAnimation];
                         if (shouldUpdate) {
                             previousAudioBuffer.set(audioBuffer);
 
-                            if (animation !== 'wave') {
+                            if (animationName !== 'wave') {
                                 audioAnalyzer.getByteFrequencyData(audioBuffer);
                             } else {
                                 audioAnalyzer.getByteTimeDomainData(audioBuffer);
@@ -376,13 +406,13 @@
 
                         context.clearRect(0, 0, canvasWidth, canvasHeight);
 
-                        if (animation === 'line') {
+                        if (animationName === 'line') {
                             lineAnimation();
-                        } else if (animation === 'wave') {
+                        } else if (animationName === 'wave') {
                             waveAnimation();
-                        } else if (animation === 'bar') {
+                        } else if (animationName === 'bar') {
                             barAnimation();
-                        } else if (animation === 'sunburst') {
+                        } else if (animationName === 'sunburst') {
                             sunburstAnimation(dt);
                         }
 
@@ -413,15 +443,18 @@
             <a id="song-link" target="_blank"></a>
         </div>
         <div class="audio-control">
-            <select onchange="updateVisual(event)">
-                <option value="sunburst">SunBurst</option>
-                <option value="bar">Bar</option>
-                <option value="wave">Wave</option>
-                <option value="line">Line</option>
-            </select>
-            <button id="previous-button" onclick="last()">Last</button>
-            <button id="play-button" onclick="play()">></button>
-            <button id="next-button" onclick="next()">Next</button>
+            <div class="viz-selector">
+                <img id="select-animation-image" src="./sunburst.png">
+                <div class="viz-options">
+                    <button id="next-animation-button" onclick="updateVisual(1)"><img src="./up.png"></button>
+                    <button id="last-animation-button" onclick="updateVisual(1)"><img src="./down.png"></button>
+                </div>
+            </div>
+            <div class="play-control">
+                <button id="previous-button" onclick="last()"><img src="./last.png"></button>
+                <button id="play-button" onclick="play()"><img id="action-img" src="./play.png"></button>
+                <button id="next-button" onclick="next()"><img src="./next.png"></button>
+            </div>
         </div>
         <audio id="playback"></audio>
     </body>
