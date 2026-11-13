@@ -1,0 +1,493 @@
+<html>
+    <head>
+        <title>Audio Visualizer Scene | ilusr</title>
+        <style>
+            body {
+                margin: 0;
+                background-color: black;
+            }
+            audio {
+                display: none;
+            }
+
+            .audio-control {
+                display: flex;
+                background-color: #2f3131;
+                width: 100%;
+                height: 48px;
+                justify-content: center;
+                position: fixed;
+                bottom: 0;
+            }
+
+            .author-info {
+                font-size: 24px;
+                color: #04D9FF;
+                position: absolute;
+                top: 10;
+                left: 50;
+            }
+
+            button {
+                background: none;
+                border: none;
+                outline: none;
+            }
+            
+            .viz-selector {
+                display: flex;
+                flex-direction: row;
+                flex: 0;
+            }
+
+            .viz-options {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            
+            .play-control {
+                display: flex;
+                flex: 1;
+                direction: row;
+                justify-content: center;
+            }
+        </style>
+        <link rel="icon" href="/favicon-32x32.png" type="image/png">
+        <script type="text/javascript">
+            let play;
+            let last;
+            let next;
+            let updateVisual;
+            let angleOffset = 0;
+            const neonPurple = [176, 38, 255];
+            const neonGreen = [57, 255, 20];
+            const neonRed = [255, 49, 49];
+            const neonBlue = [4, 217, 255];
+            let currentSong = 0;
+            const songs = [{
+                url: './Future-Grunge.ogg',
+                song: 'FUTURE GRUNGE',
+                author: 'Eric Matyas',
+                site: 'https://soundimage.org/'
+            }, {
+                url: './world_nap.mp3',
+                song: 'World Nap',
+                author: 'Ozzed',
+                site: 'https://ozzed.net/music/cor-metallicum.shtml'
+            }, {
+                url: './Desolate-Streets-in-a-Machine-World.ogg',
+                song: 'DESOLATE STREETS IN A MACHINE WORLD',
+                author: 'Eric Matyas',
+                site: 'https://soundimage.org/'
+            }, {
+                url: './LeavingTheMeadow.wav',
+                song: 'Leaving The Meadow',
+                author: 'Andrea Baroni',
+                site: 'https://andreabaroni.com/'
+            }];
+            
+            const animations = [ 
+                { name: 'bar', frequency: 32 },
+                { name: 'line', frequency: 128 },
+                { name: 'sunburst', frequency: 256 },
+                { name: 'wave', frequency: 64 }
+            ];
+
+            addEventListener('load', () => {
+                const audioElement = document.getElementById('playback');
+                const nextElement = document.getElementById('next-button');
+                const previousElement = document.getElementById('previous-button');
+                const songTitleElement = document.getElementById('song-name');
+                const authorElement = document.getElementById('author');
+                const songLinkElement = document.getElementById('song-link');
+                const actionImage = document.getElementById('action-img');
+                const selectedAnimationImg = document.getElementById('select-animation-image');
+
+                audioElement.addEventListener('ended', async () => {
+                    if (currentSong < songs.length) {
+                        await next();
+                    }
+                });
+
+                const audioContext = new AudioContext();
+                const audioAnalyzer = audioContext.createAnalyser();
+                const audioSource = audioContext.createMediaElementSource(audioElement);
+                const maxBufferSize = 512;
+                let currentBufferUsage;
+                
+                audioSource.connect(audioAnalyzer);
+                audioAnalyzer.connect(audioContext.destination);
+                
+                function updateFrequency(freq) {
+                    audioAnalyzer.fftSize = freq;
+                    currentBufferUsage = audioAnalyzer.frequencyBinCount;
+                }
+                
+                const audioBuffer = new Uint8Array(maxBufferSize);
+                const previousAudioBuffer = new Uint8Array(maxBufferSize);
+                let playing = false;
+                let selectedAnimation = 0;
+                let particles = [];
+                let maxLane = [];
+
+                async function stopAudio() {
+                    await audioElement.pause();
+                    await audioContext.suspend();
+                }
+
+                async function startAudio() {
+                    await audioElement.play();
+                    await audioContext.resume();    
+                }
+
+                function updateControls() {
+                    if (currentSong >= songs.length - 1) {
+                        nextElement.disabled = true;
+                    } else {
+                        nextElement.disabled = false;
+                    }
+                }
+
+                function setAuthorInfo(song) {
+                    songTitleElement.innerText = song.song;
+                    songLinkElement.innerText = song.site;
+                    songLinkElement.href = song.site;
+                    authorElement.innerText = song.author;
+                }
+
+                audioElement.src = songs[currentSong].url;
+                setAuthorInfo(songs[currentSong]);
+
+                play = async function() {
+                    if (playing) {
+                        await stopAudio();
+                        actionImage.src = './play.png';
+                    } else {
+                        await startAudio();
+                        actionImage.src = './pause.png';
+                    }
+
+                    playing = !playing;
+                }
+
+                last = async function() {
+                    if (currentSong <= 0) return;
+
+                    playing = false;
+                    await stopAudio();
+                    currentSong--;
+                    const newSong = songs[currentSong];
+                    audioElement.src = newSong.url;
+                    updateControls();
+                    setAuthorInfo(newSong);
+
+                    await startAudio();
+                    playing = true;
+                }
+
+                next = async function() {
+                    playing = false;
+                    await stopAudio();
+                    currentSong++;
+                    const newSong = songs[currentSong];
+                    audioElement.src = newSong.url;
+
+                    updateControls();
+                    setAuthorInfo(newSong);
+
+                    await startAudio();
+                    playing = true;
+                }
+
+                updateVisual = function(offset) {
+                    selectedAnimation = (selectedAnimation + offset) % 4;
+                    const updatedAnimation = animations[selectedAnimation];
+                    selectedAnimationImg.src = `./${updatedAnimation.name}.png`;
+                    updateFrequency(updatedAnimation.frequency);
+                }
+
+                const canvas = document.getElementById('view');
+                const context = canvas.getContext('2d');
+                const canvasWidth = canvas.width = window.innerWidth;
+                const canvasHeight = canvas.height = window.innerHeight - 60;
+                const sampleWidth = canvasWidth / currentBufferUsage;
+                const maxBars = 25;
+                const barHeight = (canvasHeight / 2) / maxBars;
+                let lastTime = 0;
+                let maxValue = 0;
+                let minValue = Infinity;
+
+                function lerp(a, b, t) {
+                    return a + (b - a) * t;
+                }
+
+                function lineAnimation() {
+                    for (let x = 0; x < canvasWidth; x++) {
+                        const position = x / currentBufferUsage;
+                        const bufferValue = audioBuffer[Math.floor(position)];
+                        maxValue = Math.max(maxValue, bufferValue);
+                        minValue = Math.min(minValue, bufferValue);
+                        const y = (bufferValue / 255) * canvasHeight;
+                        const yRelativePercent = y / canvasHeight;
+                        const diff = previousAudioBuffer[Math.floor(position)] - bufferValue;
+                        const diffPercent = Math.abs((diff % 32) / 32);
+                        const endY = lerp(y + 2, y + 32, diffPercent);
+                        const rgb = [Math.round(lerp(neonPurple[0], neonGreen[0], yRelativePercent)), Math.round(lerp(neonPurple[1], neonGreen[1], yRelativePercent)), Math.round(lerp(neonPurple[2], neonGreen[2], yRelativePercent))];
+                        const color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+
+                        if (diffPercent > .5 && (x % 4) === 1) {
+                            particles.push({
+                                x,
+                                y,
+                                width: 2,
+                                height: 2,
+                                rgb,
+                                alpha: 1,
+                                acceleration: [0, diffPercent * Math.random() * .1],
+                                direction: diff > 0 ? 1 : -1
+                            });
+                        }
+
+                        context.beginPath();
+                        context.strokeStyle = color;
+                        context.moveTo(x, y);
+                        context.lineTo(x, endY);
+                        context.stroke();
+                    }
+                }
+
+                function barAnimation() {
+                    const laneWidth = canvasWidth / currentBufferUsage;
+                    for (let lane = 0; lane < currentBufferUsage; lane++) {
+                        const bufferValue = audioBuffer[lane];
+                        const x = lane * laneWidth;
+                        maxValue = Math.max(maxValue, bufferValue);
+                        minValue = Math.min(minValue, bufferValue);
+
+                        const stackedBars = Math.round(maxBars * bufferValue / 255);
+                        let highestPoint = maxLane[lane];
+
+                        if (!highestPoint || highestPoint.bars < stackedBars || highestPoint.particle.alpha <= 0) {
+                            if (highestPoint?.particle) {
+                                highestPoint.particle.alpha = 0;
+                            }
+                            const barRelative = stackedBars / maxBars;
+                            const particle = {
+                                x,
+                                y: canvasHeight - (stackedBars * barHeight),
+                                width: laneWidth,
+                                height: barHeight / 4,
+                                rgb: [
+                                    Math.round(lerp(neonBlue[0], neonPurple[0], barRelative)),
+                                    Math.round(lerp(neonBlue[1], neonPurple[1], barRelative)),
+                                    Math.round(lerp(neonBlue[2], neonPurple[2], barRelative))
+                                ],
+                                alpha: 1,
+                                acceleration: [0, .01],
+                                direction: 1
+                            };
+                            highestPoint = { bars: stackedBars, particle };
+                            particles.push(particle); 
+                            maxLane[lane] = highestPoint;
+                        }
+
+                        for (let bar = 0; bar < stackedBars; bar++) {
+                            const y = canvasHeight - (bar * barHeight);
+                            const barRelative = bar / maxBars;
+                            const rgb = [Math.round(lerp(neonGreen[0], neonRed[0], barRelative)), Math.round(lerp(neonGreen[1], neonRed[1], barRelative)), Math.round(lerp(neonGreen[2], neonRed[2], barRelative))];
+                            const color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+
+                            context.beginPath();
+                            context.fillStyle = color;
+                            context.rect(x, y, laneWidth, barHeight / 2)
+                            context.fill();
+                        }
+                    }
+                }
+
+                function waveAnimation() {
+                    let previousPoint = [0, canvasHeight / 2];
+                    for (let x = 0; x < canvasWidth; x++) {
+                        const position = x / currentBufferUsage;
+                        const lowerBufferValue = audioBuffer[Math.floor(position)];
+                        const upperBufferValue = audioBuffer[Math.ceil(position)];
+                        maxValue = Math.max(maxValue, lowerBufferValue, upperBufferValue);
+                        minValue = Math.min(minValue, lowerBufferValue, upperBufferValue);
+                        const target = lerp(lowerBufferValue, upperBufferValue, position % 1);
+                        const y = (target / 128) * (canvasHeight / 2);
+                        const diff = previousAudioBuffer[Math.floor(position)] - lowerBufferValue;
+                        const diffPercent = Math.abs((diff % 64) / 64);
+                        const rgb = [Math.round(lerp(neonGreen[0], neonPurple[0], diffPercent)), Math.round(lerp(neonGreen[1], neonPurple[1], diffPercent)), Math.round(lerp(neonGreen[2], neonPurple[2], diffPercent))];
+                        const color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+
+                        context.beginPath();
+                        context.strokeStyle = color;
+                        context.moveTo(previousPoint[0], previousPoint[1]);
+                        context.lineTo(x, y + 2);
+                        context.stroke();
+
+                        if (diffPercent > .5 && (x % 4) === 1) {
+                            particles.push({
+                                x,
+                                y,
+                                width: 1,
+                                height: 1,
+                                rgb,
+                                alpha: 1,
+                                acceleration: [0, diffPercent * Math.random() * .1],
+                                direction: x % 4 > 1 ? 1 : -1
+                            });
+                        }
+
+                        previousPoint = [x, y + 4];
+                    }
+                }
+
+                function sunburstAnimation(dt) {
+                    const maxAngle = 2 * Math.PI;
+                    const minRadius = canvasWidth / 16;
+                    const maxRadius = canvasWidth / 4;
+                    const angleIncrement = maxAngle / currentBufferUsage;
+                    context.save();
+
+                    let totalValue = 0;
+                    for (let ray = 0; ray < currentBufferUsage; ray++) {
+                        const bufferValue = audioBuffer[ray];
+                        totalValue += bufferValue;
+                        const angle = (ray * angleIncrement) + angleOffset;
+                        const targetRadius = maxRadius * (bufferValue / 255);
+
+                        if (targetRadius < minRadius) continue;
+
+                        const innerX = canvasWidth / 2 + Math.cos(angle) * minRadius;
+                        const outerX = canvasWidth / 2 + Math.cos(angle) * targetRadius;
+                        
+                        const innerY = canvasHeight / 2 + Math.sin(angle) * minRadius;
+                        const outerY = canvasHeight / 2 + Math.sin(angle) * targetRadius;
+                        const diff = previousAudioBuffer[ray] - bufferValue;
+                        const diffPercent = Math.abs((diff % 32) / 32);
+                        
+                        maxValue = Math.max(maxValue, bufferValue);
+                        minValue = Math.min(minValue, bufferValue);
+
+                        const relativeRadius = targetRadius / maxRadius;
+                        const rgb = [
+                            Math.round(lerp(neonGreen[0], neonPurple[0], relativeRadius)),
+                            Math.round(lerp(neonGreen[1], neonPurple[1], relativeRadius)),
+                            Math.round(lerp(neonGreen[2], neonPurple[2], relativeRadius))
+                        ];
+                        const color = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+                        const acceleration = Math.random() * .1;
+
+                        const genParticles = diff > .3 ? Math.round(diffPercent * 3) : 0;
+                        for (let i = 0; i < genParticles; i++) {
+                            particles.push({
+                                x: outerX + (i * 2),
+                                y: outerY + (i * 2),
+                                width: 2,
+                                height: 2,
+                                rgb,
+                                alpha: 1,
+                                acceleration: [acceleration * Math.cos(angle), acceleration * Math.sin(angle)],
+                                direction: 1
+                            });
+                        }
+
+                        context.beginPath();
+                        context.strokeStyle = color;
+                        context.lineWidth = 5;
+                        context.moveTo(innerX, innerY);
+                        context.lineTo(outerX, outerY);
+                        context.stroke();
+                    }
+
+                    const averageValue = totalValue / currentBufferUsage;
+                    const maxPercent = averageValue / 255;
+                    if (playing) {
+                        angleOffset = (angleOffset + (((Math.PI / 2) * (dt / 1000)) * maxPercent)) % (Math.PI * 2);
+                    }
+                    context.beginPath();
+                    context.filter = `blur(${lerp(50, 0, maxPercent)}px)`;
+                    context.fillStyle = `rgba(${neonBlue[0]}, ${neonBlue[1]}, ${neonBlue[2]}, .5)`;
+                    context.arc(canvasWidth / 2, canvasHeight / 2, canvasWidth / 18, 0, 2 * Math.PI);
+                    context.fill();
+                    context.restore();
+                }
+
+                updateVisual(0);
+
+                function runLoop() {
+                    requestAnimationFrame((timestamp) => {
+                        const dt = timestamp - lastTime;
+                        const shouldUpdate = dt > 33.3;
+                        const animationName = animations[selectedAnimation].name;
+                        if (shouldUpdate) {
+                            previousAudioBuffer.set(audioBuffer);
+
+                            if (animationName !== 'wave') {
+                                audioAnalyzer.getByteFrequencyData(audioBuffer);
+                            } else {
+                                audioAnalyzer.getByteTimeDomainData(audioBuffer);
+                            } 
+                            lastTime = timestamp;
+                        }
+
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+                        if (animationName === 'line') {
+                            lineAnimation();
+                        } else if (animationName === 'wave') {
+                            waveAnimation();
+                        } else if (animationName === 'bar') {
+                            barAnimation();
+                        } else if (animationName === 'sunburst') {
+                            sunburstAnimation(dt);
+                        }
+
+                        if (playing) {
+                            for (let particle of particles) {
+                                particle.alpha -= .01;
+                                particle.y += particle.acceleration[1] * dt * particle.direction;
+                                particle.x += particle.acceleration[0] * dt * particle.direction;
+
+                                context.beginPath();
+                                context.fillStyle = `rgba(${particle.rgb[0]}, ${particle.rgb[1]}, ${particle.rgb[2]}, ${particle.alpha})`;
+                                context.rect(particle.x, particle.y, particle.width, particle.height);
+                                context.fill();
+                            }
+
+                            particles = particles.filter(p => p.alpha > 0);
+                        }
+                        
+                        runLoop();
+                    })
+                }
+
+                runLoop();
+            });
+        </script>
+    </head>
+    <body>
+        <canvas id="view"></canvas>
+        <div class="author-info">
+            <span id="song-name"></span> - <span id="author"></span>
+            <a id="song-link" target="_blank"></a>
+        </div>
+        <div class="audio-control">
+            <div class="viz-selector">
+                <img id="select-animation-image" src="./sunburst.png">
+                <div class="viz-options">
+                    <button id="next-animation-button" onclick="updateVisual(1)"><img src="./up.png"></button>
+                    <button id="last-animation-button" onclick="updateVisual(1)"><img src="./down.png"></button>
+                </div>
+            </div>
+            <div class="play-control">
+                <button id="previous-button" onclick="last()"><img src="./last.png"></button>
+                <button id="play-button" onclick="play()"><img id="action-img" src="./play.png"></button>
+                <button id="next-button" onclick="next()"><img src="./next.png"></button>
+            </div>
+        </div>
+        <audio id="playback"></audio>
+    </body>
+</html>
