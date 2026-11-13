@@ -1,6 +1,6 @@
 ---
 title: 'Audio Visualizer Scene'
-date: '2026-11-08'
+date: '2026-11-13'
 ---
 
 Warning this contains sound as well!
