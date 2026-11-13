@@ -122,7 +122,7 @@
                 }
 
                 function updateControls() {
-                    if (currentSong >= songs.length) {
+                    if (currentSong >= songs.length - 1) {
                         nextElement.disabled = true;
                     } else {
                         nextElement.disabled = false;
@@ -181,7 +181,9 @@
                 }
 
                 updateVisual = function(offset) {
-                    selectedAnimation += offset;
+                    selectedAnimation = (selectedAnimation + 1) % 4;
+
+                    if (selectedAnimation)
                     selectedAnimationImg.src = `./${animations[selectedAnimation]}.png`;
                 }
 
