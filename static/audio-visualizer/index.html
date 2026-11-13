@@ -384,7 +384,9 @@
 
                     const averageValue = totalValue / audiobufferLength;
                     const maxPercent = averageValue / 255;
-                    angleOffset = (angleOffset + (((Math.PI / 2) * (dt / 1000)) * maxPercent)) % (Math.PI * 2);
+                    if (playing) {
+                        angleOffset = (angleOffset + (((Math.PI / 2) * (dt / 1000)) * maxPercent)) % (Math.PI * 2);
+                    }
                     context.beginPath();
                     context.filter = `blur(${lerp(50, 0, maxPercent)}px)`;
                     context.fillStyle = `rgba(${neonBlue[0]}, ${neonBlue[1]}, ${neonBlue[2]}, .5)`;
@@ -421,18 +423,21 @@
                             sunburstAnimation(dt);
                         }
 
-                        for (let particle of particles) {
-                            particle.alpha -= .01;
-                            particle.y += particle.acceleration[1] * dt * particle.direction;
-                            particle.x += particle.acceleration[0] * dt * particle.direction;
-
-                            context.beginPath();
-                            context.fillStyle = `rgba(${particle.rgb[0]}, ${particle.rgb[1]}, ${particle.rgb[2]}, ${particle.alpha})`;
-                            context.rect(particle.x, particle.y, particle.width, particle.height);
-                            context.fill();
+                        if (playing) {
+                            for (let particle of particles) {
+                                particle.alpha -= .01;
+                                particle.y += particle.acceleration[1] * dt * particle.direction;
+                                particle.x += particle.acceleration[0] * dt * particle.direction;
+                            
+                                context.beginPath();
+                                context.fillStyle = `rgba(${particle.rgb[0]}, ${particle.rgb[1]}, ${particle.rgb[2]}, ${particle.alpha})`;
+                                context.rect(particle.x, particle.y, particle.width, particle.height);
+                                context.fill();
+                            }
+                        
+                            particles = particles.filter(p => p.alpha > 0);
                         }
-
-                        particles = particles.filter(p => p.alpha > 0);
+                        
                         runLoop();
                     })
                 }
